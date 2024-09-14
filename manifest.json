@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "YTWL: My Personal YouTube WatchLater Manager",
+  "version": "1.0.0",
+  "description": "Run JavaScript to manage YouTube's WL contents",
+  "permissions": ["tabs", "clipboardWrite", "storage", "activeTab", "scripting"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "YTWL"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["contentScript.js"]
+    }
+  ]
+}
