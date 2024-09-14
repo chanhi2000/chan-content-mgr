@@ -1,0 +1,25 @@
+{
+  "name": "ytwl-manager",
+  "version": "1.0.0",
+  "description": "YTWL: My Personal YouTube WatchLater Manager",
+  "main": "./src/index.js",
+  "scripts": {
+    "build": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://@github.com/chanhi2000/ytwl-manager.git"
+  },
+  "keywords": [
+    "youtube", "watch-later"
+  ],
+  "author": "Chan Hee Lee",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chanhi2000/ytwl-manager/issues"
+  },
+  "homepage": "https://github.com/chanhi2000/ytwl-manager#readme",
+  "dependencies": {
+    "crx": "5.0.1"
+  }
+}

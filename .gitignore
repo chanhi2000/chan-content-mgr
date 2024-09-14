@@ -1,0 +1,10 @@
+*.crx
+*.zip
+*.xml
+node_modules
+coverage
+.nyc_output
+tmp
+
+*.crx
+update.xml
