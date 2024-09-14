@@ -12,4 +12,4 @@ YTWL: My Personal YouTube WatchLater Manager
 > TO BE IMPLEMENTED
 
 [shield-proj-v]: https://img.shields.io/github/manifest-json/v/chanhi2000/ytwl-manager?style=flat-square
-[shield-license-gpl]: https://img.shields.io/aur/license/node?style=flat-square
+[shield-license-gpl]: https://img.shields.io/github/license/chanhi2000/ytwl-manager?style=flat-square
