@@ -1,0 +1,36 @@
+name: Build Chrome Extension
+run-name: ${{ github.actor }} is Building Chrome Extension 🚀
+on: 
+  push:
+    tags:
+      - v*
+
+jobs:
+  build-chrome-extension:
+    name: Build Chrome extension artifact
+    runs-on: ubuntu-latest
+    steps:
+    - name: Extract version number
+      id: extract_version
+      run: |
+        VERSION=$(echo "${GITHUB_REF}" | sed -E 's|refs/tags/v(.*)|\1|')
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
+        echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+    - name: Identify the extracted version
+      run: |
+        echo "Extracted version: ${{ env.VERSION }}"
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Build
+      run: |-
+        # fill in your build steps here...
+        # we archive the dist folder and include SHA commit as the last step
+        zip -r ytwl-manager-${{ env.VERSION }}.zip dist
+
+    - name: Archive chrome-extension artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: ytwl-manager-${{ env.VERSION }}
+        path: ytwl-manager-${{ env.VERSION }}.zip
