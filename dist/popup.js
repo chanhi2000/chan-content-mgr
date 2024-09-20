@@ -1,6 +1,7 @@
 const URL_TO_MATCH = /playlist\?list=WL/g;
 
 const pVersion = document.getElementById('version');
+const btnFetchYTChannelInfo = document.getElementById('fetch-yt-channel-info');
 const btnFetch = document.getElementById('fetch');
 const btnDelete = document.getElementById('delete');
 
@@ -11,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   pVersion.textContent = `Version: ${version}`;
   btnFetch.disabled = false
   btnDelete.disabled = false
+  btnFetchYTChannelInfo.disabled = false
 
   // Retrieve the URL from storage (set by the background script)
   /*
@@ -33,6 +35,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   */
+});
+
+document.getElementById('fetch-yt-channel-info').addEventListener('click', async () => {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.tabs.sendMessage(tabs[0].id, { type: 'FETCH_YT_CHANNEL_INFO' }, (res) => {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError.message);
+        return
+      }
+      console.log('Message sent successfully', res.o);
+      copyToClipboard(JSON.stringify(res.o))
+    });
+  });
 });
 
 document.getElementById('fetch').addEventListener('click', async () => {

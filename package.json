@@ -1,6 +1,6 @@
 {
   "name": "ytwl-manager",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "YTWL: My Personal YouTube WatchLater Manager",
   "main": "./src/index.js",
   "scripts": {
