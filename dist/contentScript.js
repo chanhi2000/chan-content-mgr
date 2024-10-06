@@ -35,7 +35,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 function fetchGhRepoInfo() {
   console.log('fetchGhRepoInfo ... ')
   try {
-    const langType = [...document.querySelectorAll(".about-margin .BorderGrid-row .list-style-none>li>a>span.color-fg-default")][0].innerHTML
+    const langType = [...document.querySelectorAll(".about-margin .BorderGrid-row .list-style-none>li>a>span.color-fg-default")][0]?.innerHTML ?? ''
     const repo = document.querySelector("meta[property='og:url']")
                     ?.getAttribute('content')
                     ?.replace(/https:\/\/github.com\//g, '') ?? ''

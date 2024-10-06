@@ -112,7 +112,7 @@ head:
     - property: og:description
       content: "${meta.title}"
     - property: og:url
-      content: https://chanhi2000.github.iohttps://chanhi2000.github.io/bookshelf/${meta.articleBasePath}/${meta.articlePath}.html
+      content: https://chanhi2000.github.io/bookshelf/${meta.articleBasePath}/${meta.articlePath}.html
 prev: ${_relatedPath}/articles/README.md
 date: ${meta.datePublished}
 isOriginal: false

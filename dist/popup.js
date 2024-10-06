@@ -127,12 +127,16 @@ btnFetchGhRepoInfo.addEventListener('click', async () => {
       labeStatus.classList.add('success')
       labeStatus.innerHTML = res.o.repo
       const langType = res.o.langType
-      let comment = '// lang-'
+      let comment = ''
       switch(langType) {
-        case 'Java': comment += 'java';break;
-        case 'JavaScript': comment += 'js';break;
-        case 'TypeScript': comment += 'ts';break;
-        case 'Python': comment += 'py';break;
+        case 'Java': comment += '// lang-java';break;
+        case 'Kotlin': comment += '// lang-kotlin';break;
+        case 'JavaScript': comment += '// lang-js';break;
+        case 'TypeScript': comment += '// lang-ts';break;
+        case 'Python': comment += '// lang-py';break;
+        case 'Jupyter Notebook': comment += '// lang-jupyter-notebook';break;
+        case 'Rust': comment += '// lang-rust';break;
+        case '': comment += '// tutorial-basic';break;
         default:break;
       }
       delete res.o.langType;
