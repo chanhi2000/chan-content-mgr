@@ -1,11 +1,11 @@
-# ytwl-manager
+# chan-content-mgr
 
 ![shield-proj-v][shield-proj-v]
 ![shield-license-gpl][shield-license-gpl]
 
 ## What is it?
 
-YTWL: My Personal YouTube WatchLater Manager
+chan-content-mgr: My Personal Content Manager
 
 ## How to install?
 

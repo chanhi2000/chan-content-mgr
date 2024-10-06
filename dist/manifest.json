@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "YTWL: My Personal YouTube WatchLater Manager",
-  "version": "1.0.1",
-  "description": "Run JavaScript to manage YouTube's WL contents",
+  "name": "chan-content-mgr: My Personal Content Manager",
+  "description": "Run JavaScript to manage contents",
+  "version": "1.0.2",
   "permissions": ["tabs", "clipboardWrite", "storage", "activeTab", "scripting"],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "YTWL"
+    "default_title": "CHAN-CONTENT-MGR"
   },
   "background": {
     "service_worker": "background.js"

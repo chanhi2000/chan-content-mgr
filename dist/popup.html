@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>YTWL</title>
+  <title>CHAN-CONTENT-MGR</title>
   <style>
     button {
       min-width: 150px;
@@ -9,15 +9,31 @@
       padding: 10px;
       font-size: 14px;
     }
+    label { color: lightgray; }
     #version { font-size:8px; }
     .center-v { width:100%;display:flex;justify-content:center;align-items:center;flex-direction:row;}
+    .success { color: forestgreen; }
+    .fail { color: crimson; }
   </style>
+  <link href="fontawesome-free-6.6.0-web/css/fontawesome.css" rel="stylesheet"/>
+  <link href="fontawesome-free-6.6.0-web/css/brands.css" rel="stylesheet" />
+  <link href="fontawesome-free-6.6.0-web/css/solid.css" rel="stylesheet" />
 </head>
 <body>
   <h2>Select Action</h2>
-  <button id="fetch-yt-channel-info" disabled>fetch<br/>Youtube Channel Info</button>
-  <button id="fetch" disabled>fetch<br/>Watch Later</button>
-  <button id="delete" disabled>delete<br/>Watch Later</button>
+  <button id="fetch-gh-repo-info" disabled><i class="fa-brands fa-github"></i>
+    fetch<br/>Github Repository Info
+  </button>
+  <button id="fetch-yt-channel-info" disabled><i class="fa-brands fa-youtube"></i>
+    fetch<br/>Youtube Channel Info
+  </button>
+  <button id="fetch" disabled><i class="fa-brands fa-youtube"></i>
+    fetch<br/>Watch Later
+  </button>
+  <button id="delete" disabled><i class="fa-brands fa-youtube"></i>
+    delete<br/>Watch Later
+  </button>
+  <label id="status-lbl" class="center-v">Status Message</label>
   <span class="center-v"><p id="version"></p></span>
   <script src="popup.js"></script>
 </body>

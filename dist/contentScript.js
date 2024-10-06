@@ -2,7 +2,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.info("YTWL ~ MESSAGE arrived")
   switch (message.type) {
     case 'FETCH_YT_CHANNEL_INFO':
-      sendResponse({ status: "fetch Youtube Channel Info DONE!", o: fetchYTChannelInfo() })
+      sendResponse({ status: "fetch Youtube Channel Info DONE!", o: fetchYTChannelInfo() });
+      break;
+    case 'FETCH_GH_REPO_INFO':
+      sendResponse({ status: "fetch Github Repository Info DONE!", o: fetchGhRepoInfo() });
       break;
     case 'FETCH_WL':
       sendResponse({ status: "fetch WatchLater DONE!", videos: fetchWL() })
@@ -17,7 +20,44 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
+function fetchGhRepoInfo() {
+  console.log('fetchGhRepoInfo ... ')
+  try {
+    const langType = [...document.querySelectorAll(".about-margin .BorderGrid-row .list-style-none>li>a>span.color-fg-default")][0].innerHTML
+    const repo = document.querySelector("meta[property='og:url']")
+                    ?.getAttribute('content')
+                    ?.replace(/https:\/\/github.com\//g, '') ?? ''
+    const desc = document.querySelector("meta[property='og:description']")
+                    ?.getAttribute('content')
+                    ?.replace(/https:\/\/github.com\//g, '')
+                    ?.replace(` - ${repo}`, '') ?? ''
+    const officialSite = document.querySelector("#responsive-meta-container span>a")
+                    ?.getAttribute('href') ?? ''
+    const topics = [...document.querySelectorAll(".topic-tag.topic-tag-link")].map((e) => {
+      return `${e.innerHTML}`.trim().replace(/g\\n/g, '');
+    })
+    const avatar = document.querySelector('img.avatar')
+                    ?.getAttribute('src') ?? ''
+    const banner = document.querySelector("meta[property='og:image']")
+                    ?.getAttribute('content') ?? ''
+    const o = {
+      "langType": langType,
+      "repo": repo,
+      "desc": desc,
+      "officialSite": officialSite,
+      "topics": topics,
+      "avatar": avatar,
+      "banner": banner
+    }
+    console.log(JSON.stringify(o));
+    return o;
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
 function fetchYTChannelInfo() {
+  console.log('fetchYTChannelInfo ... ')
   try {
     const channelId = (
       (document.querySelector('.yt-content-metadata-view-model-wiz__metadata-row > span')) ??
