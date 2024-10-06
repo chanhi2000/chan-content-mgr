@@ -11,5 +11,5 @@ chan-content-mgr: My Personal Content Manager
 
 > TO BE IMPLEMENTED
 
-[shield-proj-v]: https://img.shields.io/github/package-json/v/chanhi2000/ytwl-manager?style=flat-square
-[shield-license-gpl]: https://img.shields.io/github/license/chanhi2000/ytwl-manager?style=flat-square
+[shield-proj-v]: https://img.shields.io/github/package-json/v/chanhi2000/chan-content-mgr?style=flat-square
+[shield-license-gpl]: https://img.shields.io/github/license/chanhi2000/chan-content-mgr?style=flat-square

@@ -1,19 +1,48 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="dark">
 <head>
   <title>CHAN-CONTENT-MGR</title>
   <style>
+    html {
+      min-width: 200px;
+      --bg-color-blur: rgba(13, 17, 23, .9);
+      --theme-color: #50fa7b;
+      --text-color: #9e9e9e;
+      --vp-ct: .3s ease
+    }
+    html[data-theme=dark] {
+      background: var(--bg-color-blur);
+      color: var(--text-color)
+    }
     button {
       min-width: 150px;
       margin: 5px;
       padding: 10px;
       font-size: 14px;
     }
-    label { color: lightgray; }
+    label { color: dimgray; }
+    details { 
+      margin:1rem 0;padding: 1.5rem;border-radius:0.5rem;
+      background:#333;color:#a8a8a8;
+      transition:background var(--vp-ct),color var(--vp-ct);
+    }
+    summary:before {
+      content:" ";
+      background:#555;border-radius:50%;
+      transition:background var(--vp-ct),color var(--vp-ct);
+    }
+    summary {
+      margin:-1.5rem;padding-block:1.5rem;padding-inline:1rem 1.5rem;line-height:2rem;
+      list-style:none;cursor:pointer;
+    }
+    .activated {color:var(--theme-color);}
     #version { font-size:8px; }
-    .center-v { width:100%;display:flex;justify-content:center;align-items:center;flex-direction:row;}
+    #group-status { display:flex;justify-content:flex-start;align-items:center;flex-direction:row;}
+    #group-status button { margin-left:auto;font-size:8px;min-width:0px; }
+    .center-v { width:100%;display:flex;justify-content:center;align-items:center;flex-direction:row; }
     .success { color: forestgreen; }
     .fail { color: crimson; }
+    img.icon { vertical-align:-.125em;height:1em;margin-inline-end:.25em;font-size:1em;}
   </style>
   <link href="fontawesome-free-6.6.0-web/css/fontawesome.css" rel="stylesheet"/>
   <link href="fontawesome-free-6.6.0-web/css/brands.css" rel="stylesheet" />
@@ -21,19 +50,28 @@
 </head>
 <body>
   <h2>Select Action</h2>
-  <button id="fetch-gh-repo-info" disabled><i class="fa-brands fa-github"></i>
-    fetch<br/>Github Repository Info
-  </button>
-  <button id="fetch-yt-channel-info" disabled><i class="fa-brands fa-youtube"></i>
-    fetch<br/>Youtube Channel Info
-  </button>
-  <button id="fetch" disabled><i class="fa-brands fa-youtube"></i>
-    fetch<br/>Watch Later
-  </button>
-  <button id="delete" disabled><i class="fa-brands fa-youtube"></i>
-    delete<br/>Watch Later
-  </button>
-  <label id="status-lbl" class="center-v">Status Message</label>
+  <details id="details-gh">
+    <summary id="summary-gh"><i class="fa-brands fa-github"></i>Github</summary>
+    <button id="fetch-gh-repo-info" disabled>fetch<br/>Github Repository Info</button>
+  </details>
+  <details id="details-yt">
+    <summary id="summary-yt"><i class="fa-brands fa-youtube"></i>Youtube</summary>
+    <button id="fetch-yt-channel-info" disabled>fetch<br/>Youtube Channel Info</button>
+    <button id="fetch-yt-wl" disabled>fetch<br/>Watch Later</button>
+    <button id="delete-yt-wl" disabled>delete<br/>Watch Later</button>
+  </details>
+  <details id="details-blog">
+    <summary id="summary-blog"></summary>
+    <button id="fetch-free-code-camp-news" disabled>fetch<br/>freeCodeCamp News (to <i class="fa-brands fa-markdown"></i>) </button>
+    <button id="fetch-milan-jovanovic-blog" disabled>fetch<br/>MilanJovanovic Blog (to <i class="fa-brands fa-markdown"></i>) </button>
+    <button id="fetch-hackingwithswift-blog" disabled>fetch<br/>HackingWithSwift Blog (to <i class="fa-brands fa-markdown"></i>) </button>
+    <button id="fetch-yozm-article" disabled>fetch<br/>Yozm Article (to <i class="fa-brands fa-markdown"></i>) </button>
+    <input type='text' id='label-article-path' />
+  </details>
+  <span id="group-status">
+    <label id="status-lbl" class="center-v">Status Message</label>
+    <button id="copy-message" disabled>Copy Status Message</button>
+  </span>
   <span class="center-v"><p id="version"></p></span>
   <script src="popup.js"></script>
 </body>
