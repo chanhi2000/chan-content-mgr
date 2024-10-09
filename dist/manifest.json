@@ -15,9 +15,11 @@
     {
       "matches": ["<all_urls>"],
       "js": [
-        "contentScript.js", 
+        "md-gen.js",
+        "content-mgmt.js", 
         "util.js", 
-        "js/turndown-7.0.0.js"
+        "js/turndown-7.0.0.js",
+        "js/turndown-plugin-gfm-1.0.2.js"
       ]
     }
   ]

@@ -1,4 +1,7 @@
 const URL_TO_MATCH = /playlist\?list=WL/g;
+const MSG_SENT_SUCCSS = "Message sent successfully"
+
+const CLASS_ACTIVATED = "activated"
 
 const pVersion = document.getElementById('version');
 
@@ -17,11 +20,35 @@ const summaryBlog = document.getElementById('summary-blog');
 const btnFetchFreeCodeCampNews = document.getElementById('fetch-free-code-camp-news');
 const btnMilanJovanovicBlog = document.getElementById('fetch-milan-jovanovic-blog');
 const btnHackingWithSwiftBlog = document.getElementById('fetch-hackingwithswift-blog');
+const btnFrontendMastersBlog = document.getElementById('fetch-frontendmasters-blog');
+const btnSmashinMagazineBlog = document.getElementById('fetch-smashingmagazine-blog');
 const btnYozmArticle = document.getElementById('fetch-yozm-article');
 
 const labelArticlePath = document.getElementById('label-article-path');
-const labeStatus = document.getElementById('status-lbl');
+
+const labelStatus = document.getElementById('status-lbl');
+const CLASS_SUCCESS = "success"
+const CLASS_FAIL = "fail"
+function resetLabel() {
+  labelStatus.classList.remove(CLASS_FAIL);
+  labelStatus.classList.remove(CLASS_SUCCESS);
+}
+function printSuccessLabel(msg) {
+  console.info(msg);
+  labelStatus.classList.add(CLASS_SUCCESS);
+  labelStatus.innerHTML = msg;
+}
+function printFailLabel(msg) {
+  console.error(msg);
+  labelStatus.classList.add(CLASS_FAIL);
+  labelStatus.innerHTML = msg;
+}
+
 const btnCopyMessage = document.getElementById('copy-message'); 
+function enableCopyMessage() {
+  btnCopyMessage.disabled = false
+  btnCopyMessage.style.display = 'block'
+}
 
 async function getCurrentTab() {
   let queryOptions = { active: true, currentWindow: true };
@@ -39,8 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const version = manifest.version;
   pVersion.textContent = `Version: ${version}`;
   [
-    btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnHackingWithSwiftBlog, labelArticlePath
-    ,btnYozmArticle , btnCopyMessage
+    btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnHackingWithSwiftBlog, btnFrontendMastersBlog, btnSmashinMagazineBlog,
+    labelArticlePath, btnYozmArticle , btnCopyMessage
   ].forEach((e) => {
     e.style.display = 'none';
   });
@@ -97,7 +124,27 @@ document.addEventListener('DOMContentLoaded', () => {
       summaryBlog.innerHTML = `${makeIcon("https://hackingwithswift.com/favicon.svg")}<span>hackingwithswift.com</span>`;
       btnHackingWithSwiftBlog.disabled = false
       btnHackingWithSwiftBlog.style.display = 'block';
-      labelArticlePath.value = tab.url.replace(/https:\/\/www\.hackingwithswift\.com\//g, '')
+      labelArticlePath.value = tab.url.replace(/(https:\/\/)|(www\.)|(hackingwithswift\.com\/)/g, '')
+    } else if (/frontendmasters\.com\//g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(188,75,52,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://frontendmasters.com/favicon.ico")}<span>frontendmasters.com</span>`;
+      btnFrontendMastersBlog.disabled = false
+      btnFrontendMastersBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(frontendmasters\.com\/)(blog\/)/g, '')
+    } else if (/smashingmagazine\.com\//g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(211,58,44,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://smashingmagazine.com/images/favicon/favicon.svg")}<span>smashingmagazine.com</span>`;
+      btnSmashinMagazineBlog.disabled = false
+      btnSmashinMagazineBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(smashingmagazine\.com\/)|(\d{4}\/\d{2}\/)/g, '')
     } else if (/yozm\.wishket\.com\//g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
@@ -115,17 +162,13 @@ document.addEventListener('DOMContentLoaded', () => {
 btnFetchGhRepoInfo.addEventListener('click', async () => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.tabs.sendMessage(tabs[0].id, { type: 'FETCH_GH_REPO_INFO', repoPath: '', }, (res) => {
-      labeStatus.classList.remove('fail')
-      labeStatus.classList.remove('success')
+      resetLabel();
       if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError.message);
-        labeStatus.classList.add('fail')
-        labeStatus.innerHTML = chrome.runtime.lastError.message;
+        printFailLabel(chrome.runtime.lastError)
         return
       }
-      console.log('Message sent successfully', res.o);
-      labeStatus.classList.add('success')
-      labeStatus.innerHTML = res.o.repo
+      console.log(MSG_SENT_SUCCSS, res.o);
+      printSuccessLabel(res.o.repo);
       const langType = res.o.langType
       let comment = ''
       switch(langType) {
@@ -156,17 +199,14 @@ btnFetchGhRepoInfo.addEventListener('click', async () => {
 btnFetchYTChannelInfo.addEventListener('click', async () => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.tabs.sendMessage(tabs[0].id, { type: 'FETCH_YT_CHANNEL_INFO' }, (res) => {
-      labeStatus.classList.remove('fail')
-      labeStatus.classList.remove('success')
+      resetLabel();
       if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError.message);
-        labeStatus.classList.add('fail')
-        labeStatus.innerHTML = chrome.runtime.lastError.message;
+        printFailLabel(chrome.runtime.lastError.message);
         return
       }
-      console.log('Message sent successfully', res.o);
-      labeStatus.classList.add('success')
-      labeStatus.innerHTML = res.o.channelId
+      console.log(MSG_SENT_SUCCSS, res.o);
+      printSuccessLabel(res.o.channelId)
+      enableCopyMessage()
       const str = `${JSON.stringify(res.o, null, 2).replace(/\[\]/g, '[\n\n  ]')}`
       copyToClipboard(str)
     });
@@ -176,21 +216,148 @@ btnFetchYTChannelInfo.addEventListener('click', async () => {
 btnFetchYTWL.addEventListener('click', async () => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.tabs.sendMessage(tabs[0].id, { type: 'FETCH_WL' }, (res) => {
-      labeStatus.classList.remove('fail')
-      labeStatus.classList.remove('success')
+      resetLabel();
       if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError.message);
-        labeStatus.classList.add('fail')
-        labeStatus.innerHTML = chrome.runtime.lastError.message;
+        printFailLabel(chrome.runtime.lastError.message);
         return
       }
-      console.log('Message sent successfully', res);
-      labeStatus.classList.add('success')
-      labeStatus.innerHTML = `Message sent successfully ... ${res.length}`
+      console.log(MSG_SENT_SUCCSS, res);
+      printSuccessLabel(`${res.videos.length} videos fetched ...`)
+      enableCopyMessage()
       copyToClipboard(JSON.stringify(res.videos))
     });
   });
 });
+
+btnDeleteYTWL.addEventListener('click', async () => {
+  document.requestStorageAccessFor(window.location.origin).then(() => {
+    console.log('Access granted');
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      chrome.tabs.sendMessage(tabs[0].id, { type: 'DELETE_WL' }, (res) => {
+        resetLabel();
+        if (chrome.runtime.lastError) {
+          printFailLabel(chrome.runtime.lastError.message);
+          return
+        }
+        console.log(MSG_SENT_SUCCSS, res);
+        printSuccessLabel(`Begain to delete videos ...`)
+        enableCopyMessage()
+      });
+    });
+  }).catch(err => {
+    console.error('Access request failed:', err);
+    printFailLabel(err);
+  });
+});
+
+btnFetchFreeCodeCampNews.addEventListener('click', async () => {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.tabs.sendMessage(tabs[0].id, { type: 'FETCH_FREE_CODE_CAMP_NEWS' }, (res) => {
+      resetLabel();
+      if (chrome.runtime.lastError) {
+        printFailLabel(chrome.runtime.lastError.message);
+        return
+      }
+      console.log(MSG_SENT_SUCCSS, res.o);
+      printSuccessLabel(res.o.filename)
+      enableCopyMessage()
+      copyToClipboard(res.o.text)
+    });
+  });
+})
+
+btnMilanJovanovicBlog.addEventListener('click', async () => {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.tabs.sendMessage(tabs[0].id, { type: 'FETCH_MILAN_JOVANOVIC_BLOG' }, (res) => {
+      resetLabel();
+      if (chrome.runtime.lastError) {
+        printFailLabel(chrome.runtime.lastError.message);
+        return
+      }
+      console.log(MSG_SENT_SUCCSS, res.o);
+      printSuccessLabel(res.o.filename)
+      enableCopyMessage()
+      copyToClipboard(res.o.text)
+    });
+  });
+})
+
+btnHackingWithSwiftBlog.addEventListener('click', async () => {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.tabs.sendMessage(tabs[0].id, { 
+      type: 'FETCH_HACKING_WITH_SWIFT_BLOG', 
+      path: labelArticlePath.value ?? '',
+    }, (res) => {
+      resetLabel();
+      if (chrome.runtime.lastError) {
+        printFailLabel(chrome.runtime.lastError.message);
+        return
+      }
+      console.log(MSG_SENT_SUCCSS, res.o);
+      printSuccessLabel(res.o.filename)
+      enableCopyMessage()
+      copyToClipboard(res.o.text)
+    });
+  });
+});
+
+btnFrontendMastersBlog.addEventListener('click', async () => {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.tabs.sendMessage(tabs[0].id, { 
+      type: 'FETCH_FRONTEND_MASTERS_BLOG', 
+      path: labelArticlePath.value ?? '',
+    }, (res) => {
+      resetLabel();
+      if (chrome.runtime.lastError) {
+        printFailLabel(chrome.runtime.lastError.message);
+        return
+      }
+      console.log(MSG_SENT_SUCCSS, res.o);
+      printSuccessLabel(res.o.filename)
+      enableCopyMessage()
+      copyToClipboard(res.o.text)
+    });
+  });
+});
+
+
+btnSmashinMagazineBlog.addEventListener('click', async () => {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.tabs.sendMessage(tabs[0].id, { 
+      type: 'FETCH_SMASHING_MAGAZINE_BLOG',
+    }, (res) => {
+      resetLabel();
+      if (chrome.runtime.lastError) {
+        printFailLabel(chrome.runtime.lastError.message);
+        return
+      }
+      console.log(MSG_SENT_SUCCSS, res.o);
+      printSuccessLabel(res.o.filename)
+      enableCopyMessage()
+      copyToClipboard(res.o.text)
+    });
+  });
+});
+
+btnYozmArticle.addEventListener('click', async () => {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.tabs.sendMessage(tabs[0].id, { type: 'FETCH_YOZM_ARTICLE' }, (res) => {
+      resetLabel();
+      if (chrome.runtime.lastError) {
+        printFailLabel(chrome.runtime.lastError.message);
+        return
+      }
+      console.log(MSG_SENT_SUCCSS, res.o);
+      printSuccessLabel(res.o.filename)
+      enableCopyMessage()
+      copyToClipboard(res.o.text)
+    });
+  });
+});
+
+btnCopyMessage.addEventListener('click', async () => {
+  copyToClipboard(labelStatus.textContent)
+})
 
 /**
  * @name copyToClipboard
@@ -205,111 +372,3 @@ function copyToClipboard(text) {
     console.error('Failed to copy text:', err);
   });
 }
-
-btnDeleteYTWL.addEventListener('click', async () => {
-  document.requestStorageAccessFor(window.location.origin).then(() => {
-    console.log('Access granted');
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.tabs.sendMessage(tabs[0].id, { type: 'DELETE_WL' }, (res) => {
-        if (chrome.runtime.lastError) {
-          console.error(chrome.runtime.lastError.message);
-          return
-        }
-        console.log('Message sent successfully', res);
-      });
-    });
-  }).catch(err => {
-    console.error('Access request failed:', err);
-  });
-});
-
-btnFetchFreeCodeCampNews.addEventListener('click', async () => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { type: 'FETCH_FREE_CODE_CAMP_NEWS' }, (res) => {
-      labeStatus.classList.remove('fail')
-      labeStatus.classList.remove('success')
-      if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError.message);
-        labeStatus.classList.add('fail')
-        labeStatus.innerHTML = chrome.runtime.lastError.message;
-        return
-      }
-      console.log('Message sent successfully', res.o);
-      labeStatus.classList.add('success')
-      btnCopyMessage.disabled = false
-      btnCopyMessage.style.display = 'block'
-      labeStatus.innerHTML = res.o.filename
-      copyToClipboard(res.o.text)
-    });
-  });
-})
-
-btnMilanJovanovicBlog.addEventListener('click', async () => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { type: 'FETCH_MILAN_JOVANOVIC_BLOG' }, (res) => {
-      labeStatus.classList.remove('fail')
-      labeStatus.classList.remove('success')
-      if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError.message);
-        labeStatus.classList.add('fail')
-        labeStatus.innerHTML = chrome.runtime.lastError.message;
-        return
-      }
-      console.log('Message sent successfully', res.o);
-      labeStatus.classList.add('success')
-      btnCopyMessage.disabled = false
-      btnCopyMessage.style.display = 'block'
-      labeStatus.innerHTML = res.o.filename;
-      copyToClipboard(res.o.text)
-    });
-  });
-})
-
-btnHackingWithSwiftBlog.addEventListener('click', async () => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { 
-      type: 'FETCH_HACKING_WITH_SWIFT_BLOG', 
-      path: labelArticlePath.value ?? '',
-    }, (res) => {
-      labeStatus.classList.remove('fail')
-      labeStatus.classList.remove('success')
-      if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError.message);
-        labeStatus.classList.add('fail')
-        labeStatus.innerHTML = chrome.runtime.lastError.message;
-        return
-      }
-      console.log('Message sent successfully', res.o);
-      labeStatus.classList.add('success')
-      btnCopyMessage.disabled = false
-      btnCopyMessage.style.display = 'block'
-      labeStatus.innerHTML = res.o.filename;
-      copyToClipboard(res.o.text)
-    });
-  });
-});
-
-btnYozmArticle.addEventListener('click', async () => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { type: 'FETCH_YOZM_ARTICLE' }, (res) => {
-      labeStatus.classList.remove('fail')
-      labeStatus.classList.remove('success')
-      if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError.message);
-        labeStatus.classList.add('fail')
-        labeStatus.innerHTML = chrome.runtime.lastError.message;
-        return
-      }
-      console.log('Message sent successfully', res.o);
-      labeStatus.classList.add('success')
-      btnCopyMessage.disabled = false
-      btnCopyMessage.style.display = 'block'
-      labeStatus.innerHTML = res.o.filename;
-      copyToClipboard(res.o.text)
-    });
-  });
-});
-
-btnCopyMessage.addEventListener('click', async () => {
-  copyToClipboard(labeStatus.textContent)
-})
