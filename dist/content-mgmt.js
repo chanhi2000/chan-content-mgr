@@ -16,6 +16,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ status: "delete WatchLater STARTED!" })
       break;
     //region: md-gen.js
+    case 'FETCH_SITE_INFO':
+      sendResponse({ status: "fetch SiteInfo DONE!", o: fetchSiteInfo(message.url) });
+      break;
     case 'FETCH_FREE_CODE_CAMP_NEWS':
       sendResponse({ status: "fetch freeCodeCamp News DONE!", o: fetchFreeCodeCampNews() });
       break;

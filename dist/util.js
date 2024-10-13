@@ -9,56 +9,22 @@ function convertDateFormat(dateString) {
 
 function parseOgData() {
   const ogData = {};
-  for (e of document.querySelectorAll('meta[property^="og:"]')) {
-    const property = e.getAttribute('property');
+  let nodelist = document.querySelectorAll('meta[property^="og:"]')
+  if (nodelist.length == 0) nodelist = document.querySelectorAll('meta[name^="og:"]')
+
+  for (e of nodelist) {
+    const property = e.getAttribute('property') ?? e.getAttribute('name');
     const content = e.getAttribute('content');
     ogData[property] = content;
   };
+
   return ogData
 }
 
 function createFrontMatter(meta, customVpCard = null) {
   console.log(`createFrontMatter ... meta: ${JSON.stringify(meta)}`)
-  let _pageName = ''
-  let _icon = ''
-  let _category = ''
-  let _tag = ''
-  let _relatedPath = ''
-  switch(meta.topic) {
-  case 'swift':
-    console.log(`${meta.topic}!!!`)
-    _pageName = 'Swift'
-    _icon='fa-brands fa-swift'
-    _category=`${_pageName}`
-    _tag='swift\n  - ios\n  - macos\n  - xcode'
-    _relatedPath='/programming/swift'
-    break;
-  case 'react':
-    console.log(`${meta.topic}!!!`)
-    _pageName = 'React.js'
-    _icon='fa-brands fa-react'
-    _category=`Node.js\n  - ${_pageName}`
-    _tag='node\n  - nodejs\n  - node-js\n  - react\n  - reactjs\n  - react-js'
-    _relatedPath='/programming/js-react'
-    break;
-  case 'python':
-    console.log(`${meta.topic}!!!`)
-    _pageName = 'Python'
-    _icon='fa-brands fa-python'
-    _category=`${_pageName}`
-    _tag='python\n  - py'
-    _relatedPath='/programming/py'
-    break;
-  case 'cs':
-    console.log(`${meta.topic}!!!`)
-    _pageName = 'C#'
-    _icon='iconfont icon-csharp'
-    _category=`${_pageName}\n  - DotNet`
-    _tag='cs\n  - c#\n  - csharp\n  - dotnet'
-    _relatedPath='/programming/cs'
-    break;
-  default: break;
-  }
+  const submeta = createSubMetaInfo(meta.topic)
+
   const vpCard = (customVpCard) ? `\`\`\`component VPCard
 {
   "title": "${customVpCard.title}",
@@ -69,42 +35,27 @@ function createFrontMatter(meta, customVpCard = null) {
 }
 \`\`\`` : `\`\`\`component VPCard
 {
-  "title": "${_pageName} > Article(s)",
+  "title": "${submeta.pageName} > Article(s)",
   "desc": "Article(s)",
-  "link": "${_relatedPath}/articles/README.md",
+  "link": "${submeta.relatedPath}/articles/README.md",
   "logo": "/images/ico-wind.svg",
   "background": "rgba(10,10,10,0.2)"
 }
 \`\`\``
-  const siteInfo = (meta.coverUrl == '') ? `\`\`\`component VPCard
-{
-  "title": "${meta.title}",
-  "desc": "${meta.description}",
-  "link": "${meta.baseUrl}/${meta.articleOriginPath ?? meta.articlePath}",
-  "logo": "${meta.logo}",
-  "background": "rgba(${customVpCard.background},0.2)",
-}
-\`\`\`` : `
-<SiteInfo
-  name="${meta.title}"
-  desc="${meta.description}"
-  url="${meta.baseUrl}/${meta.articleOriginPath ?? meta.articlePath}"
-  logo="${meta.logo}"
-  preview="${meta.coverUrl}"/>
-`
+  const siteInfo = createSiteInfo(meta, customVpCard)
 
   return `---
 lang: ${meta.lang ?? 'en-US'}
 title: "${meta.title}"
 description: "Article(s) > ${meta.title}"
-icon: ${_icon}
+icon: ${submeta.icon}
 category:
-  - ${_category}
+  - ${submeta.category}
   - Article(s)
 tag:
   - blog
   - ${meta.articleBasePath}
-  - ${_tag}
+  - ${submeta.tag}
 head:
   - - meta:
     - property: og:title
@@ -113,7 +64,7 @@ head:
       content: "${meta.title}"
     - property: og:url
       content: https://chanhi2000.github.io/bookshelf/${meta.articleBasePath}/${meta.articlePath}.html
-prev: ${_relatedPath}/articles/README.md
+prev: ${submeta.relatedPath}/articles/README.md
 date: ${meta.datePublished}
 isOriginal: false
 author: ${meta.author}
@@ -131,6 +82,83 @@ ${vpCard}
 ${siteInfo}
 
 `
+}
+
+function createSubMetaInfo(topic) {
+  console.log('createSubMetaInfo ...')
+  let _pageName = ''
+  let _icon = ''
+  let _category = ''
+  let _tag = ''
+  let _relatedPath = ''
+  if (/swift/g.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'Swift'
+    _icon='fa-brands fa-swift'
+    _category=`${_pageName}`
+    _tag='swift\n  - ios\n  - macos\n  - xcode'
+    _relatedPath='/programming/swift'
+  } else if (/react/.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'React.js'
+    _icon='fa-brands fa-react'
+    _category=`Node.js\n  - ${_pageName}`
+    _tag='node\n  - nodejs\n  - node-js\n  - react\n  - reactjs\n  - react-js'
+    _relatedPath='/programming/js-react'
+  } else if (/(python)|(py)/g.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'Python'
+    _icon='fa-brands fa-python'
+    _category=`${_pageName}`
+    _tag='python\n  - py'
+    _relatedPath='/programming/py'
+  } else if (/(cs)|(csharp)/g.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'C#'
+    _icon='iconfont icon-csharp'
+    _category=`${_pageName}\n  - DotNet`
+    _tag='cs\n  - c#\n  - csharp\n  - dotnet'
+    _relatedPath='/programming/cs'
+  } else if (/(git)/g.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'Git'
+    _icon='iconfont icon-git'
+    _category=`${_pageName}`
+    _tag='git'
+    _relatedPath='/programming/git'
+  } else if (/(llm)/g.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'LLM'
+    _icon='fas fa-language'
+    _category=`AI\n  - ${_pageName}`
+    _tag='ai\n  - llm\n  - large-language-model'
+    _relatedPath='/ai/llm'
+  }
+
+  return {
+    pageName: _pageName,
+    icon: _icon,
+    category: _category,
+    tag: _tag,
+    relatedPath: _relatedPath,
+  }
+}
+
+function createSiteInfo(meta, customVpCard = null) {
+  return (meta.coverUrl == '') ? `\`\`\`component VPCard
+{
+  "title": "${meta.title}",
+  "desc": "${meta.description}",
+  "link": "${meta.baseUrl}/${meta.articleOriginPath ?? meta.articlePath}",
+  "logo": "${meta.logo}",
+  "background": "rgba(${customVpCard?.background ?? meta.background},0.2)"
+}
+\`\`\`` : `<SiteInfo
+  name="${meta.title}"
+  desc="${meta.description}"
+  url="${meta.baseUrl}/${meta.articleOriginPath ?? meta.articlePath}"
+  logo="${meta.logo}"
+  preview="${meta.coverUrl}"/>`
 }
 
 function createEndMatter(meta) {

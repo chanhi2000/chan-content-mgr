@@ -17,6 +17,11 @@ const btnDeleteYTWL = document.getElementById('delete-yt-wl');
 
 const detailsBlog = document.getElementById('details-blog');
 const summaryBlog = document.getElementById('summary-blog');
+const btnSiteInfo = document.getElementById('fetch-site-info');
+function enableSiteInfo() {
+  btnSiteInfo.disabled = false
+  btnSiteInfo.style.display = 'block'
+}
 const btnFetchFreeCodeCampNews = document.getElementById('fetch-free-code-camp-news');
 const btnMilanJovanovicBlog = document.getElementById('fetch-milan-jovanovic-blog');
 const btnHackingWithSwiftBlog = document.getElementById('fetch-hackingwithswift-blog');
@@ -66,8 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const version = manifest.version;
   pVersion.textContent = `Version: ${version}`;
   [
-    btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnHackingWithSwiftBlog, btnFrontendMastersBlog, btnSmashinMagazineBlog,
-    labelArticlePath, btnYozmArticle , btnCopyMessage
+    btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnHackingWithSwiftBlog, btnFrontendMastersBlog
+    , btnSmashinMagazineBlog, labelArticlePath, btnYozmArticle , btnCopyMessage
   ].forEach((e) => {
     e.style.display = 'none';
   });
@@ -77,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   getCurrentTab().then((tab) => {
     console.log("Current URL:", tab.url);
+    enableSiteInfo()
 
     if (/github\.com/g.test(tab.url)) {
       detailsGH.disabled = false;
@@ -159,200 +165,194 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-btnFetchGhRepoInfo.addEventListener('click', async () => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { type: 'FETCH_GH_REPO_INFO', repoPath: '', }, (res) => {
-      resetLabel();
-      if (chrome.runtime.lastError) {
-        printFailLabel(chrome.runtime.lastError)
-        return
-      }
-      console.log(MSG_SENT_SUCCSS, res.o);
-      printSuccessLabel(res.o.repo);
-      const langType = res.o.langType
-      let comment = ''
-      switch(langType) {
-        case 'Java': comment += '// lang-java';break;
-        case 'Kotlin': comment += '// lang-kotlin';break;
-        case 'JavaScript': comment += '// lang-js';break;
-        case 'TypeScript': comment += '// lang-ts';break;
-        case 'Python': comment += '// lang-py';break;
-        case 'Jupyter Notebook': comment += '// lang-jupyter-notebook';break;
-        case 'Rust': comment += '// lang-rust';break;
-        case '': comment += '// tutorial-basic';break;
-        default:break;
-      }
-      delete res.o.langType;
-      const str = `${JSON.stringify(res.o)}\n${comment}`.replace(/\}/g, '\n}')
-                    .replace(/\"repo\":/g, '\n  \"repo\": ')
-                    .replace(/\"desc\":/g, '\n  \"desc\": ')
-                    .replace(/\"officialSite\":/g, '\n  \"officialSite\": ')
-                    .replace(/\"topics\":/g, '\n  \"topics\": ')
-                    .replace(/\"avatar\":/g, '\n  \"avatar\": ')
-                    .replace(/\"banner\":/g, '\n  \"banner\": ')
-                    .replace(/\",\"/g, '\", \"')
-      copyToClipboard(str)
-    })
-  });
+btnSiteInfo.addEventListener('click', async () => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  const url = tab.url.replace(/www\./g, '')
+  const res = await chrome.tabs.sendMessage(tab.id, { type: 'FETCH_SITE_INFO', url: url, })
+  resetLabel();
+  if (chrome.runtime.lastError) {
+    printFailLabel(chrome.runtime.lastError)
+    return
+  }
+  console.log(MSG_SENT_SUCCSS, res.o);
+  printSuccessLabel(`SiteInfo Copied ... ${url}`);
+
+  copyToClipboard(res.o)
 })
+
+
+btnFetchGhRepoInfo.addEventListener('click', async () => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  const res = await chrome.tabs.sendMessage(tab.id, { type: 'FETCH_GH_REPO_INFO', repoPath: '' })
+  resetLabel();
+  if (chrome.runtime.lastError) {
+    printFailLabel(chrome.runtime.lastError)
+    return
+  }
+  console.log(MSG_SENT_SUCCSS, res.o);
+  printSuccessLabel(res.o.repo);
+  const langType = res.o.langType
+  let comment = ''
+  switch(langType) {
+    case 'Java': comment += '// lang-java';break;
+    case 'Kotlin': comment += '// lang-kotlin';break;
+    case 'JavaScript': comment += '// lang-js';break;
+    case 'TypeScript': comment += '// lang-ts';break;
+    case 'Python': comment += '// lang-py';break;
+    case 'Jupyter Notebook': comment += '// lang-jupyter-notebook';break;
+    case 'Rust': comment += '// lang-rust';break;
+    case '': comment += '// tutorial-basic';break;
+    default:break;
+  }
+  delete res.o.langType;
+  const str = `${JSON.stringify(res.o)}\n${comment}`.replace(/\}/g, '\n}')
+                .replace(/\"repo\":/g, '\n  \"repo\": ')
+                .replace(/\"desc\":/g, '\n  \"desc\": ')
+                .replace(/\"officialSite\":/g, '\n  \"officialSite\": ')
+                .replace(/\"topics\":/g, '\n  \"topics\": ')
+                .replace(/\"avatar\":/g, '\n  \"avatar\": ')
+                .replace(/\"banner\":/g, '\n  \"banner\": ')
+                .replace(/\",\"/g, '\", \"')
+  copyToClipboard(str)
+});
+
 
 btnFetchYTChannelInfo.addEventListener('click', async () => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { type: 'FETCH_YT_CHANNEL_INFO' }, (res) => {
-      resetLabel();
-      if (chrome.runtime.lastError) {
-        printFailLabel(chrome.runtime.lastError.message);
-        return
-      }
-      console.log(MSG_SENT_SUCCSS, res.o);
-      printSuccessLabel(res.o.channelId)
-      enableCopyMessage()
-      const str = `${JSON.stringify(res.o, null, 2).replace(/\[\]/g, '[\n\n  ]')}`
-      copyToClipboard(str)
-    });
-  });
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  const res = await chrome.tabs.sendMessage(tab.id, { type: 'FETCH_YT_CHANNEL_INFO' })
+  resetLabel();
+  if (chrome.runtime.lastError) {
+    printFailLabel(chrome.runtime.lastError.message);
+    return
+  }
+  console.log(MSG_SENT_SUCCSS, res.o);
+  printSuccessLabel(`@${res.o.channel.id}`)
+  enableCopyMessage()
+  const str = `${JSON.stringify(res.o, null, 2).replace(/\[\]/g, '[\n\n  ]')}`
+  copyToClipboard(str)
 });
+
 
 btnFetchYTWL.addEventListener('click', async () => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { type: 'FETCH_WL' }, (res) => {
-      resetLabel();
-      if (chrome.runtime.lastError) {
-        printFailLabel(chrome.runtime.lastError.message);
-        return
-      }
-      console.log(MSG_SENT_SUCCSS, res);
-      printSuccessLabel(`${res.videos.length} videos fetched ...`)
-      enableCopyMessage()
-      copyToClipboard(JSON.stringify(res.videos))
-    });
-  });
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  const res = await chrome.tabs.sendMessage(tab.id, { type: 'FETCH_WL' })
+  resetLabel();
+  if (chrome.runtime.lastError) {
+    printFailLabel(chrome.runtime.lastError.message);
+    return
+  }
+  console.log(MSG_SENT_SUCCSS, res);
+  printSuccessLabel(`${res.videos.length} videos fetched ...`)
+  enableCopyMessage()
+  copyToClipboard(JSON.stringify(res.videos))
 });
+
 
 btnDeleteYTWL.addEventListener('click', async () => {
-  document.requestStorageAccessFor(window.location.origin).then(() => {
-    console.log('Access granted');
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.tabs.sendMessage(tabs[0].id, { type: 'DELETE_WL' }, (res) => {
-        resetLabel();
-        if (chrome.runtime.lastError) {
-          printFailLabel(chrome.runtime.lastError.message);
-          return
-        }
-        console.log(MSG_SENT_SUCCSS, res);
-        printSuccessLabel(`Begain to delete videos ...`)
-        enableCopyMessage()
-      });
-    });
-  }).catch(err => {
-    console.error('Access request failed:', err);
-    printFailLabel(err);
-  });
+  await document.requestStorageAccessFor(window.location.origin)
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  const res = await chrome.tabs.sendMessage(tab.id, { type: 'DELETE_WL' })
+
+  resetLabel();
+  if (chrome.runtime.lastError) {
+    printFailLabel(chrome.runtime.lastError.message)
+    return
+  }
+  console.log(MSG_SENT_SUCCSS, res);
+  printSuccessLabel(`Begain to delete videos ...`)
+  enableCopyMessage()
 });
 
+
 btnFetchFreeCodeCampNews.addEventListener('click', async () => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { type: 'FETCH_FREE_CODE_CAMP_NEWS' }, (res) => {
-      resetLabel();
-      if (chrome.runtime.lastError) {
-        printFailLabel(chrome.runtime.lastError.message);
-        return
-      }
-      console.log(MSG_SENT_SUCCSS, res.o);
-      printSuccessLabel(res.o.filename)
-      enableCopyMessage()
-      copyToClipboard(res.o.text)
-    });
-  });
-})
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  const res = await chrome.tabs.sendMessage(tab.id, { type: 'FETCH_FREE_CODE_CAMP_NEWS' })
+  resetLabel();
+  if (chrome.runtime.lastError) {
+    printFailLabel(chrome.runtime.lastError.message)
+    return
+  }
+  console.log(MSG_SENT_SUCCSS, res.o);
+  printSuccessLabel(res.o.filename)
+  enableCopyMessage()
+  copyToClipboard(res.o.text)
+});
 
 btnMilanJovanovicBlog.addEventListener('click', async () => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { type: 'FETCH_MILAN_JOVANOVIC_BLOG' }, (res) => {
-      resetLabel();
-      if (chrome.runtime.lastError) {
-        printFailLabel(chrome.runtime.lastError.message);
-        return
-      }
-      console.log(MSG_SENT_SUCCSS, res.o);
-      printSuccessLabel(res.o.filename)
-      enableCopyMessage()
-      copyToClipboard(res.o.text)
-    });
-  });
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  const res = await chrome.tabs.sendMessage(tab.id, { type: 'FETCH_MILAN_JOVANOVIC_BLOG' })
+  resetLabel()
+  if (chrome.runtime.lastError) {
+    printFailLabel(chrome.runtime.lastError.message)
+    return
+  }
+  console.log(MSG_SENT_SUCCSS, res.o)
+  printSuccessLabel(res.o.filename)
+  enableCopyMessage()
+  copyToClipboard(res.o.text)
 })
 
 btnHackingWithSwiftBlog.addEventListener('click', async () => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { 
-      type: 'FETCH_HACKING_WITH_SWIFT_BLOG', 
-      path: labelArticlePath.value ?? '',
-    }, (res) => {
-      resetLabel();
-      if (chrome.runtime.lastError) {
-        printFailLabel(chrome.runtime.lastError.message);
-        return
-      }
-      console.log(MSG_SENT_SUCCSS, res.o);
-      printSuccessLabel(res.o.filename)
-      enableCopyMessage()
-      copyToClipboard(res.o.text)
-    });
-  });
-});
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  const res = await chrome.tabs.sendMessage(tab.id, { 
+    type: 'FETCH_HACKING_WITH_SWIFT_BLOG', 
+    path: labelArticlePath.value ?? '', 
+  })
+  resetLabel();
+  if (chrome.runtime.lastError) {
+    printFailLabel(chrome.runtime.lastError.message);
+    return
+  }
+  console.log(MSG_SENT_SUCCSS, res.o);
+  printSuccessLabel(res.o.filename)
+  enableCopyMessage()
+  copyToClipboard(res.o.text)
+})
 
 btnFrontendMastersBlog.addEventListener('click', async () => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { 
-      type: 'FETCH_FRONTEND_MASTERS_BLOG', 
-      path: labelArticlePath.value ?? '',
-    }, (res) => {
-      resetLabel();
-      if (chrome.runtime.lastError) {
-        printFailLabel(chrome.runtime.lastError.message);
-        return
-      }
-      console.log(MSG_SENT_SUCCSS, res.o);
-      printSuccessLabel(res.o.filename)
-      enableCopyMessage()
-      copyToClipboard(res.o.text)
-    });
-  });
-});
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  const res = await chrome.tabs.sendMessage(tab.id, { 
+    type: 'FETCH_FRONTEND_MASTERS_BLOG', 
+    path: labelArticlePath.value ?? '',
+  })
+  resetLabel();
+  if (chrome.runtime.lastError) {
+    printFailLabel(chrome.runtime.lastError.message);
+    return
+  }
+  console.log(MSG_SENT_SUCCSS, res.o);
+  printSuccessLabel(res.o.filename)
+  enableCopyMessage()
+  copyToClipboard(res.o.text)
+})
 
 
 btnSmashinMagazineBlog.addEventListener('click', async () => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { 
-      type: 'FETCH_SMASHING_MAGAZINE_BLOG',
-    }, (res) => {
-      resetLabel();
-      if (chrome.runtime.lastError) {
-        printFailLabel(chrome.runtime.lastError.message);
-        return
-      }
-      console.log(MSG_SENT_SUCCSS, res.o);
-      printSuccessLabel(res.o.filename)
-      enableCopyMessage()
-      copyToClipboard(res.o.text)
-    });
-  });
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  const res = await chrome.tabs.sendMessage(tab.id, { type: 'FETCH_SMASHING_MAGAZINE_BLOG' })
+  resetLabel();
+  if (chrome.runtime.lastError) {
+    printFailLabel(chrome.runtime.lastError.message);
+    return
+  }
+  console.log(MSG_SENT_SUCCSS, res.o);
+  printSuccessLabel(res.o.filename)
+  enableCopyMessage()
+  copyToClipboard(res.o.text)
 });
 
 btnYozmArticle.addEventListener('click', async () => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { type: 'FETCH_YOZM_ARTICLE' }, (res) => {
-      resetLabel();
-      if (chrome.runtime.lastError) {
-        printFailLabel(chrome.runtime.lastError.message);
-        return
-      }
-      console.log(MSG_SENT_SUCCSS, res.o);
-      printSuccessLabel(res.o.filename)
-      enableCopyMessage()
-      copyToClipboard(res.o.text)
-    });
-  });
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  const res = await chrome.tabs.sendMessage(tab.id, { type: 'FETCH_YOZM_ARTICLE' })
+  resetLabel();
+  if (chrome.runtime.lastError) {
+    printFailLabel(chrome.runtime.lastError.message);
+    return
+  }
+  console.log(MSG_SENT_SUCCSS, res.o);
+  printSuccessLabel(res.o.filename)
+  enableCopyMessage()
+  copyToClipboard(res.o.text)
 });
 
 btnCopyMessage.addEventListener('click', async () => {

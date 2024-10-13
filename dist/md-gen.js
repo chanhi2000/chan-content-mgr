@@ -1,4 +1,47 @@
 // md-gen.js
+function fetchSiteInfo(url) {
+  console.log('fetchSiteInfo ... ')
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    let _title = ogData['og:title'] ?? ''
+    if (_title === undefined || _title === "undefined" || _title === "") 
+      _title = document.querySelector('title')?.textContent?.trim() ?? ''
+
+    let _description = `${ogData['og:description']}`?.replace(/"/g, "”") ?? ''
+    if (_description === undefined || _description === "undefined" || _description === "") 
+      _description = document.querySelector('meta[name="description"]')?.getAttribute("content") ?? ''
+    
+    let _url = ogData['og:url']?.replace(/www\./, '') ?? url
+
+    const meta = {
+      title: _title,
+      description: _description,
+      baseUrl: _url,
+      articlePath: '',
+      logo: findFavicon().replace(/www\./, ''),
+      background: '244,245,255',
+      coverUrl: ogData['og:image']?.replace(/www\./, '') ?? ''
+    }
+    return createSiteInfo(meta)
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+
+  function findFavicon() {
+    var favicon = '';
+    var nodeList = document.getElementsByTagName("link");
+    for (var i = 0; i < nodeList.length; i++) {
+        if((nodeList[i].getAttribute("rel") == "icon")||(nodeList[i].getAttribute("rel") == "shortcut icon")) {
+            favicon = nodeList[i].getAttribute("href");
+        }
+    }
+    return favicon;
+  }
+}
+
+
 
 function fetchFreeCodeCampNews() {
   console.log('fetchFreeCodeCampNews ... ')
@@ -6,11 +49,15 @@ function fetchFreeCodeCampNews() {
     // Extract Open Graph metadata
     const ogData = parseOgData();
 
+    const path= `${ogData['og:url']}`
+                    .replace(/https:\/\/www\.freecodecamp\.org\/news\//g, '')
+                    .replace(/\//g, '')
+
     const meta = {
       title: document.querySelector('h1.post-full-title')
           ?.textContent
           ?.trim(),
-      description: `${ogData['og:description']}`,
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: document.querySelector('.post-full-meta>a')
           ?.textContent
           ?.trim()
@@ -25,9 +72,8 @@ function fetchFreeCodeCampNews() {
         ?.getAttribute('datetime') ?? ''),
       baseUrl: 'https://freecodecamp.org',
       articleBasePath: 'freecodecamp.org',
-      articlePath: `${ogData['og:url']}`
-                      .replace(/https:\/\/www\.freecodecamp\.org\/news\//g, '')
-                      .replace(/\//g, ''),
+      articleOriginPath: `news/${path}`,
+      articlePath: path,
       logo: 'https://cdn.freecodecamp.org/universal/favicons/favicon.ico',
       bgRGBA: '10,10,35',
       coverUrl: `${ogData['og:image']}`
@@ -74,11 +120,14 @@ function fetchMilanJovanovicBlog() {
     // Extract Open Graph metadata
     const ogData = parseOgData();
 
+    const path = `${ogData['og:url']}`
+                    .replace(/https:\/\/www\.milanjovanovic\.tech\/blog\//g, '')
+                    .replace(/\//g, '')
     const meta = {
       title: document.querySelector('h1')
           ?.textContent
           ?.trim(),
-      description: `${ogData['og:description']}`,
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: 'cs',
       author: 'Milan Jovanović',
       datePublished: convertDateFormat(
@@ -86,9 +135,8 @@ function fetchMilanJovanovicBlog() {
         ?.getAttribute('datetime') ?? ''),
       baseUrl: 'https://milanjovanovic.tech',
       articleBasePath: 'milanjovanovic.tech',
-      articlePath: `${ogData['og:url']}`
-                      .replace(/https:\/\/www\.milanjovanovic\.tech\/blog\//g, '')
-                      .replace(/\//g, ''),
+      articleOriginPath: `blog/${path}`,
+      articlePath: path,
       logo: 'https://milanjovanovic.tech/profile_favicon.png',
       bgRGBA: '79,70,229',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
@@ -138,7 +186,7 @@ function fetchHackingWithSwiftBlog(path = '') {
           ?.trim(),
       description: document.querySelector('h1.title')
           ?.textContent
-          ?.trim(),
+          ?.trim().replace(/"/g, "”"),
       topic: 'swift',
       author: 'Paul Hudson',
       datePublished: convertDateFormat(
@@ -202,11 +250,12 @@ function fetchFrontendmMastersBlog(path = '') {
     const ogData = parseOgData();
 
     const meta = {
-      lang: 'ko-KR',
+      lang: 'en-US',
       title: document.querySelector('title')
           ?.textContent
-          ?.trim(),
-      description: `${document.querySelectorAll('meta[name="description"]') ?? ''}`,
+          ?.trim()
+          ?.replace(/ – Frontend Masters Boost/g, ''),
+      description: `${document.querySelector('meta[name="description"]')?.getAttribute("content") ?? ''}`.replace(/"/g, "”"),
       topic: '',
       author: document.querySelector('.author-meta a.author-link')
         ?.textContent.trim() ?? '',
@@ -259,7 +308,7 @@ function fetchSmashingMagazineBlog() {
     const meta = {
       lang: 'ko-KR',
       title: `${ogData['og:title']}`.replace(/ — Smashing Magazine/g, ''),
-      description: `${ogData['og:description']}`,
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: '',
       author: document.querySelector('a.author-post__author-title').textContent ?? '',
       datePublished: convertDateFormat(
@@ -335,7 +384,7 @@ function fetchYozmArticle() {
       title: document.querySelector('.news-title')
           ?.textContent
           ?.trim(),
-      description: `${ogData['og:description']}`,
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: '',
       author: document.querySelector('.content-meta-elem>a').textContent ?? '',
       datePublished: '', // TODO: 날짜 찾기

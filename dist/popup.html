@@ -14,6 +14,7 @@
       background: var(--bg-color-blur);
       color: var(--text-color)
     }
+    body { padding:1rem 0; }
     button {
       min-width: 150px;
       margin: 5px;
@@ -22,6 +23,7 @@
     }
     label { color: dimgray; }
     details { 
+      min-width: 160px;
       margin:1rem 0;padding: 1.5rem;border-radius:0.5rem;
       background:#333;color:#a8a8a8;
       transition:background var(--vp-ct),color var(--vp-ct);
@@ -40,6 +42,7 @@
     #group-status { display:flex;justify-content:flex-start;align-items:center;flex-direction:row;}
     #group-status button { margin-left:auto;font-size:8px;min-width:0px; }
     .center-v { width:100%;display:flex;justify-content:center;align-items:center;flex-direction:row; }
+    .center-h { width:100%;display:flex;justify-content:center;align-items:center;flex-direction:column; }
     .success { color: forestgreen; }
     .fail { color: crimson; }
     img.icon { vertical-align:-.125em;height:1em;margin-inline-end:.25em;font-size:1em;}
@@ -50,6 +53,7 @@
 </head>
 <body>
   <h2>Select Action</h2>
+  <button id="fetch-site-info" disabled>fetch <br/>SiteInfo (to <i class="fa-brands fa-markdown"></i>) </button>
   <details id="details-gh">
     <summary id="summary-gh"><i class="fa-brands fa-github"></i>Github</summary>
     <button id="fetch-gh-repo-info" disabled>fetch<br/>Github Repository Info</button>
