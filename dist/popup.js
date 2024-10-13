@@ -27,6 +27,8 @@ const btnMilanJovanovicBlog = document.getElementById('fetch-milan-jovanovic-blo
 const btnHackingWithSwiftBlog = document.getElementById('fetch-hackingwithswift-blog');
 const btnFrontendMastersBlog = document.getElementById('fetch-frontendmasters-blog');
 const btnSmashinMagazineBlog = document.getElementById('fetch-smashingmagazine-blog');
+const btnDigitalOceanBlog = document.getElementById('fetch-digitalocean-blog');
+const btnTechKakaoPayBlog = document.getElementById('fetch-tech-kakao-pay-blog');
 const btnYozmArticle = document.getElementById('fetch-yozm-article');
 
 const labelArticlePath = document.getElementById('label-article-path');
@@ -72,7 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
   pVersion.textContent = `Version: ${version}`;
   [
     btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnHackingWithSwiftBlog, btnFrontendMastersBlog
-    , btnSmashinMagazineBlog, labelArticlePath, btnYozmArticle , btnCopyMessage
+    , btnSmashinMagazineBlog, btnDigitalOceanBlog, labelArticlePath, btnTechKakaoPayBlog, btnYozmArticle
+    , btnCopyMessage 
   ].forEach((e) => {
     e.style.display = 'none';
   });
@@ -151,6 +154,16 @@ document.addEventListener('DOMContentLoaded', () => {
       btnSmashinMagazineBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|(smashingmagazine\.com\/)|(\d{4}\/\d{2}\/)/g, '')
+    } else if (/digitalocean\.com/g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(44,103,246,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://digitalocean.com/_next/static/media/favicon.594d6067.ico")}<span>digitalocean.com</span>`;
+      btnDigitalOceanBlog.disabled = false
+      btnDigitalOceanBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(digitalocean\.com\/community\/tutorials\/)/g, '')
     } else if (/yozm\.wishket\.com\//g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
@@ -159,6 +172,14 @@ document.addEventListener('DOMContentLoaded', () => {
       summaryBlog.innerHTML = `${makeIcon("https://yozm.wishket.com/static/renewal/img/global/gnb_yozmit.svg")}<span>yozm.wishket.com</span>`;
       btnYozmArticle.disabled = false
       btnYozmArticle.style.display = 'block';
+    } else if (/tech\.kakaopay\.com/g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(255,84,15,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://tech.kakaopay.com/favicon.ico")}<span>tech.kakaopay.com</span>`;
+      btnTechKakaoPayBlog.disabled = false
+      btnTechKakaoPayBlog.style.display = 'block';
     } else {
       summaryBlog.innerHTML = 'NOTHING TO DO ...';
     }
@@ -330,6 +351,37 @@ btnFrontendMastersBlog.addEventListener('click', async () => {
 btnSmashinMagazineBlog.addEventListener('click', async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
   const res = await chrome.tabs.sendMessage(tab.id, { type: 'FETCH_SMASHING_MAGAZINE_BLOG' })
+  resetLabel();
+  if (chrome.runtime.lastError) {
+    printFailLabel(chrome.runtime.lastError.message);
+    return
+  }
+  console.log(MSG_SENT_SUCCSS, res.o);
+  printSuccessLabel(res.o.filename)
+  enableCopyMessage()
+  copyToClipboard(res.o.text)
+});
+
+btnDigitalOceanBlog.addEventListener('click', async () => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  const res = await chrome.tabs.sendMessage(tab.id, { 
+    type: 'FETCH_DIGITAL_OCEAN_BLOG',
+    path: labelArticlePath.value ?? ''
+  })
+  resetLabel();
+  if (chrome.runtime.lastError) {
+    printFailLabel(chrome.runtime.lastError.message);
+    return
+  }
+  console.log(MSG_SENT_SUCCSS, res.o);
+  printSuccessLabel(res.o.filename)
+  enableCopyMessage()
+  copyToClipboard(res.o.text)
+});
+
+btnTechKakaoPayBlog.addEventListener('click', async () => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  const res = await chrome.tabs.sendMessage(tab.id, { type: 'FETCH_TECH_KAKAO_PAY' })
   resetLabel();
   if (chrome.runtime.lastError) {
     printFailLabel(chrome.runtime.lastError.message);

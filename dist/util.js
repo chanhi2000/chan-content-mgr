@@ -9,12 +9,11 @@ function convertDateFormat(dateString) {
 
 function parseOgData() {
   const ogData = {};
-  let nodelist = document.querySelectorAll('meta[property^="og:"]')
-  if (nodelist.length == 0) nodelist = document.querySelectorAll('meta[name^="og:"]')
+  let nodelist = document.querySelectorAll('meta[property^="og:"], meta[name^="og:"]')
 
   for (e of nodelist) {
-    const property = e.getAttribute('property') ?? e.getAttribute('name');
-    const content = e.getAttribute('content');
+    const property = e?.getAttribute('property') ?? e?.getAttribute('name');
+    const content = e?.getAttribute('content');
     ogData[property] = content;
   };
 
@@ -80,7 +79,6 @@ ${vpCard}
 ---
 
 ${siteInfo}
-
 `
 }
 
@@ -165,7 +163,7 @@ function createEndMatter(meta) {
   console.log(`createEndMatter ... meta: ${JSON.stringify(meta)}`)
   return `
 
-<!-- START: ARTICLE CARD -->
+<!-- TODO: add ARTICLE CARD -->
 \`\`\`component VPCard
 {
   "title": "${meta.title}",
@@ -175,5 +173,5 @@ function createEndMatter(meta) {
   "background": "rgba(${meta.bgRGBA},0.2)"
 }
 \`\`\`
-<!-- END: ARTICLE CARD -->`
+`
 }

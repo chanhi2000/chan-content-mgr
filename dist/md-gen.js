@@ -101,7 +101,9 @@ function fetchFreeCodeCampNews() {
       .replace(/\(https:\/\/www\./g, '(https://')
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
       .replace(/\-   /g, '- ') // ul처리
+      .replace(/    \n\-/g, '-') // ul처리
       .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
+      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -163,7 +165,9 @@ function fetchMilanJovanovicBlog() {
       .replace(/\]\(\/blogs\/mnw/g, `](https://milanjovanovic.tech/blogs/mnw`)
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
       .replace(/\-   /g, '- ') // ul처리
+      .replace(/    \n\-/g, '-') // ul처리
       .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
+      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -233,7 +237,9 @@ function fetchHackingWithSwiftBlog(path = '') {
       .replace(/https:\/\/www.youtube.com\/watch\?v=/g, 'https://youtu.be/')
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
       .replace(/\-   /g, '- ') // ul처리
+      .replace(/    \n\-/g, '-') // ul처리
       .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
+      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -289,7 +295,9 @@ function fetchFrontendmMastersBlog(path = '') {
     mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
       .replace(/\-   /g, '- ') // ul처리
+      .replace(/    \n\-/g, '-') // ul처리
       .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
+      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -361,7 +369,9 @@ function fetchSmashingMagazineBlog() {
     mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
       .replace(/\-   /g, '- ') // ul처리
+      .replace(/    \n\-/g, '-') // ul처리
       .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
+      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -371,6 +381,121 @@ function fetchSmashingMagazineBlog() {
   }
 }
 
+function fetchDigitalOceanBlog(path = '') {
+  console.log('fetchDigitalOceanBlog ... ')
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: document.querySelector('h1').textContent,
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: '',
+      author: document.querySelector('.author').textContent.replace(/By\s/g, '') ?? '',
+      datePublished: convertDateFormat(
+        document.querySelector('.jnatsz').textContent.replace(/Published on /g, '') ?? ''
+      ),
+      baseUrl: 'https://digitalocean.com',
+      articleBasePath: 'digitalocean.com',
+      articlePath: path.replace(/\//g, ''),
+      articleOriginPath: path.replace(/(https:\/\/)|(www\.)|(digitalocean\.com\/)|(community\/)|(tutorial\/)|(articles\/)/g, ''),
+      logo: 'https://digitalocean.com/_next/static/media/favicon.594d6067.ico',
+      bgRGBA: '44,103,246',
+      coverUrl: `${ogData['og:image']?.replace(/\https:\/\/www\./g, 'https://')}`
+    }
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.kfTVTG').innerHTML
+    const turndownService = new TurndownService({
+      headingStyle: 'atx',
+      bulletListMarker: '-',
+      codeBlockStyle: 'fenced',
+      hr: '---',
+      emDelimiter: '*',
+      preformattedCode: 'true',
+    });
+    turndownService.use([
+      turndownPluginGfm.gfm,
+      turndownPluginGfm.tables,
+      turndownPluginGfm.strikethrough
+    ])
+    let mdContent = turndownService.turndown(articleContent)
+    mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
+      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
+      .replace(/\-   /g, '- ') // ul처리
+      .replace(/    \n\-/g, '-') // ul처리
+      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
+      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
+
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+function fetchTechKakaoPay() {
+  console.log('fetchTechKakaoPay ... ')
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'ko-KR',
+      title: (document.querySelector('title')
+          ?.textContent ?? document.querySelector('meta[name="description"]')
+          ?.getAttribute("content")
+          )?.replace(/ \| 카카오페이 기술 블로그/g, '')?.trim(),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: '',
+      author: document.querySelector('.author-content>strong').textContent ?? '',
+      datePublished: convertDateFormat(document.querySelector('time').textContent),
+      baseUrl: 'https://tech.kakaopay.com',
+      articleBasePath: 'tech.kakaopay.com',
+      articlePath: `${ogData['og:url']}`
+                      .replace(/https:\/\/tech\.kakaopay\.com\/post\//g, '')
+                      .replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+                      .replace(/https:\/\/tech\.kakaopay\.com\//g, ''),
+      logo: 'https://tech.kakaopay.com/favicon.ico',
+      bgRGBA: '255,84,15',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('article.markdown').innerHTML
+    const turndownService = new TurndownService({
+      headingStyle: 'atx',
+      bulletListMarker: '-',
+      codeBlockStyle: 'fenced',
+      hr: '---',
+      emDelimiter: '*',
+      preformattedCode: 'true',
+    });
+    turndownService.use([
+      turndownPluginGfm.gfm,
+      turndownPluginGfm.tables,
+      turndownPluginGfm.strikethrough
+    ])
+    let mdContent = turndownService.turndown(articleContent)
+    mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
+      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
+      .replace(/\-   /g, '- ') // ul처리
+      .replace(/    \n\-/g, '-') // ul처리
+      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
+      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    }
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
 function fetchYozmArticle() {
   console.log('fetchYozmArticle ... ')
   try {
@@ -420,7 +545,9 @@ function fetchYozmArticle() {
     mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
       .replace(/\-   /g, '- ') // ul처리
+      .replace(/    \n\-/g, '-') // ul처리
       .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
+      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
