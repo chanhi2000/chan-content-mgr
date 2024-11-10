@@ -110,13 +110,20 @@ function createSubMetaInfo(topic) {
     _category=`${_pageName}`
     _tag='python\n  - py'
     _relatedPath='/programming/py'
-  } else if (/(cs)|(csharp)/g.test(topic)) {
+  } else if (/(cs)|(csharp)|(c#)/g.test(topic)) {
     console.log(`${topic}!!!`)
     _pageName = 'C#'
     _icon='iconfont icon-csharp'
     _category=`${_pageName}\n  - DotNet`
     _tag='cs\n  - c#\n  - csharp\n  - dotnet'
     _relatedPath='/programming/cs'
+  } else if (/(rust)/g.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'Rust'
+    _icon='fa-brands fa-rust'
+    _category=`${_pageName}`
+    _tag='rs\n  - rust'
+    _relatedPath='/programming/rust'
   } else if (/(git)/g.test(topic)) {
     console.log(`${topic}!!!`)
     _pageName = 'Git'
@@ -124,6 +131,13 @@ function createSubMetaInfo(topic) {
     _category=`${_pageName}`
     _tag='git'
     _relatedPath='/programming/git'
+  } else if (/(kubernetes)|(k8s)/g.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'Kubernetes'
+    _icon='iconfont icon-k8s'
+    _category=`DevOps\n  - VM\n  - ${_pageName}`
+    _tag='devops\n  - kubernetes\n  - k8s'
+    _relatedPath='/devops/k8s'
   } else if (/(llm)/g.test(topic)) {
     console.log(`${topic}!!!`)
     _pageName = 'LLM'

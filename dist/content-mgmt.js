@@ -37,6 +37,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'FETCH_DIGITAL_OCEAN_BLOG':
       sendResponse({ status: "fetch DigitalOcean Blog DONE!", o: fetchDigitalOceanBlog(message.path) });
       break;
+    case 'FETCH_LEARN_K8S_BLOG':
+      sendResponse({ status: "fetch LearnK8S Blog DONE!", o: fetchLearnK8sBlog(message.path) });
+      break;
     case 'FETCH_TECH_KAKAO_PAY':
       sendResponse({ status: "fetch Tech KakaoPay Blog DONE!", o: fetchTechKakaoPay() });
       break;

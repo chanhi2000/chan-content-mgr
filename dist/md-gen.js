@@ -437,6 +437,75 @@ function fetchDigitalOceanBlog(path = '') {
   }
 }
 
+function fetchLearnK8sBlog() {
+  console.log('fetchLearnK8sBlog ... ')
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: document.querySelector('h1').textContent,
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'kubernetes',
+      author: document.querySelector('.black-50.f6.db').textContent.replace(/By\s/g, '') ?? '',
+      datePublished: convertDateFormat(
+        document.querySelector('.f7.black-60.tc.ttu.b').textContent ?? ''
+      ),
+      baseUrl: 'https://learnk8s.com',
+      articleBasePath: 'learnk8s.com',
+      articlePath: `${ogData['og:url']}`
+          .replace(/(https:\/\/)|(www\.)|(learnk8s\.com\/)/g, '')
+          .replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+          .replace(/(https:\/\/)|(www\.)|(learnk8s\.com\/)/g, '')
+          .replace(/\//g, ''),
+      logo: 'https://static.learnk8s.io/f7e5160d4744cf05c46161170b5c11c9.svg',
+      bgRGBA: '102,152,204',
+      coverUrl: `${ogData['og:image']?.replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    const elements2Remove = [
+      'h1',
+      'p.f7.black-60.tc.ttu.b',
+      'hr.pv2.bn',
+      '.aspect-ratio.aspect-ratio--6x4',
+      'hr.w3.center.b--navy.mv4.mb5-ns',
+    ]
+    elements2Remove.forEach((e) => document.querySelector(e)?.remove());
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('article.lazy-article').innerHTML
+    const turndownService = new TurndownService({
+      headingStyle: 'atx',
+      bulletListMarker: '-',
+      codeBlockStyle: 'fenced',
+      hr: '---',
+      emDelimiter: '*',
+      preformattedCode: 'true',
+    });
+    turndownService.use([
+      turndownPluginGfm.gfm,
+      turndownPluginGfm.tables,
+      turndownPluginGfm.strikethrough
+    ])
+    let mdContent = turndownService.turndown(articleContent)
+    mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
+      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
+      .replace(/\-   /g, '- ') // ul처리
+      .replace(/    \n\-/g, '-') // ul처리
+      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
+      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
+
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
 function fetchTechKakaoPay() {
   console.log('fetchTechKakaoPay ... ')
   try {
