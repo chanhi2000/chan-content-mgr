@@ -502,10 +502,83 @@ function fetchLearnK8sBlog() {
       filename: `${meta.articlePath}.md`,
       text: mdContent
     };
+  } catch (error) { ppop
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+function fetchKtAcademy() {
+  console.log('fetchKtAcademy ... ')
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: (document.querySelector('h1>span')?.textContent) ?? ogData['og:title'],
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'kotlin',
+      author: document.querySelector('.author-info>.details .article-name>a').textContent ?? '',
+      datePublished: '',
+      baseUrl: 'https://kt.academy',
+      articleBasePath: 'kt.academy',
+      articlePath: `${ogData['og:url']}`
+                      .replace(/https:\/\/kt\.academy\/article\//g, '')
+                      .replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+                      .replace(/https:\/\/kt\.academy\/article\//g, ''),
+      logo: 'https://kt.academy/logo.png',
+      bgRGBA: '243,139,49',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    document.querySelectorAll('.article-body > *')[0].remove()
+    const elements2Remove = [
+      'h1',
+      '.Articleimage_imgWrapper__qYfww'
+    ]
+    elements2Remove.forEach((e) => document.querySelector(e)?.remove());
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.article-body').innerHTML
+    const turndownService = new TurndownService({
+      headingStyle: 'atx',
+      bulletListMarker: '-',
+      codeBlockStyle: 'fenced',
+      hr: '---',
+      emDelimiter: '*',
+      preformattedCode: 'true',
+    });
+    turndownService.use([
+      turndownPluginGfm.gfm,
+      turndownPluginGfm.tables,
+      turndownPluginGfm.strikethrough
+    ])
+    let mdContent = turndownService.turndown(articleContent)
+    mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
+      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
+      .replace(/(?:^|##\s\n\n)/g, '## ') // h2 처리
+      .replace(/\nxxxxxxxxxx\n/g, '```kotlin')
+      .replace(/\[Open\sin\sPlayground →.*\n/g, '')
+      .replace(/\nTarget: JVMRunning on v.*/g, '```\n\n:::')
+      .replace(/\-   /g, '- ') // ul처리
+      .replace(/    \n\-/g, '-') // ul처리
+      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
+      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
+      .replace(/\_/g, "_")
+      .replace(/\-/g, "-")
+      .replace(/\=/g, "=")
+      .replace(/\>/g, ">")
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    }
   } catch (error) {
     console.error('Failed to copy JSON:', error);
   }
 }
+
 function fetchTechKakaoPay() {
   console.log('fetchTechKakaoPay ... ')
   try {

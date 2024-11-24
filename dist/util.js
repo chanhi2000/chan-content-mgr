@@ -96,6 +96,20 @@ function createSubMetaInfo(topic) {
     _category=`${_pageName}`
     _tag='swift\n  - ios\n  - macos\n  - xcode'
     _relatedPath='/programming/swift'
+  } else if (/kotlin/.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'Kotlin'
+    _icon='iconfont icon-kotlin'
+    _category=`Java\n  - ${_pageName}`
+    _tag='java\n  - kotlin'
+    _relatedPath='/programming/java'
+  } else if (/spring/.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'Spring'
+    _icon='iconfont icon-spring'
+    _category=`Java\n  - ${_pageName}`
+    _tag='java\n  - kotlin'
+    _relatedPath='/programming/java-spring'
   } else if (/react/.test(topic)) {
     console.log(`${topic}!!!`)
     _pageName = 'React.js'
@@ -170,7 +184,7 @@ function createSiteInfo(meta, customVpCard = null) {
   desc="${meta.description}"
   url="${meta.baseUrl}/${meta.articleOriginPath ?? meta.articlePath}"
   logo="${meta.logo}"
-  preview="${meta.coverUrl}"/>`
+  preview="${meta.coverUrl}"/>` + '\n'
 }
 
 function createEndMatter(meta) {

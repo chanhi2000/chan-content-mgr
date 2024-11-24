@@ -28,6 +28,7 @@ const btnHackingWithSwiftBlog = document.getElementById('fetch-hackingwithswift-
 const btnFrontendMastersBlog = document.getElementById('fetch-frontendmasters-blog');
 const btnSmashinMagazineBlog = document.getElementById('fetch-smashingmagazine-blog');
 const btnDigitalOceanBlog = document.getElementById('fetch-digitalocean-blog');
+const btnKtAcademy = document.getElementById('fetch-kt-academy');
 const btnLearnK8sBlog = document.getElementById('fetch-learn-k8s-blog');
 const btnTechKakaoPayBlog = document.getElementById('fetch-tech-kakao-pay-blog');
 const btnYozmArticle = document.getElementById('fetch-yozm-article');
@@ -75,8 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
   pVersion.textContent = `Version: ${version}`;
   [
     btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnHackingWithSwiftBlog, btnFrontendMastersBlog
-    , btnSmashinMagazineBlog, btnDigitalOceanBlog, btnLearnK8sBlog, labelArticlePath, btnTechKakaoPayBlog
-    , btnYozmArticle, btnCopyMessage 
+    , btnSmashinMagazineBlog, btnDigitalOceanBlog, btnKtAcademy, btnLearnK8sBlog, labelArticlePath
+    , btnTechKakaoPayBlog, btnYozmArticle, btnCopyMessage 
   ].forEach((e) => {
     e.style.display = 'none';
   });
@@ -165,6 +166,16 @@ document.addEventListener('DOMContentLoaded', () => {
       btnDigitalOceanBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|(digitalocean\.com\/community\/tutorials\/)/g, '')
+    } else if (/kt\.academy/g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(243,139,49,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://kt.academy/logo.png")}<span>kt.academy</span>`;
+      btnKtAcademy.disabled = false
+      btnKtAcademy.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(kt\.academy\/article\/)/g, '')
     } else if (/learnk8s\.io/g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
@@ -406,6 +417,20 @@ btnLearnK8sBlog.addEventListener('click', async () => {
   enableCopyMessage()
   copyToClipboard(res.o.text)
 })
+
+btnKtAcademy.addEventListener('click', async () => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  const res = await chrome.tabs.sendMessage(tab.id, { type: 'FETCH_KT_ACADEMY' })
+  resetLabel();
+  if (chrome.runtime.lastError) {
+    printFailLabel(chrome.runtime.lastError.message);
+    return
+  }
+  console.log(MSG_SENT_SUCCSS, res.o);
+  printSuccessLabel(res.o.filename)
+  enableCopyMessage()
+  copyToClipboard(res.o.text)
+});
 
 btnTechKakaoPayBlog.addEventListener('click', async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })

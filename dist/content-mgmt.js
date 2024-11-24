@@ -40,6 +40,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'FETCH_LEARN_K8S_BLOG':
       sendResponse({ status: "fetch LearnK8S Blog DONE!", o: fetchLearnK8sBlog(message.path) });
       break;
+    case 'FETCH_KT_ACADEMY': 
+      sendResponse({ status: "fetch Kt Academy Blog DONE!", o: fetchKtAcademy(message.path) });
+      break;
     case 'FETCH_TECH_KAKAO_PAY':
       sendResponse({ status: "fetch Tech KakaoPay Blog DONE!", o: fetchTechKakaoPay() });
       break;
