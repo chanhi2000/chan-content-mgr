@@ -110,6 +110,13 @@ function createSubMetaInfo(topic) {
     _category=`Java\n  - ${_pageName}`
     _tag='java\n  - kotlin'
     _relatedPath='/programming/java-spring'
+  } else if (/android/.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'Android'
+    _icon='fa-brands fa-android'
+    _category=`Java\n  - Kotlin\n  - ${_pageName}`
+    _tag='java\n  - kotlin\n  - android'
+    _relatedPath='/programming/java-android'
   } else if (/react/.test(topic)) {
     console.log(`${topic}!!!`)
     _pageName = 'React.js'

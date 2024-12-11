@@ -25,11 +25,15 @@ function enableSiteInfo() {
 const btnFetchFreeCodeCampNews = document.getElementById('fetch-free-code-camp-news');
 const btnMilanJovanovicBlog = document.getElementById('fetch-milan-jovanovic-blog');
 const btnHackingWithSwiftBlog = document.getElementById('fetch-hackingwithswift-blog');
+const btnDroidconBlog = document.getElementById('fetch-droidcon-blog');
 const btnFrontendMastersBlog = document.getElementById('fetch-frontendmasters-blog');
 const btnSmashinMagazineBlog = document.getElementById('fetch-smashingmagazine-blog');
 const btnDigitalOceanBlog = document.getElementById('fetch-digitalocean-blog');
-const btnKtAcademy = document.getElementById('fetch-kt-academy');
+const btnKtAcademyBlog = document.getElementById('fetch-kt-academy-blog');
+const btnKotzillaBlog = document.getElementById('fetch-kotzilla-blog');
+const btnOutcomeSchoolBlog = document.getElementById('fetch-outcome-school-blog');
 const btnLearnK8sBlog = document.getElementById('fetch-learn-k8s-blog');
+const btnItsFossBlog = document.getElementById('fetch-its-foss-blog');
 const btnTechKakaoPayBlog = document.getElementById('fetch-tech-kakao-pay-blog');
 const btnYozmArticle = document.getElementById('fetch-yozm-article');
 
@@ -75,9 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const version = manifest.version;
   pVersion.textContent = `Version: ${version}`;
   [
-    btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnHackingWithSwiftBlog, btnFrontendMastersBlog
-    , btnSmashinMagazineBlog, btnDigitalOceanBlog, btnKtAcademy, btnLearnK8sBlog, labelArticlePath
-    , btnTechKakaoPayBlog, btnYozmArticle, btnCopyMessage 
+    btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnHackingWithSwiftBlog, btnDroidconBlog, btnFrontendMastersBlog
+    , btnSmashinMagazineBlog, btnDigitalOceanBlog, btnLearnK8sBlog, btnKtAcademyBlog, btnKotzillaBlog
+    , btnItsFossBlog , btnOutcomeSchoolBlog, labelArticlePath, btnTechKakaoPayBlog, btnYozmArticle
+    , btnCopyMessage 
   ].forEach((e) => {
     e.style.display = 'none';
   });
@@ -136,6 +141,15 @@ document.addEventListener('DOMContentLoaded', () => {
       btnHackingWithSwiftBlog.disabled = false
       btnHackingWithSwiftBlog.style.display = 'block';
       labelArticlePath.value = tab.url.replace(/(https:\/\/)|(www\.)|(hackingwithswift\.com\/)/g, '')
+    } else if (/droidcon\.com/g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(4,20,221,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://droidcon.com/wp-content/uploads/2021/07/favicon-300x300.png")}<span>droidcon.com</span>`;
+      btnDroidconBlog.disabled = false
+      btnDroidconBlog.style.display = 'block';
+      labelArticlePath.value = tab.url.replace(/(https:\/\/)|(www\.)|(droidcon\.com\/)/g, '')
     } else if (/frontendmasters\.com\//g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
@@ -172,10 +186,30 @@ document.addEventListener('DOMContentLoaded', () => {
       detailsBlog.style.background = 'rgba(243,139,49,0.2)'
       summaryBlog.classList.add('activated')
       summaryBlog.innerHTML = `${makeIcon("https://kt.academy/logo.png")}<span>kt.academy</span>`;
-      btnKtAcademy.disabled = false
-      btnKtAcademy.style.display = 'block';
+      btnKtAcademyBlog.disabled = false
+      btnKtAcademyBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|(kt\.academy\/article\/)/g, '')
+    } else if (/blog\.kotzilla\.io/g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(238,181,80,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://blog.kotzilla.io/hubfs/favicon.png")}<span>blog.kotzilla.io</span>`;
+      btnKotzillaBlog.disabled = false
+      btnKotzillaBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(blog\.kotzilla\.io\/)/g, '')
+    } else if (/outcomeschool\.com/g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(78,70,220,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://outcomeschool.com/static/favicons/apple-touch-icon.png")}<span>outcomeschool.com</span>`;
+      btnOutcomeSchoolBlog.disabled = false
+      btnOutcomeSchoolBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(outcomeschool\.com\/)/g, '')
     } else if (/learnk8s\.io/g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
@@ -184,6 +218,16 @@ document.addEventListener('DOMContentLoaded', () => {
       summaryBlog.innerHTML = `${makeIcon("https://static.learnk8s.io/f7e5160d4744cf05c46161170b5c11c9.svg")}<span>learnk8s.io</span>`;
       btnLearnK8sBlog.disabled = false
       btnLearnK8sBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|/g, '')
+    } else if (/itsfoss\.com/g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(53,121,127,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://itsfoss.com/content/images/size/w256h256/2022/12/android-chrome-192x192.png")}<span>itsfoss.com</span>`;
+      btnItsFossBlog.disabled = false
+      btnItsFossBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|/g, '')
     } else if (/yozm\.wishket\.com\//g.test(tab.url)) {
@@ -307,87 +351,26 @@ btnDeleteYTWL.addEventListener('click', async () => {
 });
 
 
-btnFetchFreeCodeCampNews.addEventListener('click', async () => {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-  const res = await chrome.tabs.sendMessage(tab.id, { type: 'FETCH_FREE_CODE_CAMP_NEWS' })
-  resetLabel();
-  if (chrome.runtime.lastError) {
-    printFailLabel(chrome.runtime.lastError.message)
-    return
-  }
-  console.log(MSG_SENT_SUCCSS, res.o);
-  printSuccessLabel(res.o.filename)
-  enableCopyMessage()
-  copyToClipboard(res.o.text)
-});
+btnFetchFreeCodeCampNews.addEventListener('click', async () => await onClickWebScraping('FETCH_FREE_CODE_CAMP_NEWS'));
+btnMilanJovanovicBlog.addEventListener('click', async () =>    await onClickWebScraping('FETCH_MILAN_JOVANOVIC_BLOG'));
+btnHackingWithSwiftBlog.addEventListener('click', async () =>  await onClickWebScraping('FETCH_HACKING_WITH_SWIFT_BLOG'));
+btnDroidconBlog.addEventListener('click', async () =>          await onClickWebScraping('FETCH_DROIDCON_BLOG'))
+btnFrontendMastersBlog.addEventListener('click', async () =>   await onClickWebScraping('FETCH_FRONTEND_MASTERS_BLOG'));
+btnSmashinMagazineBlog.addEventListener('click', async () =>   await onClickWebScraping('FETCH_SMASHING_MAGAZINE_BLOG'));
+btnDigitalOceanBlog.addEventListener('click', async () =>      await onClickWebScraping('FETCH_DIGITAL_OCEAN_BLOG'));
+btnLearnK8sBlog.addEventListener('click', async () =>          await onClickWebScraping('FETCH_LEARN_K8S_BLOG'));
+btnKtAcademyBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_KT_ACADEMY_BLOG'));
+btnKotzillaBlog.addEventListener('click', async () =>          await onClickWebScraping('FETCH_KOTZILLA_BLOG'));
+btnOutcomeSchoolBlog.addEventListener('click', async () =>     await onClickWebScraping('FETCH_OUTCOME_SCHOOL_BLOG'));
+btnItsFossBlog.addEventListener('click', async() =>            await onClickWebScraping('FETCH_ITS_FOSS_BLOG'));
+btnTechKakaoPayBlog.addEventListener('click', async () =>      await onClickWebScraping('FETCH_TECH_KAKAO_PAY'));
+btnYozmArticle.addEventListener('click', async () =>           await onClickWebScraping('FETCH_YOZM_ARTICLE'));
 
-btnMilanJovanovicBlog.addEventListener('click', async () => {
+const onClickWebScraping = async (_type = '') => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-  const res = await chrome.tabs.sendMessage(tab.id, { type: 'FETCH_MILAN_JOVANOVIC_BLOG' })
-  resetLabel()
-  if (chrome.runtime.lastError) {
-    printFailLabel(chrome.runtime.lastError.message)
-    return
-  }
-  console.log(MSG_SENT_SUCCSS, res.o)
-  printSuccessLabel(res.o.filename)
-  enableCopyMessage()
-  copyToClipboard(res.o.text)
-})
-
-btnHackingWithSwiftBlog.addEventListener('click', async () => {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+    
   const res = await chrome.tabs.sendMessage(tab.id, { 
-    type: 'FETCH_HACKING_WITH_SWIFT_BLOG', 
-    path: labelArticlePath.value ?? '', 
-  })
-  resetLabel();
-  if (chrome.runtime.lastError) {
-    printFailLabel(chrome.runtime.lastError.message);
-    return
-  }
-  console.log(MSG_SENT_SUCCSS, res.o);
-  printSuccessLabel(res.o.filename)
-  enableCopyMessage()
-  copyToClipboard(res.o.text)
-})
-
-btnFrontendMastersBlog.addEventListener('click', async () => {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-  const res = await chrome.tabs.sendMessage(tab.id, { 
-    type: 'FETCH_FRONTEND_MASTERS_BLOG', 
-    path: labelArticlePath.value ?? '',
-  })
-  resetLabel();
-  if (chrome.runtime.lastError) {
-    printFailLabel(chrome.runtime.lastError.message);
-    return
-  }
-  console.log(MSG_SENT_SUCCSS, res.o);
-  printSuccessLabel(res.o.filename)
-  enableCopyMessage()
-  copyToClipboard(res.o.text)
-})
-
-
-btnSmashinMagazineBlog.addEventListener('click', async () => {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-  const res = await chrome.tabs.sendMessage(tab.id, { type: 'FETCH_SMASHING_MAGAZINE_BLOG' })
-  resetLabel();
-  if (chrome.runtime.lastError) {
-    printFailLabel(chrome.runtime.lastError.message);
-    return
-  }
-  console.log(MSG_SENT_SUCCSS, res.o);
-  printSuccessLabel(res.o.filename)
-  enableCopyMessage()
-  copyToClipboard(res.o.text)
-});
-
-btnDigitalOceanBlog.addEventListener('click', async () => {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-  const res = await chrome.tabs.sendMessage(tab.id, { 
-    type: 'FETCH_DIGITAL_OCEAN_BLOG',
+    type: _type,
     path: labelArticlePath.value ?? ''
   })
   resetLabel();
@@ -399,66 +382,7 @@ btnDigitalOceanBlog.addEventListener('click', async () => {
   printSuccessLabel(res.o.filename)
   enableCopyMessage()
   copyToClipboard(res.o.text)
-});
-
-btnLearnK8sBlog.addEventListener('click', async () => {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-  const res = await chrome.tabs.sendMessage(tab.id, { 
-    type: 'FETCH_LEARN_K8S_BLOG',
-    path: labelArticlePath.value ?? ''
-  })
-  resetLabel();
-  if (chrome.runtime.lastError) {
-    printFailLabel(chrome.runtime.lastError.message);
-    return
-  }
-  console.log(MSG_SENT_SUCCSS, res.o);
-  printSuccessLabel(res.o.filename)
-  enableCopyMessage()
-  copyToClipboard(res.o.text)
-})
-
-btnKtAcademy.addEventListener('click', async () => {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-  const res = await chrome.tabs.sendMessage(tab.id, { type: 'FETCH_KT_ACADEMY' })
-  resetLabel();
-  if (chrome.runtime.lastError) {
-    printFailLabel(chrome.runtime.lastError.message);
-    return
-  }
-  console.log(MSG_SENT_SUCCSS, res.o);
-  printSuccessLabel(res.o.filename)
-  enableCopyMessage()
-  copyToClipboard(res.o.text)
-});
-
-btnTechKakaoPayBlog.addEventListener('click', async () => {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-  const res = await chrome.tabs.sendMessage(tab.id, { type: 'FETCH_TECH_KAKAO_PAY' })
-  resetLabel();
-  if (chrome.runtime.lastError) {
-    printFailLabel(chrome.runtime.lastError.message);
-    return
-  }
-  console.log(MSG_SENT_SUCCSS, res.o);
-  printSuccessLabel(res.o.filename)
-  enableCopyMessage()
-  copyToClipboard(res.o.text)
-});
-
-btnYozmArticle.addEventListener('click', async () => {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-  const res = await chrome.tabs.sendMessage(tab.id, { type: 'FETCH_YOZM_ARTICLE' })
-  resetLabel();
-  if (chrome.runtime.lastError) {
-    printFailLabel(chrome.runtime.lastError.message);
-    return
-  }
-  console.log(MSG_SENT_SUCCSS, res.o);
-  printSuccessLabel(res.o.filename)
-  enableCopyMessage()
-  copyToClipboard(res.o.text)
-});
+}
 
 btnCopyMessage.addEventListener('click', async () => {
   copyToClipboard(labelStatus.textContent)

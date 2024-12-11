@@ -28,6 +28,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'FETCH_HACKING_WITH_SWIFT_BLOG': 
       sendResponse({ status: "fetch hackingWithSwift Blog DONE!", o: fetchHackingWithSwiftBlog(message.path) });
       break;
+    case 'FETCH_DROIDCON_BLOG': 
+      sendResponse({ status: "fetch droidcon Blog DONE!", o: fetchDroidconBlog(message.path) });
+      break;
     case 'FETCH_FRONTEND_MASTERS_BLOG': 
       sendResponse({ status: "fetch FrontendmMasters Blog DONE!", o: fetchFrontendmMastersBlog(message.path) });
       break;
@@ -40,8 +43,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'FETCH_LEARN_K8S_BLOG':
       sendResponse({ status: "fetch LearnK8S Blog DONE!", o: fetchLearnK8sBlog(message.path) });
       break;
-    case 'FETCH_KT_ACADEMY': 
-      sendResponse({ status: "fetch Kt Academy Blog DONE!", o: fetchKtAcademy(message.path) });
+    case 'FETCH_KT_ACADEMY_BLOG': 
+      sendResponse({ status: "fetch Kt Academy Blog DONE!", o: fetchKtAcademyBlog(message.path) });
+      break;
+    case 'FETCH_KOTZILLA_BLOG': 
+      sendResponse({ status: "fetch Kotzilla Blog DONE!", o: fetchKotzillaBlog(message.path) });
+      break;
+    case 'FETCH_OUTCOME_SCHOOL_BLOG':
+      sendResponse({ status: "fetch OutcomeSchool Blog DONE!", o: fetchOutcomeSchoolBlog(message.path) });
+      break;
+    case 'FETCH_ITS_FOSS_BLOG':
+      sendResponse({ status: "fetch ItsFoss Blog DONE!", o: fetchItsFossBlog(message.path) });
       break;
     case 'FETCH_TECH_KAKAO_PAY':
       sendResponse({ status: "fetch Tech KakaoPay Blog DONE!", o: fetchTechKakaoPay() });

@@ -249,6 +249,77 @@ function fetchHackingWithSwiftBlog(path = '') {
   }
 }
 
+function fetchDroidconBlog(path = '') {
+  console.log('fetchDroidconBlog ... ')
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: ogData['og:title']?.trim()
+          ?.replace(/ – droidcon/g, ''),
+      description: ogData['og:description'].replace(/"/g, "”"),
+      topic: 'android',
+      author: document.querySelector('.post-author-name.fn')?.textContent.trim() ?? '',
+      datePublished: convertDateFormat(
+        document.querySelector('time.post_date.published')
+        ?.getAttribute('datetime') ?? ''),
+      baseUrl: 'https://droidcon.com',
+      articleBasePath: 'droidcon.com',
+      articlePath: path.replace(/(https:\/\/)|(www\.)|(droidcon\.com\/)|(\d{4}\/\d{2}\/\d{2}\/)/g, '')
+        .replace(/\//g, ''),
+      logo: 'https://droidcon.com/wp-content/uploads/2021/07/favicon-300x300.png',
+      bgRGBA: '4,20,221',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    const elements2Remove = [
+      '.w-image.meta_simple',
+      '.vc_col-sm-2.wpb_column.vc_column_container'
+    ]
+    elements2Remove.forEach((e) => document.querySelector(e)?.remove());
+
+    var ca = Array.prototype.slice.call(
+      document.querySelectorAll(".classA")
+    ).concat(Array.prototype.slice.call(
+      document.querySelectorAll(".classB")
+    ));
+
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = [...document.querySelectorAll('.droidcon_post_wrapper section.us_custom_ff837323 .vc_col-sm-8>.vc_column-inner>.wpb_wrapper>*')].map((e) => e.innerHTML).join('')
+    const turndownService = new TurndownService({
+      headingStyle: 'atx',
+      bulletListMarker: '-',
+      codeBlockStyle: 'fenced',
+      hr: '---',
+      emDelimiter: '*',
+      preformattedCode: 'true',
+    });
+    turndownService.use([
+      turndownPluginGfm.gfm,
+      turndownPluginGfm.tables,
+      turndownPluginGfm.strikethrough
+    ])
+    let mdContent = turndownService.turndown(articleContent)
+    mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
+      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
+      .replace(/\-   /g, '- ') // ul처리
+      .replace(/    \n\-/g, '-') // ul처리
+      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
+      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
 function fetchFrontendmMastersBlog(path = '') {
   console.log('fetchFrontendmMastersBlog ... ')
   try {
@@ -271,6 +342,7 @@ function fetchFrontendmMastersBlog(path = '') {
       baseUrl: 'https://frontendmasters.com',
       articleBasePath: 'frontendmasters.com',
       articlePath: path.replace(/\//g, ''),
+      articleOriginPath: `blog/${path}`,
       logo: 'https://frontendmasters.com/favicon.ico',
       bgRGBA: '188,75,52',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
@@ -294,10 +366,12 @@ function fetchFrontendmMastersBlog(path = '') {
     let mdContent = turndownService.turndown(articleContent)
     mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
+      .replace(/\# \[\]\(\#.*\)/g, '# ')
       .replace(/\-   /g, '- ') // ul처리
       .replace(/    \n\-/g, '-') // ul처리
       .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
       .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
+      .replace(/(\`Code language\:.*\(*\))/g, '\n\`\`\`') // ol처리
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -328,7 +402,7 @@ function fetchSmashingMagazineBlog() {
                       .replace(/(https:\/\/)|(www\.)|(smashingmagazine\.com\/)|(\d{4}\/\d{2}\/)/g, '')
                       .replace(/\//g, ''),
       articleOriginPath: `${ogData['og:url']}`
-                      .replace(/(https:\/\/)|(www\.)|(smashingmagazine\.com\/)|(\d{4}\/\d{2}\/)/g, ''),
+                      .replace(/(https:\/\/)|(www\.)|(smashingmagazine\.com\/)/g, ''),
       logo: 'https://smashingmagazine.com/images/favicon/favicon.svg',
       bgRGBA: '211,58,44',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
@@ -507,8 +581,8 @@ function fetchLearnK8sBlog() {
   }
 }
 
-function fetchKtAcademy() {
-  console.log('fetchKtAcademy ... ')
+function fetchKtAcademyBlog() {
+  console.log('fetchKtAcademyBlog ... ')
   try {
     // Extract Open Graph metadata
     const ogData = parseOgData();
@@ -578,6 +652,207 @@ function fetchKtAcademy() {
     console.error('Failed to copy JSON:', error);
   }
 }
+
+function fetchKotzillaBlog() {
+  console.log('fetchKotzillaBlog ... ')
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: (document.querySelector('h1>span')?.textContent) ?? ogData['og:title'],
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'kotlin',
+      author: document.querySelector('.blog-post__author>a')?.textContent ?? '',
+      datePublished: convertDateFormat(
+        document.querySelector('time.blog-post__timestamp')?.getAttribute('datetime') ?? ''
+      ),
+      baseUrl: 'https://blog.kotzilla.io',
+      articleBasePath: 'blog.kotzilla.io',
+      articlePath: `${ogData['og:url']}`
+                      .replace(/https:\/\/blog\.kotzilla\.io\//g, '')
+                      .replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+                      .replace(/https:\/\/blog\.kotzilla\.io\//g, ''),
+      logo: 'https://blog.kotzilla.io/hubfs/favicon.png',
+      bgRGBA: '238,181,80',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    document.querySelectorAll('.hs_cos_wrapper.hs_cos_wrapper_widget.hs_cos_wrapper_type_module')?.forEach((e) => e.remove())
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('#hs_cos_wrapper_post_body').innerHTML
+    const turndownService = new TurndownService({
+      headingStyle: 'atx',
+      bulletListMarker: '-',
+      codeBlockStyle: 'fenced',
+      hr: '---',
+      emDelimiter: '*',
+      preformattedCode: 'true',
+    });
+    turndownService.use([
+      turndownPluginGfm.gfm,
+      turndownPluginGfm.tables,
+      turndownPluginGfm.strikethrough
+    ])
+    let mdContent = turndownService.turndown(articleContent)
+    mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
+      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
+      .replace(/(?:^|##\s\n\n)/g, '## ') // h2 처리
+      .replace(/\nxxxxxxxxxx\n/g, '```kotlin')
+      .replace(/\-   /g, '- ') // ul처리
+      .replace(/    \n\-/g, '-') // ul처리
+      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
+      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
+      .replace(/\_/g, "_")
+      .replace(/\-/g, "-")
+      .replace(/\=/g, "=")
+      .replace(/\>/g, ">")
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    }
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+function fetchOutcomeSchoolBlog() {
+  console.log('fetchOutcomeSchoolBlog ... ')
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: (document.querySelector('h1')?.textContent) ?? ogData['og:title'],
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: '',
+      author: document.querySelector('dd.text-gray-900')?.textContent ?? '',
+      datePublished: convertDateFormat(
+        document.querySelector('dd > time')?.getAttribute('datetime') ?? ''
+      ),
+      baseUrl: 'https://outcomeschool.com',
+      articleBasePath: 'outcomeschool.com',
+      articlePath: `${ogData['og:url']}`
+                      .replace(/(https:\/\/)|(www\.)|(outcomeschool\.com\/)|(blog\/)|/g, '')
+                      .replace(/\//g, ''),
+      // articleOriginPath: `${ogData['og:url']}`
+      //                 .replace(/(https:\/\/)|(www\.)|(outcomeschool\.com\/)|(blog\/)|/g, '')
+      //                 .replace(/https:\/\/outcomeschool\.com\//g, ''),
+      logo: 'https://outcomeschool.com/static/favicons/apple-touch-icon.png',
+      bgRGBA: '78,70,220',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    document.querySelectorAll('.prose>span')?.forEach((e) => e.remove())
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.prose').innerHTML
+    const turndownService = new TurndownService({
+      headingStyle: 'atx',
+      bulletListMarker: '-',
+      codeBlockStyle: 'fenced',
+      hr: '---',
+      emDelimiter: '*',
+      preformattedCode: 'true',
+    });
+    turndownService.use([
+      turndownPluginGfm.gfm,
+      turndownPluginGfm.tables,
+      turndownPluginGfm.strikethrough
+    ])
+    let mdContent = turndownService.turndown(articleContent)
+    mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
+      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
+      .replace(/(?:^|##\s\n\n)/g, '## ') // h2 처리
+      .replace(/\nxxxxxxxxxx\n/g, '```kotlin')
+      .replace(/\-   /g, '- ') // ul처리
+      .replace(/    \n\-/g, '-') // ul처리
+      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
+      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
+      .replace(/\_/g, "_")
+      .replace(/\-/g, "-")
+      .replace(/\=/g, "=")
+      .replace(/\>/g, ">")
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    }
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+function fetchItsFossBlog() {
+  console.log('fetchOutcomeSchoolBlog ... ')
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: (document.querySelector('h1.post-hero__title')?.textContent) ?? ogData['og:title'],
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: '',
+      author: document.querySelector('.author-card__name>a')?.textContent ?? '',
+      datePublished: convertDateFormat(
+        document.querySelector('.post-info__dr>time')?.getAttribute('datetime') ?? ''
+      ),
+      baseUrl: 'https://itsfoss.com',
+      articleBasePath: 'itsfoss.com',
+      articlePath: `${ogData['og:url']}`
+                      .replace(/(https:\/\/)|(www\.)|(itsfoss\.com\/)/g, '')
+                      .replace(/\//g, ''),
+      logo: 'https://itsfoss.com/content/images/size/w256h256/2022/12/android-chrome-192x192.png',
+      bgRGBA: '53,121,127',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    document.querySelectorAll('.hide-mobile')?.forEach((e) => e.remove())
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('article.post').innerHTML
+    const turndownService = new TurndownService({
+      headingStyle: 'atx',
+      bulletListMarker: '-',
+      codeBlockStyle: 'fenced',
+      hr: '---',
+      emDelimiter: '*',
+      preformattedCode: 'true',
+    });
+    turndownService.use([
+      turndownPluginGfm.gfm,
+      turndownPluginGfm.tables,
+      turndownPluginGfm.strikethrough
+    ])
+    let mdContent = turndownService.turndown(articleContent)
+    mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
+      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
+      .replace(/(?:^|##\s\n\n)/g, '## ') // h2 처리
+      .replace(/\nxxxxxxxxxx\n/g, '```kotlin')
+      .replace(/\-   /g, '- ') // ul처리
+      .replace(/    \n\-/g, '-') // ul처리
+      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
+      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
+      .replace(/\_/g, "_")
+      .replace(/\-/g, "-")
+      .replace(/\=/g, "=")
+      .replace(/\>/g, ">")
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    }
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
 
 function fetchTechKakaoPay() {
   console.log('fetchTechKakaoPay ... ')
