@@ -1,4 +1,13 @@
 // md-gen.js
+const TURNDOWN_SERVICE_DEFAULT_OPTIONS = {
+  headingStyle: 'atx',
+  bulletListMarker: '-',
+  codeBlockStyle: 'fenced',
+  hr: '---',
+  emDelimiter: '*',
+  preformattedCode: 'true',
+}
+
 function fetchSiteInfo(url) {
   console.log('fetchSiteInfo ... ')
   try {
@@ -42,7 +51,6 @@ function fetchSiteInfo(url) {
 }
 
 
-
 function fetchFreeCodeCampNews() {
   console.log('fetchFreeCodeCampNews ... ')
   try {
@@ -67,6 +75,7 @@ function fetchFreeCodeCampNews() {
           ?.textContent
           ?.trim()
           ?.split("\n")[0] ?? '',
+      authorUrl: `https://freecodecamp.org${document.querySelector('.author-card-name>a')?.getAttribute('href') ?? ''}`,
       datePublished: convertDateFormat(
         document.querySelector('.post-full-meta-date')
         ?.getAttribute('datetime') ?? ''),
@@ -80,22 +89,8 @@ function fetchFreeCodeCampNews() {
     }
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
-
     const articleContent = document.querySelector('.post-content').innerHTML
-    const turndownService = new TurndownService({
-      headingStyle: 'atx',
-      bulletListMarker: '-',
-      codeBlockStyle: 'fenced',
-      hr: '---',
-      emDelimiter: '*',
-      preformattedCode: 'true',
-    });
-    turndownService.use([
-      turndownPluginGfm.gfm,
-      turndownPluginGfm.tables,
-      turndownPluginGfm.strikethrough
-    ])
-    let mdContent = turndownService.turndown(articleContent)
+    let mdContent = getTurndownResult(articleContent)
     mdContent = `${frontmatter}${mdContent.replace(/https:\/\/www.youtube.com\/watch\?v=/g, 'https://youtu.be/')
       .replace(/\[freeCodeCamp.org\]/g, '[<FontIcon icon="fa-brands fa-free-code-camp"/>freeCodeCamp.org]')
       .replace(/\(https:\/\/www\./g, '(https://')
@@ -117,7 +112,7 @@ function fetchFreeCodeCampNews() {
 function fetchMilanJovanovicBlog() {
   console.log('fetchMilanJovanovicBlog ... ')
   try {
-    document.querySelector('.mb-16.mt-10').remove()
+    document.querySelector('.mb-16.mt-10, .mb-12.pt-4')?.remove()
 
     // Extract Open Graph metadata
     const ogData = parseOgData();
@@ -146,20 +141,7 @@ function fetchMilanJovanovicBlog() {
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('article.prose').innerHTML
-    const turndownService = new TurndownService({
-      headingStyle: 'atx',
-      bulletListMarker: '-',
-      codeBlockStyle: 'fenced',
-      hr: '---',
-      emDelimiter: '*',
-      preformattedCode: 'true',
-    });
-    turndownService.use([
-      turndownPluginGfm.gfm,
-      turndownPluginGfm.tables,
-      turndownPluginGfm.strikethrough
-    ])
-    let mdContent = turndownService.turndown(articleContent)
+    let mdContent = getTurndownResult(articleContent);
     mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
       .replace(/https:\/\/www.youtube.com\/watch\?v=/g, 'https://youtu.be/')
       .replace(/\]\(\/blogs\/mnw/g, `](https://milanjovanovic.tech/blogs/mnw`)
@@ -219,20 +201,7 @@ function fetchHackingWithSwiftBlog(path = '') {
     document.querySelector('.hws-sponsor')?.remove()
     document.querySelector('p.lead')?.remove()
     const articleContent = document.querySelector('.col-lg-9').innerHTML
-    const turndownService = new TurndownService({
-      headingStyle: 'atx',
-      bulletListMarker: '-',
-      codeBlockStyle: 'fenced',
-      hr: '---',
-      emDelimiter: '*',
-      preformattedCode: 'true',
-    });
-    turndownService.use([
-      turndownPluginGfm.gfm,
-      turndownPluginGfm.tables,
-      turndownPluginGfm.strikethrough
-    ])
-    let mdContent = turndownService.turndown(articleContent)
+    let mdContent = getTurndownResult(articleContent);
     mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
       .replace(/https:\/\/www.youtube.com\/watch\?v=/g, 'https://youtu.be/')
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
@@ -290,20 +259,7 @@ function fetchDroidconBlog(path = '') {
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = [...document.querySelectorAll('.droidcon_post_wrapper section.us_custom_ff837323 .vc_col-sm-8>.vc_column-inner>.wpb_wrapper>*')].map((e) => e.innerHTML).join('')
-    const turndownService = new TurndownService({
-      headingStyle: 'atx',
-      bulletListMarker: '-',
-      codeBlockStyle: 'fenced',
-      hr: '---',
-      emDelimiter: '*',
-      preformattedCode: 'true',
-    });
-    turndownService.use([
-      turndownPluginGfm.gfm,
-      turndownPluginGfm.tables,
-      turndownPluginGfm.strikethrough
-    ])
-    let mdContent = turndownService.turndown(articleContent)
+    let mdContent = getTurndownResult(articleContent);
     mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
       .replace(/\-   /g, '- ') // ul처리
@@ -350,20 +306,7 @@ function fetchFrontendmMastersBlog(path = '') {
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('.article-content').innerHTML
-    const turndownService = new TurndownService({
-      headingStyle: 'atx',
-      bulletListMarker: '-',
-      codeBlockStyle: 'fenced',
-      hr: '---',
-      emDelimiter: '*',
-      preformattedCode: 'true',
-    });
-    turndownService.use([
-      turndownPluginGfm.gfm,
-      turndownPluginGfm.tables,
-      turndownPluginGfm.strikethrough
-    ])
-    let mdContent = turndownService.turndown(articleContent)
+    let mdContent = getTurndownResult(articleContent);
     mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
       .replace(/\# \[\]\(\#.*\)/g, '# ')
@@ -393,6 +336,7 @@ function fetchSmashingMagazineBlog() {
       description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: '',
       author: document.querySelector('a.author-post__author-title').textContent ?? '',
+      authorUrl: `https://smashingmagazine.com${document.querySelector('a.bio-image-link').getAttribute('href') ?? ''}`,
       datePublished: convertDateFormat(
         document.querySelector('time.article-header--date')
         ?.getAttribute('datetime') ?? ''),
@@ -426,20 +370,7 @@ function fetchSmashingMagazineBlog() {
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('.c-garfield-the-cat').innerHTML
-    const turndownService = new TurndownService({
-      headingStyle: 'atx',
-      bulletListMarker: '-',
-      codeBlockStyle: 'fenced',
-      hr: '---',
-      emDelimiter: '*',
-      preformattedCode: 'true',
-    });
-    turndownService.use([
-      turndownPluginGfm.gfm,
-      turndownPluginGfm.tables,
-      turndownPluginGfm.strikethrough
-    ])
-    let mdContent = turndownService.turndown(articleContent)
+    let mdContent = getTurndownResult(articleContent);
     mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
       .replace(/\-   /g, '- ') // ul처리
@@ -481,20 +412,7 @@ function fetchDigitalOceanBlog(path = '') {
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('.kfTVTG').innerHTML
-    const turndownService = new TurndownService({
-      headingStyle: 'atx',
-      bulletListMarker: '-',
-      codeBlockStyle: 'fenced',
-      hr: '---',
-      emDelimiter: '*',
-      preformattedCode: 'true',
-    });
-    turndownService.use([
-      turndownPluginGfm.gfm,
-      turndownPluginGfm.tables,
-      turndownPluginGfm.strikethrough
-    ])
-    let mdContent = turndownService.turndown(articleContent)
+    let mdContent = getTurndownResult(articleContent);
     mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
       .replace(/\-   /g, '- ') // ul처리
@@ -551,26 +469,14 @@ function fetchLearnK8sBlog() {
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('article.lazy-article').innerHTML
-    const turndownService = new TurndownService({
-      headingStyle: 'atx',
-      bulletListMarker: '-',
-      codeBlockStyle: 'fenced',
-      hr: '---',
-      emDelimiter: '*',
-      preformattedCode: 'true',
-    });
-    turndownService.use([
-      turndownPluginGfm.gfm,
-      turndownPluginGfm.tables,
-      turndownPluginGfm.strikethrough
-    ])
-    let mdContent = turndownService.turndown(articleContent)
+    let mdContent = getTurndownResult(articleContent);
     mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
       .replace(/\-   /g, '- ') // ul처리
       .replace(/    \n\-/g, '-') // ul처리
       .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
       .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
+    mdContent = churnSpecialChars(mdContent);
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -616,20 +522,7 @@ function fetchKtAcademyBlog() {
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('.article-body').innerHTML
-    const turndownService = new TurndownService({
-      headingStyle: 'atx',
-      bulletListMarker: '-',
-      codeBlockStyle: 'fenced',
-      hr: '---',
-      emDelimiter: '*',
-      preformattedCode: 'true',
-    });
-    turndownService.use([
-      turndownPluginGfm.gfm,
-      turndownPluginGfm.tables,
-      turndownPluginGfm.strikethrough
-    ])
-    let mdContent = turndownService.turndown(articleContent)
+    let mdContent = getTurndownResult(articleContent);
     mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
       .replace(/(?:^|##\s\n\n)/g, '## ') // h2 처리
@@ -640,10 +533,8 @@ function fetchKtAcademyBlog() {
       .replace(/    \n\-/g, '-') // ul처리
       .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
       .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
-      .replace(/\_/g, "_")
-      .replace(/\-/g, "-")
-      .replace(/\=/g, "=")
-      .replace(/\>/g, ">")
+    mdContent = churnSpecialChars(mdContent);
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -680,25 +571,12 @@ function fetchKotzillaBlog() {
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
     }
 
-    document.querySelectorAll('.hs_cos_wrapper.hs_cos_wrapper_widget.hs_cos_wrapper_type_module')?.forEach((e) => e.remove())
+    ElRemoveAll('.hs_cos_wrapper.hs_cos_wrapper_widget.hs_cos_wrapper_type_module')
 
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('#hs_cos_wrapper_post_body').innerHTML
-    const turndownService = new TurndownService({
-      headingStyle: 'atx',
-      bulletListMarker: '-',
-      codeBlockStyle: 'fenced',
-      hr: '---',
-      emDelimiter: '*',
-      preformattedCode: 'true',
-    });
-    turndownService.use([
-      turndownPluginGfm.gfm,
-      turndownPluginGfm.tables,
-      turndownPluginGfm.strikethrough
-    ])
-    let mdContent = turndownService.turndown(articleContent)
+    let mdContent = getTurndownResult(articleContent);
     mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
       .replace(/(?:^|##\s\n\n)/g, '## ') // h2 처리
@@ -707,10 +585,7 @@ function fetchKotzillaBlog() {
       .replace(/    \n\-/g, '-') // ul처리
       .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
       .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
-      .replace(/\_/g, "_")
-      .replace(/\-/g, "-")
-      .replace(/\=/g, "=")
-      .replace(/\>/g, ">")
+    mdContent = churnSpecialChars(mdContent);
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -748,25 +623,12 @@ function fetchOutcomeSchoolBlog() {
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
     }
 
-    document.querySelectorAll('.prose>span')?.forEach((e) => e.remove())
+    ElRemoveAll('.prose>span')
 
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('.prose').innerHTML
-    const turndownService = new TurndownService({
-      headingStyle: 'atx',
-      bulletListMarker: '-',
-      codeBlockStyle: 'fenced',
-      hr: '---',
-      emDelimiter: '*',
-      preformattedCode: 'true',
-    });
-    turndownService.use([
-      turndownPluginGfm.gfm,
-      turndownPluginGfm.tables,
-      turndownPluginGfm.strikethrough
-    ])
-    let mdContent = turndownService.turndown(articleContent)
+    let mdContent = getTurndownResult(articleContent);
     mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
       .replace(/(?:^|##\s\n\n)/g, '## ') // h2 처리
@@ -775,10 +637,7 @@ function fetchOutcomeSchoolBlog() {
       .replace(/    \n\-/g, '-') // ul처리
       .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
       .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
-      .replace(/\_/g, "_")
-      .replace(/\-/g, "-")
-      .replace(/\=/g, "=")
-      .replace(/\>/g, ">")
+    mdContent = churnSpecialChars(mdContent);
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -787,6 +646,114 @@ function fetchOutcomeSchoolBlog() {
     console.error('Failed to copy JSON:', error);
   }
 }
+
+function fetchLogRocketBlog(path = '') {
+  console.log(`fetchLogRocketBlog ... path: ${path}`)
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const topics = [...document.querySelectorAll('#post-tags>li>a')]?.map((e) => e?.textContent?.replace(/\#/g, ''))
+
+    const meta = {
+      lang: 'en-US',
+      title: (`${ogData['og:title']}`?.replace(/ - LogRocket Blog/g, '')) ?? (document.querySelector('title')?.textContent)?.trim().replace(/"/g, "”"),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: topics[0] ?? '',
+      author: document.querySelector('#post-author-name')?.textContent ?? '',
+      authorUrl: `${document.querySelector('#post-author-name')?.getAttribute('href') ?? ''}`,
+      datePublished: convertDateFormat(
+        document.querySelector('#post-date')?.textContent.split(' ⋅ ')[0]
+      ),
+      baseUrl: 'https://blog.logrocket.com',
+      articleBasePath: 'blog.logrocket.com',
+      articlePath: path.replace(/https:\/\/blog\.logrocket\.com\//g, '')
+                      .replace(/\//g, ''),
+      logo: '/assets/image/blog.logrocket.com/favicon.png',
+      bgRGBA: '112,76,182',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    ElRemoveAll('.article-post, .code-block, .blog-plug.inline-plug.react-plug');
+    [...document.querySelectorAll('pre')].forEach((e) => {
+      console.log(e.innerHTML)
+      let currentHtml = e.innerHTML;
+      let language;
+      if (e.classList.contains('language-typescript') || e.classList.contains('typescript')) language = 'typescript';
+      else if (e.classList.contains('sql')) language = 'sql';
+      else if (e.classList.contains('shell')) language = 'shell';
+      else language = 'javascript';
+      let className = (language === '') ? language : `language-${language}`;
+      e.innerHTML = `<code class="${className}">${currentHtml}</code>`
+    })
+    
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.lr-content').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
+    mdContent = churnSpecialChars(mdContent);
+    
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+
+function fetchRealPythonBlog(path = '') {
+  console.log(`fetchRealPythonBlog ... path: ${path}`)
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const topics = [...document.querySelectorAll('.d-inline.d-md-block a.badge')]?.map((e) => e?.textContent?.replace(/\#/g, ''))
+
+    const meta = {
+      lang: 'en-US',
+      title: (`${ogData['og:title']}`?.replace(/ – Real Python/g, '') ?? (document.querySelector('h1')?.textContent)?.trim()).replace(/"/g, "”"),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'python', // topics[0] ?? '',
+      author: document.querySelector('.mb-0 a[href="#author"]')?.textContent ?? '',
+      authorUrl: `https://realpython.com${document.querySelector('.card-link')?.getAttribute('href') ?? ''}`,
+      datePublished: convertDateFormat(
+        JSON.parse(document.querySelector('script[type="application/ld+json"]')?.textContent)?.datePublished
+      ),
+      baseUrl: 'https://realpython.com',
+      articleBasePath: 'realpython.com',
+      articlePath: path.replace(/https:\/\/realpython\.com/g, '')
+                      .replace(/\//g, ''),
+      logo: 'https://realpython.com/static/favicon.68cbf4197b0c.png',
+      bgRGBA: '31,52,74',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    ElRemoveAll('#toc, .sidebar-module-inset.p-0, .rounded.border.border-light');
+    
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.article-body').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
+    mdContent = mdContent.replace(/\n\[Remove ads\]\(\/account\/join\/\)\n/g, '') // 광고 링크 처리
+          .replace(/Python\n\n\`/g, '```py\n')
+          .replace(/Shell\n\n\`/g, '```sh\n')
+          .replace(/\` \n\n/g, '\n```\n\n')
+          .replace(/\[\]\(#.*"Permanent link"\)/g, '')
+    mdContent = churnSpecialChars(mdContent);
+    
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
 
 function fetchItsFossBlog() {
   console.log('fetchOutcomeSchoolBlog ... ')
@@ -813,25 +780,12 @@ function fetchItsFossBlog() {
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
     }
 
-    document.querySelectorAll('.hide-mobile')?.forEach((e) => e.remove())
+    ElRemoveAll('.hide-mobile')
 
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('article.post').innerHTML
-    const turndownService = new TurndownService({
-      headingStyle: 'atx',
-      bulletListMarker: '-',
-      codeBlockStyle: 'fenced',
-      hr: '---',
-      emDelimiter: '*',
-      preformattedCode: 'true',
-    });
-    turndownService.use([
-      turndownPluginGfm.gfm,
-      turndownPluginGfm.tables,
-      turndownPluginGfm.strikethrough
-    ])
-    let mdContent = turndownService.turndown(articleContent)
+    let mdContent = getTurndownResult(articleContent);
     mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
       .replace(/(?:^|##\s\n\n)/g, '## ') // h2 처리
@@ -840,10 +794,152 @@ function fetchItsFossBlog() {
       .replace(/    \n\-/g, '-') // ul처리
       .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
       .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
-      .replace(/\_/g, "_")
-      .replace(/\-/g, "-")
-      .replace(/\=/g, "=")
-      .replace(/\>/g, ">")
+    mdContent = churnSpecialChars(mdContent);
+
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    }
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+
+function fetchYozmArticle() {
+  console.log('fetchYozmArticle ... ')
+  try {
+    document.querySelector('p.lead')?.remove()
+
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'ko-KR',
+      title: document.querySelector('.news-title')
+          ?.textContent
+          ?.trim(),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: '',
+      author: document.querySelector('.content-meta-elem>a').textContent ?? '',
+      authorUrl: `https://yozm.wishket.com${document.querySelector('.content-meta-elem>a')?.getAttribute('href') ?? ''}`,
+      datePublished: convertDateFormat(
+        document.querySelector('meta[name="date"]')?.content
+      ),
+      baseUrl: 'https://yozm.wishket.com',
+      articleBasePath: 'yozm.wishket.com',
+      articlePath: `${ogData['og:url']}`
+                      .replace(/https:\/\/yozm\.wishket\.com\/magazine\/detail\//g, '')
+                      .replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+                      .replace(/https:\/\/yozm\.wishket\.com\//g, ''),
+      logo: 'https://yozm.wishket.com/static/renewal/img/global/gnb_yozmit.svg',
+      bgRGBA: '84,7,224',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.next-news-contents.news-highlight-box').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+function fetchD2Article(path = '') {
+  console.log(`fetchD2Article ... path: ${path}`)
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'ko-KR',
+      title: (document.querySelector('title')
+          ?.textContent ?? document.querySelector('meta[name="description"]')
+          ?.getAttribute("content")
+          )?.trim().replace(/"/g, "”"),
+      description: (document.querySelector('title')
+          ?.textContent ?? document.querySelector('meta[name="description"]')
+          ?.getAttribute("content")
+          )?.trim().replace(/"/g, "”"),
+      topic: '',
+      author: [...document.querySelectorAll('.writer_info>.people_info>dl .name')].map((e) => e.textContent).join(', ') ?? '',
+      datePublished: convertDateFormat(
+        document.querySelectorAll('.post_info>dd')[0].textContent
+      ),
+      baseUrl: 'https://d2.naver.com',
+      articleBasePath: 'd2.naver.com',
+      articlePath: path.replace(/https:\/\/d2\.naver\.com\/helloworld\//g, '')
+                      .replace(/\//g, ''),
+      articleOriginPath: path
+                      .replace(/https:\/\/d2\.naver\.com\//g, ''),
+      logo: 'https://d2.naver.com/favicon.ico',
+      bgRGBA: '103,262,163',
+      coverUrl: '' // `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+    
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.con_view').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = mdContent.replace(/!\[\]\(\/content\//g, '![](https://d2.naver.com/content/') // ol처리
+    mdContent = churnSpecialChars(mdContent);
+    
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+
+function fetchTechKakao() {
+  console.log('fetchTechKakao ... ')
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'ko-KR',
+      title: (document.querySelector('title')
+          ?.textContent ?? document.querySelector('meta[name="description"]')
+          ?.getAttribute("content")
+          )?.replace(/ - tech.kakao.com/g, '')?.trim(),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: '',
+      author: document.querySelector('.tit_author').textContent ?? '',
+      authorUrl: `https://tech.kakao.com${document.querySelector('.info_author > a').getAttribute('href')}`,
+      datePublished: convertDateFormat(document.querySelector('.daum-wm-datetime').textContent),
+      baseUrl: 'https://tech.kakao.com',
+      articleBasePath: 'tech.kakao.com',
+      articlePath: `${ogData['og:url']}`
+                      .replace(/(https:\/\/)|(www\.)|(tech\.kakao\.com\/)|(posts\/)/g, '')
+                      .replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+                      .replace(/https:\/\/tech\.kakao\.com\//g, ''),
+      logo: 'https://kakaocorp.com/page/favicon.ico',
+      bgRGBA: '78,70,210',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.daum-wm-content.preview').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -885,26 +981,10 @@ function fetchTechKakaoPay() {
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('article.markdown').innerHTML
-    const turndownService = new TurndownService({
-      headingStyle: 'atx',
-      bulletListMarker: '-',
-      codeBlockStyle: 'fenced',
-      hr: '---',
-      emDelimiter: '*',
-      preformattedCode: 'true',
-    });
-    turndownService.use([
-      turndownPluginGfm.gfm,
-      turndownPluginGfm.tables,
-      turndownPluginGfm.strikethrough
-    ])
-    let mdContent = turndownService.turndown(articleContent)
-    mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
-      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
-      .replace(/\-   /g, '- ') // ul처리
-      .replace(/    \n\-/g, '-') // ul처리
-      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
-      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -913,63 +993,60 @@ function fetchTechKakaoPay() {
     console.error('Failed to copy JSON:', error);
   }
 }
-function fetchYozmArticle() {
-  console.log('fetchYozmArticle ... ')
-  try {
-    document.querySelector('p.lead')?.remove()
 
-    // Extract Open Graph metadata
-    const ogData = parseOgData();
+function ElRemoveAll(selector = '') {
+  console.log(`removeAll ... selector: ${selector}`)
+  if (selector == '') {
+    console.log('EXIT: no selector found ...')
+    return;
+  }
+  document.querySelectorAll(selector)?.forEach((e) => e.remove())
+}
 
-    const meta = {
-      lang: 'ko-KR',
-      title: document.querySelector('.news-title')
-          ?.textContent
-          ?.trim(),
-      description: `${ogData['og:description']}`.replace(/"/g, "”"),
-      topic: '',
-      author: document.querySelector('.content-meta-elem>a').textContent ?? '',
-      datePublished: '', // TODO: 날짜 찾기
-      baseUrl: 'https://yozm.wishket.com',
-      articleBasePath: 'yozm.wishket.com',
-      articlePath: `${ogData['og:url']}`
-                      .replace(/https:\/\/yozm\.wishket\.com\/magazine\/detail\//g, '')
-                      .replace(/\//g, ''),
-      articleOriginPath: `${ogData['og:url']}`
-                      .replace(/https:\/\/yozm\.wishket\.com\//g, ''),
-      logo: 'https://yozm.wishket.com/static/renewal/img/global/gnb_yozmit.svg',
-      bgRGBA: '84,7,224',
-      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
-    }
-
-    const frontmatter = createFrontMatter(meta)
-    const endMatter = createEndMatter(meta)
-    const articleContent = document.querySelector('.next-news-contents.news-highlight-box').innerHTML
-    const turndownService = new TurndownService({
-      headingStyle: 'atx',
-      bulletListMarker: '-',
-      codeBlockStyle: 'fenced',
-      hr: '---',
-      emDelimiter: '*',
-      preformattedCode: 'true',
-    });
-    turndownService.use([
-      turndownPluginGfm.gfm,
-      turndownPluginGfm.tables,
-      turndownPluginGfm.strikethrough
-    ])
-    let mdContent = turndownService.turndown(articleContent)
-    mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
+function combineFrontAndEnd(md = '', frontmatter = '', endmatter = '') {
+  console.log(`churnFirsthand ...`)
+  if (md == '') {
+    console.log('EXIT: no content found ...')
+    return;
+  }
+  return `${frontmatter}${md.replace(/\(https:\/\/www\./g, '(https://')
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
       .replace(/\-   /g, '- ') // ul처리
       .replace(/    \n\-/g, '-') // ul처리
-      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
+      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endmatter}` // ol처리
       .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
-    return {
-      filename: `${meta.articlePath}.md`,
-      text: mdContent
-    };
-  } catch (error) {
-    console.error('Failed to copy JSON:', error);
+}
+
+function churnSpecialChars(md = '') {
+  console.log(`churnSpecialChars ...`)
+  if (md == '') {
+    console.log('EXIT: no content found ...')
+    return;
   }
+  return md.replace(/\\\./g, '.')
+    .replace(/\\`/g, '`')
+    .replace(/\\-/g, '-')
+    .replace(/\\_/g, '_')
+    .replace(/\\=/g, '=')
+    .replace(/\\\[/g, '[')
+    .replace(/\\\]/g, ']')
+    .replace(/\\>/g, '>')
+}
+
+function getTurndownResult(articleContent = '') {
+  console.log('md-gen > createMdContent ...')
+  const turndownService = new TurndownService({
+    headingStyle: 'atx',
+    bulletListMarker: '-',
+    codeBlockStyle: 'fenced',
+    hr: '---',
+    emDelimiter: '*',
+    preformattedCode: 'true',
+  });
+  turndownService.use([
+    turndownPluginGfm.gfm,
+    turndownPluginGfm.tables,
+    turndownPluginGfm.strikethrough
+  ])
+  return turndownService.turndown(articleContent)
 }

@@ -16,51 +16,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ status: "delete WatchLater STARTED!" })
       break;
     //region: md-gen.js
-    case 'FETCH_SITE_INFO':
-      sendResponse({ status: "fetch SiteInfo DONE!", o: fetchSiteInfo(message.url) });
-      break;
-    case 'FETCH_FREE_CODE_CAMP_NEWS':
-      sendResponse({ status: "fetch freeCodeCamp News DONE!", o: fetchFreeCodeCampNews() });
-      break;
-    case 'FETCH_MILAN_JOVANOVIC_BLOG': 
-      sendResponse({ status: "fetch milanJovanovic Blog DONE!", o: fetchMilanJovanovicBlog() });
-      break;
-    case 'FETCH_HACKING_WITH_SWIFT_BLOG': 
-      sendResponse({ status: "fetch hackingWithSwift Blog DONE!", o: fetchHackingWithSwiftBlog(message.path) });
-      break;
-    case 'FETCH_DROIDCON_BLOG': 
-      sendResponse({ status: "fetch droidcon Blog DONE!", o: fetchDroidconBlog(message.path) });
-      break;
-    case 'FETCH_FRONTEND_MASTERS_BLOG': 
-      sendResponse({ status: "fetch FrontendmMasters Blog DONE!", o: fetchFrontendmMastersBlog(message.path) });
-      break;
-    case 'FETCH_SMASHING_MAGAZINE_BLOG': 
-      sendResponse({ status: "fetch SmashingMagazine Blog DONE!", o: fetchSmashingMagazineBlog(message.path) });
-      break;
-    case 'FETCH_DIGITAL_OCEAN_BLOG':
-      sendResponse({ status: "fetch DigitalOcean Blog DONE!", o: fetchDigitalOceanBlog(message.path) });
-      break;
-    case 'FETCH_LEARN_K8S_BLOG':
-      sendResponse({ status: "fetch LearnK8S Blog DONE!", o: fetchLearnK8sBlog(message.path) });
-      break;
-    case 'FETCH_KT_ACADEMY_BLOG': 
-      sendResponse({ status: "fetch Kt Academy Blog DONE!", o: fetchKtAcademyBlog(message.path) });
-      break;
-    case 'FETCH_KOTZILLA_BLOG': 
-      sendResponse({ status: "fetch Kotzilla Blog DONE!", o: fetchKotzillaBlog(message.path) });
-      break;
-    case 'FETCH_OUTCOME_SCHOOL_BLOG':
-      sendResponse({ status: "fetch OutcomeSchool Blog DONE!", o: fetchOutcomeSchoolBlog(message.path) });
-      break;
-    case 'FETCH_ITS_FOSS_BLOG':
-      sendResponse({ status: "fetch ItsFoss Blog DONE!", o: fetchItsFossBlog(message.path) });
-      break;
-    case 'FETCH_TECH_KAKAO_PAY':
-      sendResponse({ status: "fetch Tech KakaoPay Blog DONE!", o: fetchTechKakaoPay() });
-      break;
-    case 'FETCH_YOZM_ARTICLE':
-      sendResponse({ status: "fetch yozm Article DONE!", o: fetchYozmArticle() });
-      break;
+    case 'FETCH_SITE_INFO':               sendResponse({ status: "fetch SiteInfo DONE!", o: fetchSiteInfo(message.url) });break;
+    case 'FETCH_FREE_CODE_CAMP_NEWS':     sendResponse({ status: "fetch freeCodeCamp News DONE!", o: fetchFreeCodeCampNews() });break;
+    case 'FETCH_MILAN_JOVANOVIC_BLOG':    sendResponse({ status: "fetch milanJovanovic Blog DONE!", o: fetchMilanJovanovicBlog() });break;
+    case 'FETCH_HACKING_WITH_SWIFT_BLOG': sendResponse({ status: "fetch hackingWithSwift Blog DONE!", o: fetchHackingWithSwiftBlog(message.path) });break;
+    case 'FETCH_DROIDCON_BLOG':           sendResponse({ status: "fetch droidcon Blog DONE!", o: fetchDroidconBlog(message.path) });break;
+    case 'FETCH_FRONTEND_MASTERS_BLOG':   sendResponse({ status: "fetch FrontendmMasters Blog DONE!", o: fetchFrontendmMastersBlog(message.path) });break;
+    case 'FETCH_SMASHING_MAGAZINE_BLOG':  sendResponse({ status: "fetch SmashingMagazine Blog DONE!", o: fetchSmashingMagazineBlog(message.path) });break;
+    case 'FETCH_DIGITAL_OCEAN_BLOG':      sendResponse({ status: "fetch DigitalOcean Blog DONE!", o: fetchDigitalOceanBlog(message.path) });break;
+    case 'FETCH_LEARN_K8S_BLOG':          sendResponse({ status: "fetch LearnK8S Blog DONE!", o: fetchLearnK8sBlog(message.path) });break;
+    case 'FETCH_KT_ACADEMY_BLOG':         sendResponse({ status: "fetch Kt Academy Blog DONE!", o: fetchKtAcademyBlog(message.path) });break;
+    case 'FETCH_KOTZILLA_BLOG':           sendResponse({ status: "fetch Kotzilla Blog DONE!", o: fetchKotzillaBlog(message.path) });break;
+    case 'FETCH_OUTCOME_SCHOOL_BLOG':     sendResponse({ status: "fetch OutcomeSchool Blog DONE!", o: fetchOutcomeSchoolBlog(message.path) });break;
+    case 'FETCH_LOGROCKET_BLOG':          sendResponse({ status: "fetch LogRocket Blog DONE!", o: fetchLogRocketBlog(message.path) });break;
+    case 'FETCH_REALPYTHON_BLOG':         sendResponse({ status: "fetch RealPython Blog DONE!", o: fetchRealPythonBlog(message.path) });break;
+    case 'FETCH_ITS_FOSS_BLOG':           sendResponse({ status: "fetch ItsFoss Blog DONE!", o: fetchItsFossBlog(message.path) });break;
+    case 'FETCH_YOZM_ARTICLE':            sendResponse({ status: "fetch yozm Article DONE!", o: fetchYozmArticle() });break;
+    case 'FETCH_D2_ARTICLE':              sendResponse({ status: "fetch D2 Article DONE!", o: fetchD2Article(message.path) });break;
+    case 'FETCH_TECH_KAKAO':              sendResponse({ status: "fetch Tech Kakao Blog DONE!", o: fetchTechKakao() });break;
+    case 'FETCH_TECH_KAKAO_PAY':          sendResponse({ status: "fetch Tech KakaoPay Blog DONE!", o: fetchTechKakaoPay() });break;
     // endregion: md-gen.js
     default:
       console.warn("message type MISMATCH");
@@ -108,10 +82,10 @@ function fetchYTChannelInfo() {
   console.log('fetchYTChannelInfo ... ')
   try {
     const channelId = (
-      (document.querySelector('.yt-content-metadata-view-model-wiz__metadata-row > span')) ??
+      (document.querySelector('.yt-core-attributed-string--link-inherit-color')) ??
       (document.querySelector('#channel-handle > span')) ??
       (document.querySelector('yt-formatted-string#channel-handle'))
-    )?.innerHTML?.replace('@', '');
+    )?.textContent?.replace('@', '');
     
     const channelNameTag = (
       (document.querySelector('h1.dynamic-text-view-model-wiz__h1 > span')) ?? 

@@ -34,8 +34,12 @@ const btnKotzillaBlog = document.getElementById('fetch-kotzilla-blog');
 const btnOutcomeSchoolBlog = document.getElementById('fetch-outcome-school-blog');
 const btnLearnK8sBlog = document.getElementById('fetch-learn-k8s-blog');
 const btnItsFossBlog = document.getElementById('fetch-its-foss-blog');
+const btnLogrocketBlog = document.getElementById('fetch-logrocket-blog');
+const btnRealPythonBlog = document.getElementById('fetch-realpython-blog');
+const btnTechKakaoBlog = document.getElementById('fetch-tech-kakao-blog');
 const btnTechKakaoPayBlog = document.getElementById('fetch-tech-kakao-pay-blog');
 const btnYozmArticle = document.getElementById('fetch-yozm-article');
+const btnD2NaverArticle = document.getElementById('fetch-d2-article');
 
 const labelArticlePath = document.getElementById('label-article-path');
 
@@ -81,8 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
   [
     btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnHackingWithSwiftBlog, btnDroidconBlog, btnFrontendMastersBlog
     , btnSmashinMagazineBlog, btnDigitalOceanBlog, btnLearnK8sBlog, btnKtAcademyBlog, btnKotzillaBlog
-    , btnItsFossBlog , btnOutcomeSchoolBlog, labelArticlePath, btnTechKakaoPayBlog, btnYozmArticle
-    , btnCopyMessage 
+    , btnLogrocketBlog, btnRealPythonBlog, btnItsFossBlog , btnOutcomeSchoolBlog, labelArticlePath
+    , btnTechKakaoBlog, btnTechKakaoPayBlog, btnYozmArticle, btnD2NaverArticle, btnCopyMessage 
   ].forEach((e) => {
     e.style.display = 'none';
   });
@@ -220,6 +224,26 @@ document.addEventListener('DOMContentLoaded', () => {
       btnLearnK8sBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|/g, '')
+    } else if (/blog\.logrocket\.com/g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(112,76,182,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://blog.logrocket.com/wp-content/uploads/2019/06/cropped-cropped-favicon-196x196.png")}<span>blog.logrocket.com</span>`;
+      btnLogrocketBlog.disabled = false
+      btnLogrocketBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(blog\.logrocket\.com\/)/g, '')
+    } else if (/realpython\.com/g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(31,52,74,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("/static/favicon.68cbf4197b0c.png")}<span>realpython.com</span>`;
+      btnRealPythonBlog.disabled = false
+      btnRealPythonBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(realpython\.com\/)/g, '')
     } else if (/itsfoss\.com/g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
@@ -238,6 +262,17 @@ document.addEventListener('DOMContentLoaded', () => {
       summaryBlog.innerHTML = `${makeIcon("https://yozm.wishket.com/static/renewal/img/global/gnb_yozmit.svg")}<span>yozm.wishket.com</span>`;
       btnYozmArticle.disabled = false
       btnYozmArticle.style.display = 'block';
+      labelArticlePath.value = tab.url;
+    } else if (/d2\.naver\.com\//g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(103,262,163,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://d2.naver.com/favicon.ico")}<span>d2.naver.com</span>`;
+      btnD2NaverArticle.disabled = false
+      btnD2NaverArticle.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(d2\.naver\.com\/)|(helloworld\/)/g, '');
     } else if (/tech\.kakaopay\.com/g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
@@ -246,6 +281,16 @@ document.addEventListener('DOMContentLoaded', () => {
       summaryBlog.innerHTML = `${makeIcon("https://tech.kakaopay.com/favicon.ico")}<span>tech.kakaopay.com</span>`;
       btnTechKakaoPayBlog.disabled = false
       btnTechKakaoPayBlog.style.display = 'block';
+      labelArticlePath.value = tab.url.replace(/(https:\/\/)|(www\.)|(tech\.kakaopay\.com\/)|(helloworld\/)/g, '');
+    } else if (/tech\.kakao\.com/g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(78,70,210,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://kakaocorp.com/page/favicon.ico")}<span>tech.kakao.com</span>`;
+      btnTechKakaoBlog.disabled = false
+      btnTechKakaoBlog.style.display = 'block';
+      labelArticlePath.value = tab.url.replace(/(https:\/\/)|(www\.)|(tech\.kakao\.com\/)|(posts\/)/g, '');
     } else {
       summaryBlog.innerHTML = 'NOTHING TO DO ...';
     }
@@ -362,9 +407,13 @@ btnLearnK8sBlog.addEventListener('click', async () =>          await onClickWebS
 btnKtAcademyBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_KT_ACADEMY_BLOG'));
 btnKotzillaBlog.addEventListener('click', async () =>          await onClickWebScraping('FETCH_KOTZILLA_BLOG'));
 btnOutcomeSchoolBlog.addEventListener('click', async () =>     await onClickWebScraping('FETCH_OUTCOME_SCHOOL_BLOG'));
+btnLogrocketBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_LOGROCKET_BLOG'));
+btnRealPythonBlog.addEventListener('click', async () =>        await onClickWebScraping('FETCH_REALPYTHON_BLOG'));
 btnItsFossBlog.addEventListener('click', async() =>            await onClickWebScraping('FETCH_ITS_FOSS_BLOG'));
+btnTechKakaoBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_TECH_KAKAO'));
 btnTechKakaoPayBlog.addEventListener('click', async () =>      await onClickWebScraping('FETCH_TECH_KAKAO_PAY'));
 btnYozmArticle.addEventListener('click', async () =>           await onClickWebScraping('FETCH_YOZM_ARTICLE'));
+btnD2NaverArticle.addEventListener('click', async () =>        await onClickWebScraping('FETCH_D2_ARTICLE'));
 
 const onClickWebScraping = async (_type = '') => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })

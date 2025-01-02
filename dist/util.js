@@ -1,5 +1,9 @@
 
 function convertDateFormat(dateString) {
+  if (dateString == null || dateString == '') {
+    console.warn('util > convertDateFormat ... dataString EMPTY')
+    return;
+  }
   const date = new Date(dateString);
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -21,7 +25,7 @@ function parseOgData() {
 }
 
 function createFrontMatter(meta, customVpCard = null) {
-  console.log(`createFrontMatter ... meta: ${JSON.stringify(meta)}`)
+  console.log(`util > createFrontMatter ... meta: ${JSON.stringify(meta)}`)
   const submeta = createSubMetaInfo(meta.topic)
 
   const vpCard = (customVpCard) ? `\`\`\`component VPCard
@@ -42,7 +46,11 @@ function createFrontMatter(meta, customVpCard = null) {
 }
 \`\`\``
   const siteInfo = createSiteInfo(meta, customVpCard)
-
+  const authorInfo = (meta.authorUrl == null || meta.authorUrl == '') 
+    ? `author: ${meta.author}`
+    : `author:
+  - name: ${meta.author}
+    url : ${meta.authorUrl}`
   return `---
 lang: ${meta.lang ?? 'en-US'}
 title: "${meta.title}"
@@ -66,7 +74,7 @@ head:
 prev: ${submeta.relatedPath}/articles/README.md
 date: ${meta.datePublished}
 isOriginal: false
-author: ${meta.author}
+${authorInfo}
 cover: ${meta.coverUrl}
 ---
 
@@ -117,6 +125,13 @@ function createSubMetaInfo(topic) {
     _category=`Java\n  - Kotlin\n  - ${_pageName}`
     _tag='java\n  - kotlin\n  - android'
     _relatedPath='/programming/java-android'
+  } else if (/(js|javascript)/.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'JavaScript'
+    _icon='fa-brands fa-js'
+    _category=`JavaScript`
+    _tag='js\n  - javascript'
+    _relatedPath='/programming/js'
   } else if (/react/.test(topic)) {
     console.log(`${topic}!!!`)
     _pageName = 'React.js'
@@ -131,7 +146,21 @@ function createSubMetaInfo(topic) {
     _category=`${_pageName}`
     _tag='python\n  - py'
     _relatedPath='/programming/py'
-  } else if (/(cs)|(csharp)|(c#)/g.test(topic)) {
+  } else if (/(django)/g.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'Django'
+    _icon='iconfont icon-django'
+    _category=`Python\n  - ${_pageName}`
+    _tag='python\n  - py\n  - django\n  - py-django'
+    _relatedPath='/programming/py-django'
+  } else if (/(css)/g.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'CSS'
+    _icon='fa-brands fa-css3-alt'
+    _category=`${_pageName}`
+    _tag='css'
+    _relatedPath='/programming/css'
+  } else if (/(csharp)|(c#)/g.test(topic)) {
     console.log(`${topic}!!!`)
     _pageName = 'C#'
     _icon='iconfont icon-csharp'
