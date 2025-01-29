@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'FETCH_MILAN_JOVANOVIC_BLOG':    sendResponse({ status: "fetch milanJovanovic Blog DONE!", o: fetchMilanJovanovicBlog() });break;
     case 'FETCH_HACKING_WITH_SWIFT_BLOG': sendResponse({ status: "fetch hackingWithSwift Blog DONE!", o: fetchHackingWithSwiftBlog(message.path) });break;
     case 'FETCH_DROIDCON_BLOG':           sendResponse({ status: "fetch droidcon Blog DONE!", o: fetchDroidconBlog(message.path) });break;
-    case 'FETCH_FRONTEND_MASTERS_BLOG':   sendResponse({ status: "fetch FrontendmMasters Blog DONE!", o: fetchFrontendmMastersBlog(message.path) });break;
+    case 'FETCH_FRONTEND_MASTERS_BLOG':   sendResponse({ status: "fetch FrontendmMasters Blog DONE!", o: fetchFrontendMastersBlog(message.path) });break;
     case 'FETCH_SMASHING_MAGAZINE_BLOG':  sendResponse({ status: "fetch SmashingMagazine Blog DONE!", o: fetchSmashingMagazineBlog(message.path) });break;
     case 'FETCH_DIGITAL_OCEAN_BLOG':      sendResponse({ status: "fetch DigitalOcean Blog DONE!", o: fetchDigitalOceanBlog(message.path) });break;
     case 'FETCH_LEARN_K8S_BLOG':          sendResponse({ status: "fetch LearnK8S Blog DONE!", o: fetchLearnK8sBlog(message.path) });break;
@@ -160,8 +160,8 @@ function fetchWL() {
 
 async function deleteWL() {
   // Fiddle with these if you'd like
-  let batchSize = 200; // Number to delete at once before waiting
-  let waitBetweenBatchesInMilliseconds = 1000 * 60 * 5; // 5 minutes
+  let batchSize = 1200; // Number to delete at once before waiting
+  let waitBetweenBatchesInMilliseconds = 1000 * 60; // 1 minutes
   let waitBetweenDeletionsInMilliseconds = 1000; // Half a second
 
   let totalWaitTime = ((5000 / batchSize) * (waitBetweenBatchesInMilliseconds / 1000 / 60)) + (5000 * (waitBetweenDeletionsInMilliseconds / 1000 / 60))

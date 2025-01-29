@@ -90,16 +90,11 @@ function fetchFreeCodeCampNews() {
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('.post-content').innerHTML
-    let mdContent = getTurndownResult(articleContent)
-    mdContent = `${frontmatter}${mdContent.replace(/https:\/\/www.youtube.com\/watch\?v=/g, 'https://youtu.be/')
-      .replace(/\[freeCodeCamp.org\]/g, '[<FontIcon icon="fa-brands fa-free-code-camp"/>freeCodeCamp.org]')
-      .replace(/\(https:\/\/www\./g, '(https://')
-      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
-      .replace(/\-   /g, '- ') // ul처리
-      .replace(/    \n\-/g, '-') // ul처리
-      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
-      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
-    return {
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = mdContent.replace(/\[freeCodeCamp\.org\]/g, '[<FontIcon icon="fa-brands fa-free-code-camp"/>freeCodeCamp.org]')
+      return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
     };
@@ -142,14 +137,9 @@ function fetchMilanJovanovicBlog() {
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('article.prose').innerHTML
     let mdContent = getTurndownResult(articleContent);
-    mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
-      .replace(/https:\/\/www.youtube.com\/watch\?v=/g, 'https://youtu.be/')
-      .replace(/\]\(\/blogs\/mnw/g, `](https://milanjovanovic.tech/blogs/mnw`)
-      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
-      .replace(/\-   /g, '- ') // ul처리
-      .replace(/    \n\-/g, '-') // ul처리
-      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
-      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = mdContent.replace(/\]\(\/blogs\/mnw/g, `](https://milanjovanovic.tech/blogs/mnw`)
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -202,13 +192,8 @@ function fetchHackingWithSwiftBlog(path = '') {
     document.querySelector('p.lead')?.remove()
     const articleContent = document.querySelector('.col-lg-9').innerHTML
     let mdContent = getTurndownResult(articleContent);
-    mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
-      .replace(/https:\/\/www.youtube.com\/watch\?v=/g, 'https://youtu.be/')
-      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
-      .replace(/\-   /g, '- ') // ul처리
-      .replace(/    \n\-/g, '-') // ul처리
-      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
-      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -260,12 +245,8 @@ function fetchDroidconBlog(path = '') {
     const endMatter = createEndMatter(meta)
     const articleContent = [...document.querySelectorAll('.droidcon_post_wrapper section.us_custom_ff837323 .vc_col-sm-8>.vc_column-inner>.wpb_wrapper>*')].map((e) => e.innerHTML).join('')
     let mdContent = getTurndownResult(articleContent);
-    mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
-      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
-      .replace(/\-   /g, '- ') // ul처리
-      .replace(/    \n\-/g, '-') // ul처리
-      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
-      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -276,8 +257,8 @@ function fetchDroidconBlog(path = '') {
   }
 }
 
-function fetchFrontendmMastersBlog(path = '') {
-  console.log('fetchFrontendmMastersBlog ... ')
+function fetchFrontendMastersBlog(path = '') {
+  console.log('fetchFrontendMastersBlog ... ')
   try {
     // Extract Open Graph metadata
     const ogData = parseOgData();
@@ -290,8 +271,8 @@ function fetchFrontendmMastersBlog(path = '') {
           ?.replace(/ – Frontend Masters Boost/g, ''),
       description: `${document.querySelector('meta[name="description"]')?.getAttribute("content") ?? ''}`.replace(/"/g, "”"),
       topic: '',
-      author: document.querySelector('.author-meta a.author-link')
-        ?.textContent.trim() ?? '',
+      author: document.querySelector('.author-meta a.author-link')?.textContent.trim() ?? '',
+      authorUrl: `${document.querySelector('.author-meta a.author-link').getAttribute('href') ?? ''}`,
       datePublished: convertDateFormat(
         document.querySelector('time.block-time')
         ?.getAttribute('datetime') ?? ''),
@@ -307,14 +288,9 @@ function fetchFrontendmMastersBlog(path = '') {
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('.article-content').innerHTML
     let mdContent = getTurndownResult(articleContent);
-    mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
-      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
-      .replace(/\# \[\]\(\#.*\)/g, '# ')
-      .replace(/\-   /g, '- ') // ul처리
-      .replace(/    \n\-/g, '-') // ul처리
-      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
-      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
-      .replace(/(\`Code language\:.*\(*\))/g, '\n\`\`\`') // ol처리
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = mdContent.replace(/(\`Code language\:.*\(*\))/g, '\n\`\`\`') // ol처리
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -371,12 +347,8 @@ function fetchSmashingMagazineBlog() {
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('.c-garfield-the-cat').innerHTML
     let mdContent = getTurndownResult(articleContent);
-    mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
-      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
-      .replace(/\-   /g, '- ') // ul처리
-      .replace(/    \n\-/g, '-') // ul처리
-      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
-      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -413,13 +385,8 @@ function fetchDigitalOceanBlog(path = '') {
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('.kfTVTG').innerHTML
     let mdContent = getTurndownResult(articleContent);
-    mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
-      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
-      .replace(/\-   /g, '- ') // ul처리
-      .replace(/    \n\-/g, '-') // ul처리
-      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
-      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
-
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -470,14 +437,8 @@ function fetchLearnK8sBlog() {
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('article.lazy-article').innerHTML
     let mdContent = getTurndownResult(articleContent);
-    mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
-      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
-      .replace(/\-   /g, '- ') // ul처리
-      .replace(/    \n\-/g, '-') // ul처리
-      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
-      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
-
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -693,7 +654,6 @@ function fetchLogRocketBlog(path = '') {
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
     mdContent = churnSpecialChars(mdContent);
-    
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -1010,6 +970,7 @@ function combineFrontAndEnd(md = '', frontmatter = '', endmatter = '') {
     return;
   }
   return `${frontmatter}${md.replace(/\(https:\/\/www\./g, '(https://')
+      .replace(/https:\/\/www.youtube.com\/watch\?v=/g, 'https://youtu.be/')
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
       .replace(/\-   /g, '- ') // ul처리
       .replace(/    \n\-/g, '-') // ul처리
