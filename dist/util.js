@@ -132,6 +132,13 @@ function createSubMetaInfo(topic) {
     _category=`JavaScript`
     _tag='js\n  - javascript'
     _relatedPath='/programming/js'
+  } else if (/(ts|typescript)/.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'TypeScript'
+    _icon='iconfont icon-typescript'
+    _category=`TypeScript`
+    _tag='ts\n  - typesccript'
+    _relatedPath='/programming/ts'
   } else if (/react/.test(topic)) {
     console.log(`${topic}!!!`)
     _pageName = 'React.js'

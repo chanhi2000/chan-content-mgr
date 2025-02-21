@@ -36,6 +36,7 @@ const btnLearnK8sBlog = document.getElementById('fetch-learn-k8s-blog');
 const btnItsFossBlog = document.getElementById('fetch-its-foss-blog');
 const btnLogrocketBlog = document.getElementById('fetch-logrocket-blog');
 const btnRealPythonBlog = document.getElementById('fetch-realpython-blog');
+const btnEventDrivenBlog = document.getElementById('fetch-event-driven-blog');
 const btnTechKakaoBlog = document.getElementById('fetch-tech-kakao-blog');
 const btnTechKakaoPayBlog = document.getElementById('fetch-tech-kakao-pay-blog');
 const btnYozmArticle = document.getElementById('fetch-yozm-article');
@@ -85,8 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
   [
     btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnHackingWithSwiftBlog, btnDroidconBlog, btnFrontendMastersBlog
     , btnSmashinMagazineBlog, btnDigitalOceanBlog, btnLearnK8sBlog, btnKtAcademyBlog, btnKotzillaBlog
-    , btnLogrocketBlog, btnRealPythonBlog, btnItsFossBlog , btnOutcomeSchoolBlog, labelArticlePath
-    , btnTechKakaoBlog, btnTechKakaoPayBlog, btnYozmArticle, btnD2NaverArticle, btnCopyMessage 
+    , btnLogrocketBlog, btnRealPythonBlog, btnEventDrivenBlog, btnItsFossBlog , btnOutcomeSchoolBlog
+    , labelArticlePath, btnTechKakaoBlog, btnTechKakaoPayBlog, btnYozmArticle, btnD2NaverArticle, btnCopyMessage 
   ].forEach((e) => {
     e.style.display = 'none';
   });
@@ -239,11 +240,21 @@ document.addEventListener('DOMContentLoaded', () => {
       detailsBlog.open = true;
       detailsBlog.style.background = 'rgba(31,52,74,0.2)'
       summaryBlog.classList.add('activated')
-      summaryBlog.innerHTML = `${makeIcon("/static/favicon.68cbf4197b0c.png")}<span>realpython.com</span>`;
+      summaryBlog.innerHTML = `${makeIcon("https://realpython.com/static/favicon.68cbf4197b0c.png")}<span>realpython.com</span>`;
       btnRealPythonBlog.disabled = false
       btnRealPythonBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|(realpython\.com\/)/g, '')
+    } else if (/event-driven\.io/g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(255,255,0,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://chanhi2000.github.io/bookshelf/assets/image/event-driven.io/favicon.jfif")}<span>event-driven.io</span>`;
+      btnEventDrivenBlog.disabled = false
+      btnEventDrivenBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(event-driven\.io\/)|(en\/)/g, '')
     } else if (/itsfoss\.com/g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
@@ -409,6 +420,7 @@ btnKotzillaBlog.addEventListener('click', async () =>          await onClickWebS
 btnOutcomeSchoolBlog.addEventListener('click', async () =>     await onClickWebScraping('FETCH_OUTCOME_SCHOOL_BLOG'));
 btnLogrocketBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_LOGROCKET_BLOG'));
 btnRealPythonBlog.addEventListener('click', async () =>        await onClickWebScraping('FETCH_REALPYTHON_BLOG'));
+btnEventDrivenBlog.addEventListener('click', async () =>       await onClickWebScraping('FETCH_EVENT_DRIVEN_BLOG'));
 btnItsFossBlog.addEventListener('click', async() =>            await onClickWebScraping('FETCH_ITS_FOSS_BLOG'));
 btnTechKakaoBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_TECH_KAKAO'));
 btnTechKakaoPayBlog.addEventListener('click', async () =>      await onClickWebScraping('FETCH_TECH_KAKAO_PAY'));

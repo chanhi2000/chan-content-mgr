@@ -271,8 +271,9 @@ function fetchFrontendMastersBlog(path = '') {
           ?.replace(/ – Frontend Masters Boost/g, ''),
       description: `${document.querySelector('meta[name="description"]')?.getAttribute("content") ?? ''}`.replace(/"/g, "”"),
       topic: '',
-      author: document.querySelector('.author-meta a.author-link')?.textContent.trim() ?? '',
-      authorUrl: `${document.querySelector('.author-meta a.author-link').getAttribute('href') ?? ''}`,
+      author: document.querySelector('.author-meta a.author-link')
+        ?.textContent.trim() ?? '',
+      authorUrl: document.querySelector('.author-meta a.author-link')?.getAttribute('href') ?? '',
       datePublished: convertDateFormat(
         document.querySelector('time.block-time')
         ?.getAttribute('datetime') ?? ''),
@@ -703,6 +704,55 @@ function fetchRealPythonBlog(path = '') {
           .replace(/Shell\n\n\`/g, '```sh\n')
           .replace(/\` \n\n/g, '\n```\n\n')
           .replace(/\[\]\(#.*"Permanent link"\)/g, '')
+    mdContent = churnSpecialChars(mdContent);
+    
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+
+function fetchEventDrivenBlog(path = '') {
+  console.log(`fetchEventDrivenBlog ... path: ${path}`)
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const topics = [...document.querySelectorAll('.d-inline.d-md-block a.badge')]?.map((e) => e?.textContent?.replace(/\#/g, ''))
+
+    const meta = {
+      lang: 'en-US',
+      title: (`${ogData['og:title']}`?.replace(/ - Event-Driven.io/g, '') ?? (document.querySelector('h1')?.textContent)?.trim()).replace(/"/g, "”"),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: '', // topics[0] ?? '',
+      author: `Oskar Dudycz`,
+      authorUrl: `https://event-driven.io/en/about/`,
+      datePublished: convertDateFormat(
+        [...document.querySelectorAll('main>article>header>p>span')][0]?.textContent
+      ),
+      baseUrl: 'https://event-driven.io/en',
+      articleBasePath: 'event-driven.io',
+      articlePath: path.replace(/(https:\/\/)|(event-driven\.io)|(en\/)/g, '')
+                      .replace(/\//g, ''),
+      logo: '/assets/image/event-driven.io/favicon.jfif',
+      bgRGBA: '255,255,0',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    ElRemoveAll('#toc, .sidebar-module-inset.p-0, .rounded.border.border-light');
+    
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.bodytext').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
+    mdContent = mdContent.replace(/\n\[Remove ads\]\(\/account\/join\/\)\n/g, '') // 광고 링크 처리
+          .replace(/\` \n\n/g, '\n```\n\n')
+          .replace(/\[\]\(#.*\)/g, '')
     mdContent = churnSpecialChars(mdContent);
     
     return {
