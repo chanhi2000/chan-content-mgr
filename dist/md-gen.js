@@ -268,14 +268,15 @@ function fetchFrontendMastersBlog(path = '') {
       title: document.querySelector('title')
           ?.textContent
           ?.trim()
-          ?.replace(/ – Frontend Masters Boost/g, ''),
+          ?.replace(/ – Frontend Masters Boost/g, '')
+          ?.replace(/ – Frontend Masters Blog/g, ''),
       description: `${document.querySelector('meta[name="description"]')?.getAttribute("content") ?? ''}`.replace(/"/g, "”"),
       topic: '',
-      author: document.querySelector('.author-meta a.author-link')
+      author: document.querySelector('.author-and-time a.author-link')
         ?.textContent.trim() ?? '',
-      authorUrl: document.querySelector('.author-meta a.author-link')?.getAttribute('href') ?? '',
+      authorUrl: document.querySelector('.author-and-time a.author-link')?.getAttribute('href') ?? '',
       datePublished: convertDateFormat(
-        document.querySelector('time.block-time')
+        document.querySelector('.author-and-time time')
         ?.getAttribute('datetime') ?? ''),
       baseUrl: 'https://frontendmasters.com',
       articleBasePath: 'frontendmasters.com',
@@ -826,13 +827,13 @@ function fetchYozmArticle() {
 
     const meta = {
       lang: 'ko-KR',
-      title: document.querySelector('.news-title')
+      title: document.querySelector('h1')
           ?.textContent
           ?.trim(),
       description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: '',
-      author: document.querySelector('.content-meta-elem>a').textContent ?? '',
-      authorUrl: `https://yozm.wishket.com${document.querySelector('.content-meta-elem>a')?.getAttribute('href') ?? ''}`,
+      author: document.querySelector('span[data-testid="contents-author-name"]').textContent ?? '',
+      authorUrl: `https://yozm.wishket.com${document.querySelector('a[data-testid="contents-author-root"]')?.getAttribute('href') ?? ''}`,
       datePublished: convertDateFormat(
         document.querySelector('meta[name="date"]')?.content
       ),
@@ -843,14 +844,14 @@ function fetchYozmArticle() {
                       .replace(/\//g, ''),
       articleOriginPath: `${ogData['og:url']}`
                       .replace(/https:\/\/yozm\.wishket\.com\//g, ''),
-      logo: 'https://yozm.wishket.com/static/renewal/img/global/gnb_yozmit.svg',
+      logo: 'https://yozm.wishket.com/favicon.ico',
       bgRGBA: '84,7,224',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
     }
 
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
-    const articleContent = document.querySelector('.next-news-contents.news-highlight-box').innerHTML
+    const articleContent = document.querySelector('#article-detail-wrapper').innerHTML
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);

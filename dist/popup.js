@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
       detailsBlog.open = true;
       detailsBlog.style.background = 'rgba(84,7,224,0.2)'
       summaryBlog.classList.add('activated')
-      summaryBlog.innerHTML = `${makeIcon("https://yozm.wishket.com/static/renewal/img/global/gnb_yozmit.svg")}<span>yozm.wishket.com</span>`;
+      summaryBlog.innerHTML = `${makeIcon("https://yozm.wishket.com/favicon.ico")}<span>yozm.wishket.com</span>`;
       btnYozmArticle.disabled = false
       btnYozmArticle.style.display = 'block';
       labelArticlePath.value = tab.url;

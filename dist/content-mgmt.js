@@ -53,7 +53,8 @@ function fetchGhRepoInfo() {
     const desc = document.querySelector("meta[property='og:description']")
                     ?.getAttribute('content')
                     ?.replace(/https:\/\/github.com\//g, '')
-                    ?.replace(` - ${repo}`, '') ?? ''
+                    ?.replace(/Contribute\sto\s|development\sby\screating\san\saccount\son\sGitHub./g, '')
+                    ?.replace(` ${repo} `, '')?.replace(` - ${repo}`, '') ?? ''
     const officialSite = document.querySelector("#responsive-meta-container span>a")
                     ?.getAttribute('href') ?? ''
     const topics = [...document.querySelectorAll(".topic-tag.topic-tag-link")].map((e) => {
