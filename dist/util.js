@@ -151,14 +151,14 @@ function createSubMetaInfo(topic) {
     _pageName = 'Python'
     _icon='fa-brands fa-python'
     _category=`${_pageName}`
-    _tag='python\n  - py'
+    _tag='py\n  - python'
     _relatedPath='/programming/py'
   } else if (/(django)/g.test(topic)) {
     console.log(`${topic}!!!`)
     _pageName = 'Django'
     _icon='iconfont icon-django'
     _category=`Python\n  - ${_pageName}`
-    _tag='python\n  - py\n  - django\n  - py-django'
+    _tag='py\n  - python\n  - django\n  - py-django'
     _relatedPath='/programming/py-django'
   } else if (/(css)/g.test(topic)) {
     console.log(`${topic}!!!`)
@@ -181,6 +181,13 @@ function createSubMetaInfo(topic) {
     _category=`${_pageName}`
     _tag='rs\n  - rust'
     _relatedPath='/programming/rust'
+  } else if (/(go)/g.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'Go'
+    _icon='fa-brands fa-golang'
+    _category=`${_pageName}`
+    _tag='go\n  - golang'
+    _relatedPath='/programming/go'
   } else if (/(git)/g.test(topic)) {
     console.log(`${topic}!!!`)
     _pageName = 'Git'
@@ -200,7 +207,7 @@ function createSubMetaInfo(topic) {
     _pageName = 'LLM'
     _icon='fas fa-language'
     _category=`AI\n  - ${_pageName}`
-    _tag='ai\n  - llm\n  - large-language-model'
+    _tag='ai\n  - artificial-intelligence\n  - llm\n  - large-language-model'
     _relatedPath='/ai/llm'
   }
 

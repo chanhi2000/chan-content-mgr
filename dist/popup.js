@@ -37,6 +37,7 @@ const btnItsFossBlog = document.getElementById('fetch-its-foss-blog');
 const btnLogrocketBlog = document.getElementById('fetch-logrocket-blog');
 const btnRealPythonBlog = document.getElementById('fetch-realpython-blog');
 const btnEventDrivenBlog = document.getElementById('fetch-event-driven-blog');
+const btnGosolveBlog = document.getElementById('fetch-gosolve-blog');
 const btnTechKakaoBlog = document.getElementById('fetch-tech-kakao-blog');
 const btnTechKakaoPayBlog = document.getElementById('fetch-tech-kakao-pay-blog');
 const btnYozmArticle = document.getElementById('fetch-yozm-article');
@@ -86,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
   [
     btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnHackingWithSwiftBlog, btnDroidconBlog, btnFrontendMastersBlog
     , btnSmashinMagazineBlog, btnDigitalOceanBlog, btnLearnK8sBlog, btnKtAcademyBlog, btnKotzillaBlog
-    , btnLogrocketBlog, btnRealPythonBlog, btnEventDrivenBlog, btnItsFossBlog , btnOutcomeSchoolBlog
+    , btnLogrocketBlog, btnRealPythonBlog, btnEventDrivenBlog, btnGosolveBlog, btnItsFossBlog , btnOutcomeSchoolBlog
     , labelArticlePath, btnTechKakaoBlog, btnTechKakaoPayBlog, btnYozmArticle, btnD2NaverArticle, btnCopyMessage 
   ].forEach((e) => {
     e.style.display = 'none';
@@ -255,6 +256,16 @@ document.addEventListener('DOMContentLoaded', () => {
       btnEventDrivenBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|(event-driven\.io\/)|(en\/)/g, '')
+    } else if (/gosolve\.io/g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(56,119,242,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://gosolve.io/wp-content/uploads/2022/03/cropped-ikona1-192x192.png")}<span>gosolve.io</span>`;
+      btnGosolveBlog.disabled = false
+      btnGosolveBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(gosolve\.io\/)|/g, '')
     } else if (/itsfoss\.com/g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
@@ -421,6 +432,7 @@ btnOutcomeSchoolBlog.addEventListener('click', async () =>     await onClickWebS
 btnLogrocketBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_LOGROCKET_BLOG'));
 btnRealPythonBlog.addEventListener('click', async () =>        await onClickWebScraping('FETCH_REALPYTHON_BLOG'));
 btnEventDrivenBlog.addEventListener('click', async () =>       await onClickWebScraping('FETCH_EVENT_DRIVEN_BLOG'));
+btnGosolveBlog.addEventListener('click', async () =>           await onClickWebScraping('FETCH_GOSOLVE_BLOG'));
 btnItsFossBlog.addEventListener('click', async() =>            await onClickWebScraping('FETCH_ITS_FOSS_BLOG'));
 btnTechKakaoBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_TECH_KAKAO'));
 btnTechKakaoPayBlog.addEventListener('click', async () =>      await onClickWebScraping('FETCH_TECH_KAKAO_PAY'));

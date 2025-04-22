@@ -765,6 +765,62 @@ function fetchEventDrivenBlog(path = '') {
   }
 }
 
+function fetchGosolveBlog(path = "") {
+  console.log(`fetchGosolveBlog ... path: ${path}`)
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: (`${ogData['og:title']}`?.replace(/ - GoSolve/g, '') ?? (document.querySelector('h1')?.textContent)?.trim()).replace(/"/g, "”"),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'go', // topics[0] ?? '',
+      author: document.querySelector('meta[name^="author"]')?.getAttribute("content") ?? '',
+      authorUrl: document.querySelector('meta[property^="article:author"]')?.getAttribute("content") ?? '',
+      datePublished: convertDateFormat(
+        document.querySelector('meta[property^="article:published_time"]')?.getAttribute("content") ?? ''
+      ),
+      baseUrl: 'https://gosolve.io',
+      articleBasePath: 'gosolve.io',
+      articlePath: path.replace(/(https:\/\/)|(gosolve\.io)/g, '')
+                      .replace(/\//g, ''),
+      logo: 'https://gosolve.io/wp-content/uploads/2022/03/cropped-ikona1-192x192.png',
+      bgRGBA: '56,119,242',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    
+    const pres = [...document.querySelectorAll('pre')]
+    pres.forEach((e) => {
+      console.log(e.innerHTML)
+      let currentHtml = e.innerHTML;
+      let language = 'go';
+      // if (e.classList.contains('language-typescript') || e.classList.contains('typescript')) language = 'typescript';
+      // else if (e.classList.contains('sql')) language = 'sql';
+      // else if (e.classList.contains('shell')) language = 'shell';
+      // else language = 'javascript';
+      let className = (language === '') ? language : `language-${language}`;
+      e.innerHTML = `<code class="${className}">${currentHtml}</code>`
+    })
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('section.single-blog__content > .container > .row > .col-xl-8.mx-auto').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
+    mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
+          .replace(/\[\]\(#.*\)/g, '')
+    mdContent = churnSpecialChars(mdContent);
+    
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
 
 function fetchItsFossBlog() {
   console.log('fetchOutcomeSchoolBlog ... ')
