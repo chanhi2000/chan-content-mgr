@@ -823,7 +823,7 @@ function fetchGosolveBlog(path = "") {
 
 
 function fetchItsFossBlog() {
-  console.log('fetchOutcomeSchoolBlog ... ')
+  console.log('fetchItsFossBlog ... ')
   try {
     // Extract Open Graph metadata
     const ogData = parseOgData();
@@ -852,6 +852,66 @@ function fetchItsFossBlog() {
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('article.post').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
+      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
+      .replace(/(?:^|##\s\n\n)/g, '## ') // h2 처리
+      .replace(/\nxxxxxxxxxx\n/g, '```kotlin')
+      .replace(/\-   /g, '- ') // ul처리
+      .replace(/    \n\-/g, '-') // ul처리
+      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
+      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
+    mdContent = churnSpecialChars(mdContent);
+
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    }
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+
+function fetchTecmintBlog() {
+  console.log('fetchTecmintBlog ... ')
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: (document.querySelector('h1.entry-title')?.textContent) ?? ogData['og:title'],
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'linux-fedora',
+      author: document.querySelector('span.author span.author-name')?.textContent ?? '',
+      authorUrl: document.querySelector('span.author > a')?.getAttribute("href")
+                      .replace(/(www\.)/g, '') ?? '',
+      datePublished: convertDateFormat(
+        document.querySelector('time.entry-date.updated-date')?.getAttribute('datetime') ?? ''
+      ),
+      baseUrl: 'https://tecmint.com',
+      articleBasePath: 'tecmint.com',
+      articlePath: `${ogData['og:url']}`
+                      .replace(/(https:\/\/)|(www\.)|(tecmint\.com\/)/g, '')
+                      .replace(/\//g, ''),
+      logo: 'https://tecmint.com/wp-content/uploads/2020/07/favicon.ico',
+      bgRGBA: '5,86,243',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    ElRemoveAll()
+    const pretags = [...document.querySelectorAll('pre')]
+    pretags?.forEach((e) => {
+      console.log(e.innerHTML)
+      let currentHtml = e.innerHTML;
+      e.innerHTML = `<code class="language-shell">${currentHtml}</code>`
+    })
+    
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.entry-content').innerHTML
     let mdContent = getTurndownResult(articleContent);
     mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
       .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리

@@ -202,6 +202,20 @@ function createSubMetaInfo(topic) {
     _category=`DevOps\n  - VM\n  - ${_pageName}`
     _tag='devops\n  - kubernetes\n  - k8s'
     _relatedPath='/devops/k8s'
+  } else if (/(ubutnu)|(debian)/g.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'Linux - Debian'
+    _icon='fa-brands fa-debian'
+    _category=`DevOps\n  - Linux\n  - Debian`
+    _tag='devops\n  - linux\n  - debian\n  - ubuntu\n  - raspberry-pi\n  - kali\n  - kalilinux\n  - kali-linux'
+    _relatedPath='/devops/linux-fedora'
+  } else if (/(cent)|(centos)|(fedora)/g.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'Linux - Fedora'
+    _icon='fa-brands fa-fedora'
+    _category=`DevOps\n  - Linux\n  - Fedora`
+    _tag='devops\n  - linux\n  - fedora\n  - redhat\n  - centos'
+    _relatedPath='/devops/linux-fedora'
   } else if (/(llm)/g.test(topic)) {
     console.log(`${topic}!!!`)
     _pageName = 'LLM'
