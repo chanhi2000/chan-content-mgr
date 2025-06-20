@@ -410,16 +410,17 @@ function fetchLearnK8sBlog() {
       description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: 'kubernetes',
       author: document.querySelector('.black-50.f6.db').textContent.replace(/By\s/g, '') ?? '',
+      authorUrl: document.querySelector(`.tc.mb4.db.mw4.mt4.mt5-ns a.link`).getAttribute('href') ?? '',
       datePublished: convertDateFormat(
         document.querySelector('.f7.black-60.tc.ttu.b').textContent ?? ''
       ),
-      baseUrl: 'https://learnk8s.com',
-      articleBasePath: 'learnk8s.com',
+      baseUrl: 'https://learnk8s.io',
+      articleBasePath: 'learnk8s.io',
       articlePath: `${ogData['og:url']}`
-          .replace(/(https:\/\/)|(www\.)|(learnk8s\.com\/)/g, '')
+          .replace(/(https:\/\/)|(www\.)|(learnk8s\.io)/g, '')
           .replace(/\//g, ''),
       articleOriginPath: `${ogData['og:url']}`
-          .replace(/(https:\/\/)|(www\.)|(learnk8s\.com\/)/g, '')
+          .replace(/(https:\/\/)|(www\.)|(learnk8s\.io)/g, '')
           .replace(/\//g, ''),
       logo: 'https://static.learnk8s.io/f7e5160d4744cf05c46161170b5c11c9.svg',
       bgRGBA: '102,152,204',
