@@ -93,6 +93,7 @@ function fetchFreeCodeCampNews() {
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
     mdContent = mdContent.replace(/\[freeCodeCamp\.org\]/g, '[<FontIcon icon="fa-brands fa-free-code-camp"/>freeCodeCamp.org]')
       return {
       filename: `${meta.articlePath}.md`,
@@ -120,7 +121,7 @@ function fetchMilanJovanovicBlog() {
           ?.textContent
           ?.trim(),
       description: `${ogData['og:description']}`.replace(/"/g, "”"),
-      topic: 'cs',
+      topic: 'csharp',
       author: 'Milan Jovanović',
       datePublished: convertDateFormat(
         document.querySelector('time.uppercase')
@@ -139,6 +140,78 @@ function fetchMilanJovanovicBlog() {
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = mdContent.replace(/\]\(\/blogs\/mnw/g, `](https://milanjovanovic.tech/blogs/mnw`)
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+function fetchCodeMazeBlog() {
+  console.log('fetchCodeMazeBlog ... ')
+  try {
+    const elements2Remove = [
+      // '.code-block.code-block-1',
+      // '.code-block.code-block-2',
+      '.advads-after-content',
+      '.advads-after-content-2',
+    ]
+    elements2Remove.forEach((e) => document.querySelector(e)?.remove());
+    ElRemoveAll('.enlighter-default, .banner-wrapper, .cb_p6_patreon_button, .code-block')
+
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const path = `${ogData['og:url']}`
+                    .replace(/https:\/\/www\.code-maze\.com\//g, '')
+                    .replace(/\//g, '')
+    const meta = {
+      title: document.querySelector('.post-header .entry-title')
+          ?.textContent
+          ?.trim(),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'csharp',
+      author: document.querySelector('.post-meta.vcard .url.fn')?.textContent.trim() ?? '',
+      authorUrl: document.querySelector('.post-meta.vcard .url.fn')?.getAttribute('href') ?? '',
+      datePublished: convertDateFormat(
+        document.querySelector('meta[property^="article:published_time"]')?.getAttribute("content") ?? ''
+      ),
+      baseUrl: 'https://code-maze.com',
+      articleBasePath: 'code-maze.com',
+      articleOriginPath: `/${path}`,
+      articlePath: path,
+      logo: 'https://chanhi2000.github.io/bookshelf/assets/image/code-maze.com/favicon.png',
+      bgRGBA: '22,22,22',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+    
+    const pres = [...document.querySelectorAll('pre')]
+    pres.forEach((e) => {
+      console.log(e.innerHTML)
+      let currentHtml = e.innerHTML;
+      let lang = e.getAttribute("data-enlighter-language")
+      let language = "csharp";
+      if (lang.includes('typescript') || lang.includes('ts')) language = 'typescript';
+      else if (lang.includes('sql')) language = 'sql';
+      else if (lang.includes('shell')) language = 'shell';
+      else if (lang.includes('javascript') || lang.includes('js')) language = 'javascript';
+      else if (lang.includes('csharp')) language = 'csharp';
+      else if (lang.includes('raw')) language = 'plaintext';
+      else language = 'plaintext';
+      let className = (language === '') ? language : `language-${language}`;
+      e.innerHTML = `<code class="${className}">${currentHtml}</code>`
+    })
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.post-content.entry-content').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
     mdContent = mdContent.replace(/\]\(\/blogs\/mnw/g, `](https://milanjovanovic.tech/blogs/mnw`)
     return {
       filename: `${meta.articlePath}.md`,
@@ -194,6 +267,7 @@ function fetchHackingWithSwiftBlog(path = '') {
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -247,6 +321,7 @@ function fetchDroidconBlog(path = '') {
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -292,6 +367,7 @@ function fetchFrontendMastersBlog(path = '') {
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
     mdContent = mdContent.replace(/(\`Code language\:.*\(*\))/g, '\n\`\`\`') // ol처리
     return {
       filename: `${meta.articlePath}.md`,
@@ -351,6 +427,7 @@ function fetchSmashingMagazineBlog() {
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -389,6 +466,7 @@ function fetchDigitalOceanBlog(path = '') {
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -442,6 +520,7 @@ function fetchLearnK8sBlog() {
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -498,6 +577,7 @@ function fetchKtAcademyBlog() {
       .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
       .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -550,6 +630,7 @@ function fetchKotzillaBlog() {
       .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
       .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -602,6 +683,7 @@ function fetchOutcomeSchoolBlog() {
       .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
       .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -657,6 +739,7 @@ function fetchLogRocketBlog(path = '') {
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -707,6 +790,67 @@ function fetchRealPythonBlog(path = '') {
           .replace(/\` \n\n/g, '\n```\n\n')
           .replace(/\[\]\(#.*"Permanent link"\)/g, '')
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+
+function fetchDockerBlog(path='') {
+  console.log(`fetchDockerBlog ... path: ${path}`)
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const topics = [...document.querySelectorAll('.d-inline.d-md-block a.badge')]?.map((e) => e?.textContent?.replace(/\#/g, ''))
+
+    const meta = {
+      lang: 'en-US',
+      title: (`${ogData['og:title']}`?.replace(/( \| )|(Docker Blog)/g, '') ?? 
+        (document.querySelector('h1')?.textContent)?.trim()).replace(/"/g, "”"),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'docker', // topics[0] ?? '',
+      author: document.querySelector('.wp-block-ponyo-blog-author .author .info a')?.textContent?.trim() ?? '',
+      authorUrl: (document.querySelector('.wp-block-ponyo-blog-author .author .info a')?.getAttribute('href') ?? '')
+        ?.replace(/\https:\/\/www\./g, 'https://'),
+      datePublished: convertDateFormat(
+        document.querySelector('meta[property^="article:published_time"]')?.getAttribute("content") ?? ''
+      ),
+      baseUrl: 'https://docker.com/blog',
+      articleBasePath: 'docker.com',
+      articlePath: path.replace(/(https:\/\/)|(www\.)|(docker\.com)/g, '')
+                      .replace(/\/blog/g, '')
+                      .replace(/\//g, ''),
+      logo: 'https://docker.com/app/uploads/2024/02/cropped-docker-logo-favicon-192x192.png',
+      bgRGBA: '29,99,237',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+    
+    const pretags = [...document.querySelectorAll('pre')]
+    pretags?.forEach((e) => {
+      console.log(e.innerHTML)
+      let currentHtml = e.innerHTML;
+      e.innerHTML = `<code class="language-shell">${currentHtml}</code>`
+    })
+
+    // ElRemoveAll('#toc, .sidebar-module-inset.p-0, .rounded.border.border-light');
+    
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.entry-content.wp-block-post-content').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
+    mdContent = mdContent.replace(/\n\[Remove ads\]\(\/account\/join\/\)\n/g, '') // 광고 링크 처리
+          .replace(/\` \n\n/g, '\n```\n\n')
+          .replace(/\[\]\(#.*"Permanent link"\)/g, '')
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
     
     return {
       filename: `${meta.articlePath}.md`,
@@ -756,6 +900,7 @@ function fetchEventDrivenBlog(path = '') {
           .replace(/\` \n\n/g, '\n```\n\n')
           .replace(/\[\]\(#.*\)/g, '')
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
     
     return {
       filename: `${meta.articlePath}.md`,
@@ -812,6 +957,7 @@ function fetchGosolveBlog(path = "") {
     mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
           .replace(/\[\]\(#.*\)/g, '')
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
     
     return {
       filename: `${meta.articlePath}.md`,
@@ -863,6 +1009,7 @@ function fetchItsFossBlog() {
       .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
       .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -923,6 +1070,7 @@ function fetchTecmintBlog() {
       .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
       .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -972,6 +1120,7 @@ function fetchYozmArticle() {
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -1021,6 +1170,7 @@ function fetchD2Article(path = '') {
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = mdContent.replace(/!\[\]\(\/content\//g, '![](https://d2.naver.com/content/') // ol처리
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
     
     return {
       filename: `${meta.articlePath}.md`,
@@ -1067,6 +1217,7 @@ function fetchTechKakao() {
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -1112,6 +1263,7 @@ function fetchTechKakaoPay() {
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -1160,6 +1312,21 @@ function churnSpecialChars(md = '') {
     .replace(/\\\[/g, '[')
     .replace(/\\\]/g, ']')
     .replace(/\\>/g, '>')
+}
+
+function simplifyCodeblockLang(md = '') {
+  console.log(`simplifyCodeblockLang ...`)
+  if (md == '') {
+    console.log('EXIT: no content found ...')
+    return;
+  }
+  return md.replace(/```markdown/g, '```md')
+    .replace(/```javascript/g, '```js')
+    .replace(/```typescript/g, '```ts')
+    .replace(/```python/g, '```py')
+    .replace(/```(shell|bash)/g, '```sh')
+    .replace(/```csharp/g, '```cs')
+
 }
 
 function getTurndownResult(articleContent = '') {

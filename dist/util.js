@@ -195,11 +195,18 @@ function createSubMetaInfo(topic) {
     _category=`${_pageName}`
     _tag='git'
     _relatedPath='/programming/git'
+  } else if (/(docker)/g.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'Docker'
+    _icon='fa-brands fa-docker'
+    _category=`DevOps\n  - ${_pageName}`
+    _tag='devops\n  - docker'
+    _relatedPath='/devops/docker'
   } else if (/(kubernetes)|(k8s)/g.test(topic)) {
     console.log(`${topic}!!!`)
     _pageName = 'Kubernetes'
     _icon='iconfont icon-k8s'
-    _category=`DevOps\n  - VM\n  - ${_pageName}`
+    _category=`DevOps\n  - ${_pageName}`
     _tag='devops\n  - kubernetes\n  - k8s'
     _relatedPath='/devops/k8s'
   } else if (/(ubutnu)|(debian)/g.test(topic)) {

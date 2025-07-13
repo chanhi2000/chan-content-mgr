@@ -24,6 +24,7 @@ function enableSiteInfo() {
 }
 const btnFetchFreeCodeCampNews = document.getElementById('fetch-free-code-camp-news');
 const btnMilanJovanovicBlog = document.getElementById('fetch-milan-jovanovic-blog');
+const btnCodeMazeBlog = document.getElementById('fetch-code-maze-blog');
 const btnHackingWithSwiftBlog = document.getElementById('fetch-hackingwithswift-blog');
 const btnDroidconBlog = document.getElementById('fetch-droidcon-blog');
 const btnFrontendMastersBlog = document.getElementById('fetch-frontendmasters-blog');
@@ -37,6 +38,7 @@ const btnItsFossBlog = document.getElementById('fetch-its-foss-blog');
 const btnTecmintBlog = document.getElementById('fetch-tecmint-blog');
 const btnLogrocketBlog = document.getElementById('fetch-logrocket-blog');
 const btnRealPythonBlog = document.getElementById('fetch-realpython-blog');
+const btnDockerBlog = document.getElementById('fetch-docker-blog');
 const btnEventDrivenBlog = document.getElementById('fetch-event-driven-blog');
 const btnGosolveBlog = document.getElementById('fetch-gosolve-blog');
 const btnTechKakaoBlog = document.getElementById('fetch-tech-kakao-blog');
@@ -86,9 +88,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const version = manifest.version;
   pVersion.textContent = `Version: ${version}`;
   [
-    btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnHackingWithSwiftBlog, btnDroidconBlog, btnFrontendMastersBlog
+    btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnCodeMazeBlog, btnHackingWithSwiftBlog, btnDroidconBlog, btnFrontendMastersBlog
     , btnSmashinMagazineBlog, btnDigitalOceanBlog, btnLearnK8sBlog, btnKtAcademyBlog, btnKotzillaBlog
-    , btnLogrocketBlog, btnRealPythonBlog, btnEventDrivenBlog, btnGosolveBlog, btnItsFossBlog, btnTecmintBlog
+    , btnLogrocketBlog, btnRealPythonBlog, btnDockerBlog, btnEventDrivenBlog, btnGosolveBlog, btnItsFossBlog, btnTecmintBlog
     , btnOutcomeSchoolBlog, labelArticlePath, btnTechKakaoBlog, btnTechKakaoPayBlog, btnYozmArticle, btnD2NaverArticle, btnCopyMessage 
   ].forEach((e) => {
     e.style.display = 'none';
@@ -139,6 +141,14 @@ document.addEventListener('DOMContentLoaded', () => {
       summaryBlog.innerHTML = `${makeIcon("https://milanjovanovic.tech/profile_favicon.png")}<span>milanjovanovic.tech</span>`;
       btnMilanJovanovicBlog.disabled = false
       btnMilanJovanovicBlog.style.display = 'block';
+    } else if (/code-maze\.com\//g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(22,22,22,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://chanhi2000.github.io/bookshelf/assets/image/code-maze.com/favicon.png")}<span>code-maze.com</span>`;
+      btnCodeMazeBlog.disabled = false
+      btnCodeMazeBlog.style.display = 'block';
     } else if (/hackingwithswift\.com\//g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
@@ -247,7 +257,16 @@ document.addEventListener('DOMContentLoaded', () => {
       btnRealPythonBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|(realpython\.com\/)/g, '')
-    } else if (/event-driven\.io/g.test(tab.url)) {
+    } else if (/docker\.com\/blog/g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(29,99,237,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://docker.com/app/uploads/2024/02/cropped-docker-logo-favicon-192x192.png")}<span>docker.com/blog</span>`;
+      btnDockerBlog.disabled = false
+      btnDockerBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+    }else if (/event-driven\.io/g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
       detailsBlog.style.background = 'rgba(255,255,0,0.2)'
@@ -361,6 +380,7 @@ btnFetchGhRepoInfo.addEventListener('click', async () => {
   switch(langType) {
     case 'Java': comment += '// lang-java';break;
     case 'Kotlin': comment += '// lang-kotlin';break;
+    case 'C#': comment += '// lang-csharp';break;
     case 'JavaScript': comment += '// lang-js';break;
     case 'TypeScript': comment += '// lang-ts';break;
     case 'Python': comment += '// lang-py';break;
@@ -431,6 +451,7 @@ btnDeleteYTWL.addEventListener('click', async () => {
 
 btnFetchFreeCodeCampNews.addEventListener('click', async () => await onClickWebScraping('FETCH_FREE_CODE_CAMP_NEWS'));
 btnMilanJovanovicBlog.addEventListener('click', async () =>    await onClickWebScraping('FETCH_MILAN_JOVANOVIC_BLOG'));
+btnCodeMazeBlog.addEventListener('click', async () =>          await onClickWebScraping('FETCH_CODE_MAZE_BLOG'));
 btnHackingWithSwiftBlog.addEventListener('click', async () =>  await onClickWebScraping('FETCH_HACKING_WITH_SWIFT_BLOG'));
 btnDroidconBlog.addEventListener('click', async () =>          await onClickWebScraping('FETCH_DROIDCON_BLOG'))
 btnFrontendMastersBlog.addEventListener('click', async () =>   await onClickWebScraping('FETCH_FRONTEND_MASTERS_BLOG'));
@@ -442,6 +463,7 @@ btnKotzillaBlog.addEventListener('click', async () =>          await onClickWebS
 btnOutcomeSchoolBlog.addEventListener('click', async () =>     await onClickWebScraping('FETCH_OUTCOME_SCHOOL_BLOG'));
 btnLogrocketBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_LOGROCKET_BLOG'));
 btnRealPythonBlog.addEventListener('click', async () =>        await onClickWebScraping('FETCH_REALPYTHON_BLOG'));
+btnDockerBlog.addEventListener('click', async () =>            await onClickWebScraping('FETCH_DOCKER_BLOG'));
 btnEventDrivenBlog.addEventListener('click', async () =>       await onClickWebScraping('FETCH_EVENT_DRIVEN_BLOG'));
 btnGosolveBlog.addEventListener('click', async () =>           await onClickWebScraping('FETCH_GOSOLVE_BLOG'));
 btnItsFossBlog.addEventListener('click', async() =>            await onClickWebScraping('FETCH_ITS_FOSS_BLOG'));

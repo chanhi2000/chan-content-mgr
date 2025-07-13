@@ -19,6 +19,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'FETCH_SITE_INFO':               sendResponse({ status: "fetch SiteInfo DONE!", o: fetchSiteInfo(message.url) });break;
     case 'FETCH_FREE_CODE_CAMP_NEWS':     sendResponse({ status: "fetch freeCodeCamp News DONE!", o: fetchFreeCodeCampNews() });break;
     case 'FETCH_MILAN_JOVANOVIC_BLOG':    sendResponse({ status: "fetch milanJovanovic Blog DONE!", o: fetchMilanJovanovicBlog() });break;
+    case 'FETCH_CODE_MAZE_BLOG':          sendResponse({ status: "fetch code-maze Blog DONE!", o: fetchCodeMazeBlog() });break;
     case 'FETCH_HACKING_WITH_SWIFT_BLOG': sendResponse({ status: "fetch hackingWithSwift Blog DONE!", o: fetchHackingWithSwiftBlog(message.path) });break;
     case 'FETCH_DROIDCON_BLOG':           sendResponse({ status: "fetch droidcon Blog DONE!", o: fetchDroidconBlog(message.path) });break;
     case 'FETCH_FRONTEND_MASTERS_BLOG':   sendResponse({ status: "fetch FrontendmMasters Blog DONE!", o: fetchFrontendMastersBlog(message.path) });break;
@@ -30,6 +31,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'FETCH_OUTCOME_SCHOOL_BLOG':     sendResponse({ status: "fetch OutcomeSchool Blog DONE!", o: fetchOutcomeSchoolBlog(message.path) });break;
     case 'FETCH_LOGROCKET_BLOG':          sendResponse({ status: "fetch LogRocket Blog DONE!", o: fetchLogRocketBlog(message.path) });break;
     case 'FETCH_REALPYTHON_BLOG':         sendResponse({ status: "fetch RealPython Blog DONE!", o: fetchRealPythonBlog(message.path) });break;
+    case 'FETCH_DOCKER_BLOG':             sendResponse({ status: "fetch Docker Blog DONE!", o: fetchDockerBlog(message.path) });break;
     case 'FETCH_EVENT_DRIVEN_BLOG':       sendResponse({ status: "fetch EventDriven Blog DONE!", o: fetchEventDrivenBlog(message.path) });break;
     case 'FETCH_GOSOLVE_BLOG':            sendResponse({ status: "fetch GoSolve Blog DONE!", o: fetchGosolveBlog(message.path) });break;
     case 'FETCH_ITS_FOSS_BLOG':           sendResponse({ status: "fetch ItsFoss Blog DONE!", o: fetchItsFossBlog(message.path) });break;
