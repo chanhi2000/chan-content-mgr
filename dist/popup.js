@@ -28,6 +28,7 @@ const btnCodeMazeBlog = document.getElementById('fetch-code-maze-blog');
 const btnHackingWithSwiftBlog = document.getElementById('fetch-hackingwithswift-blog');
 const btnDroidconBlog = document.getElementById('fetch-droidcon-blog');
 const btnFrontendMastersBlog = document.getElementById('fetch-frontendmasters-blog');
+const btnCssTricksBlog = document.getElementById('fetch-css-tricks-blog');
 const btnSmashinMagazineBlog = document.getElementById('fetch-smashingmagazine-blog');
 const btnDigitalOceanBlog = document.getElementById('fetch-digitalocean-blog');
 const btnKtAcademyBlog = document.getElementById('fetch-kt-academy-blog');
@@ -89,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
   pVersion.textContent = `Version: ${version}`;
   [
     btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnCodeMazeBlog, btnHackingWithSwiftBlog, btnDroidconBlog, btnFrontendMastersBlog
-    , btnSmashinMagazineBlog, btnDigitalOceanBlog, btnLearnK8sBlog, btnKtAcademyBlog, btnKotzillaBlog
+    , btnCssTricksBlog, btnSmashinMagazineBlog, btnDigitalOceanBlog, btnLearnK8sBlog, btnKtAcademyBlog, btnKotzillaBlog
     , btnLogrocketBlog, btnRealPythonBlog, btnDockerBlog, btnEventDrivenBlog, btnGosolveBlog, btnItsFossBlog, btnTecmintBlog
     , btnOutcomeSchoolBlog, labelArticlePath, btnTechKakaoBlog, btnTechKakaoPayBlog, btnYozmArticle, btnD2NaverArticle, btnCopyMessage 
   ].forEach((e) => {
@@ -177,6 +178,16 @@ document.addEventListener('DOMContentLoaded', () => {
       btnFrontendMastersBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|(frontendmasters\.com\/)(blog\/)/g, '')
+    } else if (/css-tricks\.com\//g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(17,17.17,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://css-tricks.com/favicon.svg")}<span>css-tricks.com</span>`;
+      btnCssTricksBlog.disabled = false
+      btnCssTricksBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(css-tricks\.com\/)|(\d{4}\/\d{2}\/)/g, '')
     } else if (/smashingmagazine\.com\//g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
@@ -455,6 +466,7 @@ btnCodeMazeBlog.addEventListener('click', async () =>          await onClickWebS
 btnHackingWithSwiftBlog.addEventListener('click', async () =>  await onClickWebScraping('FETCH_HACKING_WITH_SWIFT_BLOG'));
 btnDroidconBlog.addEventListener('click', async () =>          await onClickWebScraping('FETCH_DROIDCON_BLOG'))
 btnFrontendMastersBlog.addEventListener('click', async () =>   await onClickWebScraping('FETCH_FRONTEND_MASTERS_BLOG'));
+btnCssTricksBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_CSS_TRICKS_BLOG'));
 btnSmashinMagazineBlog.addEventListener('click', async () =>   await onClickWebScraping('FETCH_SMASHING_MAGAZINE_BLOG'));
 btnDigitalOceanBlog.addEventListener('click', async () =>      await onClickWebScraping('FETCH_DIGITAL_OCEAN_BLOG'));
 btnLearnK8sBlog.addEventListener('click', async () =>          await onClickWebScraping('FETCH_LEARN_K8S_BLOG'));

@@ -346,7 +346,7 @@ function fetchFrontendMastersBlog(path = '') {
           ?.replace(/ – Frontend Masters Boost/g, '')
           ?.replace(/ – Frontend Masters Blog/g, ''),
       description: `${document.querySelector('meta[name="description"]')?.getAttribute("content") ?? ''}`.replace(/"/g, "”"),
-      topic: '',
+      topic: 'css',
       author: document.querySelector('.author-and-time a.author-link')
         ?.textContent.trim() ?? '',
       authorUrl: document.querySelector('.author-and-time a.author-link')?.getAttribute('href') ?? '',
@@ -369,6 +369,54 @@ function fetchFrontendMastersBlog(path = '') {
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = mdContent.replace(/(\`Code language\:.*\(*\))/g, '\n\`\`\`') // ol처리
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+function fetchCssTricks(path = '') {
+  console.log('fetchCssTricks ... ')
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: ogData['og:title']
+          ?.replace(/ \| CSS-Tricks/g, ''),
+      description: `${document.querySelector('meta[name="description"]')?.getAttribute("content") ?? ''}`
+        .replace(/"/g, "”"),
+      topic: 'css',
+      author: document.querySelector('header.mega-header .author-row a.author-name')
+        ?.textContent.trim() ?? '',
+      authorUrl: document.querySelector('header.mega-header .author-row a.author-name')
+        ?.getAttribute('href') ?? '',
+      datePublished: convertDateFormat(
+        document.querySelector('header.mega-header .author-row time')
+        ?.getAttribute('datetime') || 
+        document.querySelector('header.mega-header .author-row time')
+        ?.textContent?.trim() || ''
+      ),
+      baseUrl: 'https://css-tricks.com',
+      articleBasePath: 'css-tricks.com',
+      articlePath: path.replace(/\//g, ''),
+      // articleOriginPath: `blog/${path}`,
+      logo: 'https://css-tricks/favicon.svg',
+      bgRGBA: '17,17,17',
+      coverUrl: `${ogData['og:image']?.replace(/\https:\/\/www\./g, 'https://')?.replace(/^\/\//g, 'https://i0.wp.com/')}`
+    }
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('article .article-content').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = mdContent.replace(/\[\]\(#.*\)/g, '')
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -1321,6 +1369,7 @@ function simplifyCodeblockLang(md = '') {
     return;
   }
   return md.replace(/```markdown/g, '```md')
+    .replace(/```(markup|svg)/g, '```xml')
     .replace(/```javascript/g, '```js')
     .replace(/```typescript/g, '```ts')
     .replace(/```python/g, '```py')
