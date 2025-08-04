@@ -167,7 +167,7 @@ function fetchCodeMazeBlog() {
     const ogData = parseOgData();
 
     const path = `${ogData['og:url']}`
-                    .replace(/https:\/\/www\.code-maze\.com\//g, '')
+                    .replace(/(https:\/\/)|(www\.)|(code-maze\.com\/)/g, '')
                     .replace(/\//g, '')
     const meta = {
       title: document.querySelector('.post-header .entry-title')
@@ -182,9 +182,9 @@ function fetchCodeMazeBlog() {
       ),
       baseUrl: 'https://code-maze.com',
       articleBasePath: 'code-maze.com',
-      articleOriginPath: `/${path}`,
+      articleOriginPath: `${path}`,
       articlePath: path,
-      logo: 'https://chanhi2000.github.io/bookshelf/assets/image/code-maze.com/favicon.png',
+      logo: '/assets/image/code-maze.com/favicon.png',
       bgRGBA: '22,22,22',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
     }
@@ -208,6 +208,80 @@ function fetchCodeMazeBlog() {
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('.post-content.entry-content').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = mdContent.replace(/\]\(\/blogs\/mnw/g, `](https://milanjovanovic.tech/blogs/mnw`)
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+function fetchCSharpcornerBlog() {
+  console.log('fetchCSharpcornerBlog ... ')
+  try {
+
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const path = `${ogData['og:url']}`
+                    .replace(/(https:\/\/)|(www\.)|(c-sharpcorner\.com\/)/g, '')
+                    .replace(/article\//g, '')
+                    .replace(/\//g, '')
+    const meta = {
+      title: document.querySelector('.post-title')?.textContent
+          ?.trim(),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: document.querySelector('.post-data-listing-wrap .media .media-left #CategoryLink')
+          ?.getAttribute('href')
+          ?.trim()
+          ?.replace(/(https:\/\/)|(www\.)|(c-sharpcorner\.com\/)|(technologies\/)/g, '')
+          ?.toLowerCase() || 'csharp', 
+      author: document.querySelector('.user-details .publish-info .profile-control a.user-name')
+          ?.textContent
+          ?.trim() || '',
+      authorUrl: document.querySelector('.user-details .publish-info .profile-control a.user-name')
+          ?.getAttribute('href')
+          ?.replace(/(www\.)/, "")
+          ?? '',
+      datePublished: convertDateFormat(
+        JSON.parse(document.querySelector('script[type="application/ld+json"]')?.textContent)?.datePublished
+      ),
+      baseUrl: 'https://c-sharpcorner.com',
+      articleBasePath: 'c-sharpcorner.com',
+      articleOriginPath: `article/${path}`,
+      articlePath: path,
+      logo: 'https://c-sharpcorner.com/images/layout/favicon-icon-dark.svg',
+      bgRGBA: '0,121,199',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+    
+    /*
+    const pres = [...document.querySelectorAll('pre')]
+    pres.forEach((e) => {
+      console.log(e.innerHTML)
+      let currentHtml = e.innerHTML;
+      let lang = e.getAttribute("data-enlighter-language")
+      let language = "csharp";
+      if (lang.includes('typescript') || lang.includes('ts')) language = 'typescript';
+      else if (lang.includes('sql')) language = 'sql';
+      else if (lang.includes('shell')) language = 'shell';
+      else if (lang.includes('javascript') || lang.includes('js')) language = 'javascript';
+      else if (lang.includes('csharp')) language = 'csharp';
+      else if (lang.includes('raw')) language = 'plaintext';
+      else language = 'plaintext';
+      let className = (language === '') ? language : `language-${language}`;
+      e.innerHTML = `<code class="${className}">${currentHtml}</code>`
+    })
+    */
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.user-content #div2').innerHTML
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
@@ -860,7 +934,7 @@ function fetchDockerBlog(path='') {
 
     const meta = {
       lang: 'en-US',
-      title: (`${ogData['og:title']}`?.replace(/( \| )|(Docker Blog)/g, '') ?? 
+      title: (`${ogData['og:title']}`?.replace(/( \| )|(Docker Blog|Docker)/g, '') ?? 
         (document.querySelector('h1')?.textContent)?.trim()).replace(/"/g, "”"),
       description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: 'docker', // topics[0] ?? '',
@@ -1354,8 +1428,9 @@ function churnSpecialChars(md = '') {
   }
   return md.replace(/\\\./g, '.')
     .replace(/\\`/g, '`')
-    .replace(/\\-/g, '-')
+    .replace(/(\\-)|(\\–)/g, '-')
     .replace(/\\_/g, '_')
+    .replace(/ /g, ' ')
     .replace(/\\=/g, '=')
     .replace(/\\\[/g, '[')
     .replace(/\\\]/g, ']')

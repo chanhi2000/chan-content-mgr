@@ -25,6 +25,7 @@ function enableSiteInfo() {
 const btnFetchFreeCodeCampNews = document.getElementById('fetch-free-code-camp-news');
 const btnMilanJovanovicBlog = document.getElementById('fetch-milan-jovanovic-blog');
 const btnCodeMazeBlog = document.getElementById('fetch-code-maze-blog');
+const btnCSharpcornerBlog = document.getElementById('fetch-c-sharpcorner-blog');
 const btnHackingWithSwiftBlog = document.getElementById('fetch-hackingwithswift-blog');
 const btnDroidconBlog = document.getElementById('fetch-droidcon-blog');
 const btnFrontendMastersBlog = document.getElementById('fetch-frontendmasters-blog');
@@ -89,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const version = manifest.version;
   pVersion.textContent = `Version: ${version}`;
   [
-    btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnCodeMazeBlog, btnHackingWithSwiftBlog, btnDroidconBlog, btnFrontendMastersBlog
+    btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnCodeMazeBlog, btnCSharpcornerBlog, btnHackingWithSwiftBlog, btnDroidconBlog, btnFrontendMastersBlog
     , btnCssTricksBlog, btnSmashinMagazineBlog, btnDigitalOceanBlog, btnLearnK8sBlog, btnKtAcademyBlog, btnKotzillaBlog
     , btnLogrocketBlog, btnRealPythonBlog, btnDockerBlog, btnEventDrivenBlog, btnGosolveBlog, btnItsFossBlog, btnTecmintBlog
     , btnOutcomeSchoolBlog, labelArticlePath, btnTechKakaoBlog, btnTechKakaoPayBlog, btnYozmArticle, btnD2NaverArticle, btnCopyMessage 
@@ -150,6 +151,14 @@ document.addEventListener('DOMContentLoaded', () => {
       summaryBlog.innerHTML = `${makeIcon("https://chanhi2000.github.io/bookshelf/assets/image/code-maze.com/favicon.png")}<span>code-maze.com</span>`;
       btnCodeMazeBlog.disabled = false
       btnCodeMazeBlog.style.display = 'block';
+    } else if (/c-sharpcorner\.com\//g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(0,121,199,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://c-sharpcorner.com/images/layout/favicon-icon-dark.svg")}<span>c-sharpcorner.com</span>`;
+      btnCSharpcornerBlog.disabled = false
+      btnCSharpcornerBlog.style.display = 'block';
     } else if (/hackingwithswift\.com\//g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
@@ -463,6 +472,7 @@ btnDeleteYTWL.addEventListener('click', async () => {
 btnFetchFreeCodeCampNews.addEventListener('click', async () => await onClickWebScraping('FETCH_FREE_CODE_CAMP_NEWS'));
 btnMilanJovanovicBlog.addEventListener('click', async () =>    await onClickWebScraping('FETCH_MILAN_JOVANOVIC_BLOG'));
 btnCodeMazeBlog.addEventListener('click', async () =>          await onClickWebScraping('FETCH_CODE_MAZE_BLOG'));
+btnCSharpcornerBlog.addEventListener('click', async () =>      await onClickWebScraping('FETCH_C_SHARPCORNER_BLOG'));
 btnHackingWithSwiftBlog.addEventListener('click', async () =>  await onClickWebScraping('FETCH_HACKING_WITH_SWIFT_BLOG'));
 btnDroidconBlog.addEventListener('click', async () =>          await onClickWebScraping('FETCH_DROIDCON_BLOG'))
 btnFrontendMastersBlog.addEventListener('click', async () =>   await onClickWebScraping('FETCH_FRONTEND_MASTERS_BLOG'));

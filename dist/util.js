@@ -223,6 +223,13 @@ function createSubMetaInfo(topic) {
     _category=`DevOps\n  - Linux\n  - Fedora`
     _tag='devops\n  - linux\n  - fedora\n  - redhat\n  - centos'
     _relatedPath='/devops/linux-fedora'
+  }  else if (/(win)|(windows)/g.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'Windows'
+    _icon='fa-brands fa-windows'
+    _category=`DevOps\n  - ${_pageName}`
+    _tag='devops\n  - win\n  - windows'
+    _relatedPath='/devops/win'
   } else if (/(llm)/g.test(topic)) {
     console.log(`${topic}!!!`)
     _pageName = 'LLM'
