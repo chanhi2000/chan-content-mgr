@@ -146,6 +146,13 @@ function createSubMetaInfo(topic) {
     _category=`Node.js\n  - ${_pageName}`
     _tag='node\n  - nodejs\n  - node-js\n  - react\n  - reactjs\n  - react-js'
     _relatedPath='/programming/js-react'
+  } else if (/(next)/.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'Next.js'
+    _icon='iconfont icon-nextjs'
+    _category=`Node.js\n  - ${_pageName}`
+    _tag='node\n  - nodejs\n  - node-js\n  - next\n  - nextjs\n  - next-js'
+    _relatedPath='/programming/js-next'
   } else if (/(python)|(py)/g.test(topic)) {
     console.log(`${topic}!!!`)
     _pageName = 'Python'
@@ -188,6 +195,13 @@ function createSubMetaInfo(topic) {
     _category=`${_pageName}`
     _tag='go\n  - golang'
     _relatedPath='/programming/go'
+  } else if (/(dart)|(flutter)/g.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'Dart'
+    _icon='fa-brands fa-dart-lang'
+    _category=`${_pageName}\n  - Flutter`
+    _tag='dart\n  - flutter'
+    _relatedPath='/programming/dart'
   } else if (/(git)/g.test(topic)) {
     console.log(`${topic}!!!`)
     _pageName = 'Git'
@@ -237,6 +251,13 @@ function createSubMetaInfo(topic) {
     _category=`AI\n  - ${_pageName}`
     _tag='ai\n  - artificial-intelligence\n  - llm\n  - large-language-model'
     _relatedPath='/ai/llm'
+  } else if (/(mcp)/g.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'MCP'
+    _icon='iconfont icon-mcp'
+    _category=`AI\n  - LLM\n  - ${_pageName}`
+    _tag='ai\n  - artificial-intelligence\n  - llm\n  - large-language-model\n  - mcp\n  - model-context-protocol'
+    _relatedPath='/ai/mcp'
   }
 
   return {

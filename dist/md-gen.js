@@ -934,7 +934,7 @@ function fetchDockerBlog(path='') {
 
     const meta = {
       lang: 'en-US',
-      title: (`${ogData['og:title']}`?.replace(/( \| )|(Docker Blog|Docker)/g, '') ?? 
+      title: (`${ogData['og:title']}`?.replace(/( \| )|(Docker Blog)/g, '') ?? 
         (document.querySelector('h1')?.textContent)?.trim()).replace(/"/g, "”"),
       description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: 'docker', // topics[0] ?? '',
