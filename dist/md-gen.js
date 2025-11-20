@@ -500,6 +500,116 @@ function fetchCssTricks(path = '') {
   }
 }
 
+function fetchPiccalilLiBlog(path="") {
+  console.log(`fetchPiccalilLiBlog ... path: ${path}`)
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const [ author, topic ] = [...document.querySelectorAll('.hero__meta.cluster a')].map((e) => {
+      return {
+        content: e?.textContent,
+        link: `https://piccalil.li${e?.getAttribute('href')}`
+      }
+    })
+
+    const meta = {
+      title: ogData['og:title']?.trim(),
+      description: ogData['og:description'].replace(/"/g, "”"),
+      topic: topic?.content?.toLowerCase(),
+      author: author?.content,
+      authorUrl: author?.link,
+      datePublished: convertDateFormat(
+        document.querySelector('.hero__meta.cluster time')
+        ?.getAttribute('datetime') ?? ''),
+      baseUrl: 'https://piccalil.li',
+      articleBasePath: 'piccalil.li',
+      articleOriginPath: `blog/${path}`,
+      articlePath: path,
+      logo: 'https://piccalil.li/favicons/favicon.ico',
+      bgRGBA: '253,208,0',
+      coverUrl: `${ogData['og:image']}`
+    }
+    
+    const codeBlockWrapper = [...document.querySelectorAll('.code-block-wrapper')]
+    codeBlockWrapper.forEach((e) => {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      // pre안 내용정리
+      let pre = e.querySelector('pre')
+      let astroWrapper = pre.querySelector('astro-slot')
+      pre.innerHTML = astroWrapper.innerHTML
+      console.log(pre)
+      // pre를 밖으로
+      e.parentNode.insertBefore(pre, e)
+      e.remove()
+      // e.innerHTML = pre.outerHTML
+    })
+    const codepenWrapper = [...document.querySelectorAll('.codepen-wrapper')]
+    codepenWrapper.forEach((e) => {
+      const raw = JSON.parse(e?.querySelector('astro-island')?.getAttribute("props"))
+      const link = e?.querySelector('a.edit-on-codepen')?.getAttribute("href") ?? ""
+      const [ usernameFound, idFound ] = link.replace(/(https:\/\/)|(codepen\.io\/)/g, '').split('/pen/')
+      const json = { 
+        ...raw,
+        view: raw?.view[1],
+        title: raw?.title[1],
+        username: usernameFound,
+        id: idFound || raw?.id[1],
+        editable: raw?.editable[1],
+        height: raw?.height[1]
+      }
+      // TODO: 태그 변경?
+      /* const tag2Replace = `
+<!--
+<CodePen
+  user="${usernameFound}"
+  slug-hash="${json.id}"
+  title="${json.title}"
+  :default-tab="['css','result']"
+  :theme="$isDarkmode ? 'dark': 'light'"/>
+-->
+`
+      console.log(tag2Replace)
+      const el2Replace = e.parentElement.createElement(tag2Replace)
+      e.parentNode.insertBefore(el2Replace, e)
+      e.remove() */
+    })
+    /* const pres = [...document.querySelectorAll('pre')]
+    pres.forEach((e) => {
+      let currentHtml = e.innerHTML;
+      console.log(e.innerHTML)
+      let parentHtml = e.parentElement
+      let gparentHtml = parentHtml.parentElement
+      let ggparentHtml = gparentHtml.parentElement
+      let gggparentHtml = ggparentHtml.parentElement
+      parentHtml.remove()
+      gparentHtml.remove()
+      ggparentHtml.remove()
+      // gggparentHtml.remove()
+    }) */
+
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    let articleContent = document.querySelector('.article').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = mdContent.replace(/\[permalink\]\(#.*\)/g, '')
+      .replace(/\[Advert\!\[.*\)/g, '')
+      .replace(/\t/g, "  ") // tab -> 2-space indentation
+      .replace()
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
 function fetchSmashingMagazineBlog() {
   console.log('fetchSmashingMagazineBlog ... ')
   try {
@@ -647,7 +757,7 @@ function fetchLearnK8sBlog() {
       filename: `${meta.articlePath}.md`,
       text: mdContent
     };
-  } catch (error) { ppop
+  } catch (error) {
     console.error('Failed to copy JSON:', error);
   }
 }
