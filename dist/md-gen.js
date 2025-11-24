@@ -435,6 +435,21 @@ function fetchFrontendMastersBlog(path = '') {
       bgRGBA: '188,75,52',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
     }
+
+    const codepenWrapper = [...document.querySelectorAll('.cp_embed_wrapper > iframe')]
+    const tags2Replace = codepenWrapper.map((e) => {
+      const [ usernameFound, idFound] = e.getAttribute('src')?.replace(/\/\/codepen\.io\//g, "")
+        ?.replace(/\?.*/g, "").split("/embed/")
+      // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
+      const titleFound = "N/A" // SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with 
+      return `<CodePen
+  user="${usernameFound}"
+  slug-hash="${idFound}"
+  title="${titleFound}"
+  :default-tab="['css','result']"
+  :theme="$isDarkmode ? 'dark': 'light'"/>`
+    })
+
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('.article-content').innerHTML
@@ -442,7 +457,16 @@ function fetchFrontendMastersBlog(path = '') {
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
-    mdContent = mdContent.replace(/(\`Code language\:.*\(*\))/g, '\n\`\`\`') // ol처리
+    mdContent = mdContent.replace(/(\`Code language\:.*\(*\))/g, '\n\`\`\`')
+      .replace(/\[\]\(\#.*\)/g, "") // remove empty tag
+
+    let i = 0; // Initialize counter
+    mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
+        const currentReplacement = tags2Replace[i];
+        i++; // Increment for next time
+        return currentReplacement;
+    });
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -483,6 +507,21 @@ function fetchCssTricks(path = '') {
       bgRGBA: '17,17,17',
       coverUrl: `${ogData['og:image']?.replace(/\https:\/\/www\./g, 'https://')?.replace(/^\/\//g, 'https://i0.wp.com/')}`
     }
+
+    const codepenWrapper = [...document.querySelectorAll('.cp_embed_wrapper > iframe')]
+    const tags2Replace = codepenWrapper.map((e) => {
+      const [ usernameFound, idFound] = e.getAttribute('src')?.replace(/\/\/codepen\.io\//g, "")
+        ?.replace(/\?.*/g, "").split("/embed/")
+      // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
+      const titleFound = "N/A" // SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with 
+      return `<CodePen
+  user="${usernameFound}"
+  slug-hash="${idFound}"
+  title="${titleFound}"
+  :default-tab="['css','result']"
+  :theme="$isDarkmode ? 'dark': 'light'"/>`
+    })
+
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('article .article-content').innerHTML
@@ -491,6 +530,14 @@ function fetchCssTricks(path = '') {
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = mdContent.replace(/\[\]\(#.*\)/g, '')
+    
+    let i = 0; // Initialize counter
+    mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
+        const currentReplacement = tags2Replace[i];
+        i++; // Increment for next time
+        return currentReplacement;
+    });
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent

@@ -208,7 +208,8 @@ document.addEventListener('DOMContentLoaded', () => {
       btnPiccalilLiBlog.disabled = false
       btnPiccalilLiBlog.style.display = 'block';
       labelArticlePath.value = tab.url
-        .replace(/(https:\/\/)|(www\.)|(piccalil\.li\/)(blog\/)/g, '')
+        .replace(/(https:\/\/)|(www\.)|(piccalil\.li\/)|(blog\/)/g, '')
+        .replace(/(\/)/g, '')
     } else if (/smashingmagazine\.com\//g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
