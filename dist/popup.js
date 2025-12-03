@@ -44,6 +44,8 @@ const btnRealPythonBlog = document.getElementById('fetch-realpython-blog');
 const btnDockerBlog = document.getElementById('fetch-docker-blog');
 const btnEventDrivenBlog = document.getElementById('fetch-event-driven-blog');
 const btnGosolveBlog = document.getElementById('fetch-gosolve-blog');
+const btnBramusBlog = document.getElementById('fetch-bramus-blog');
+const btnUnaBlog = document.getElementById('fetch-una-blog');
 const btnTechKakaoBlog = document.getElementById('fetch-tech-kakao-blog');
 const btnTechKakaoPayBlog = document.getElementById('fetch-tech-kakao-pay-blog');
 const btnYozmArticle = document.getElementById('fetch-yozm-article');
@@ -93,9 +95,9 @@ document.addEventListener('DOMContentLoaded', () => {
   [
     btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnCodeMazeBlog, btnCSharpcornerBlog, btnHackingWithSwiftBlog, btnDroidconBlog, btnFrontendMastersBlog
     , btnCssTricksBlog, btnPiccalilLiBlog, btnSmashinMagazineBlog, btnDigitalOceanBlog, btnLearnK8sBlog, btnKtAcademyBlog
-    , btnKotzillaBlog , btnLogrocketBlog, btnRealPythonBlog, btnDockerBlog, btnEventDrivenBlog, btnGosolveBlog, btnItsFossBlog
-    , btnTecmintBlog, btnOutcomeSchoolBlog, labelArticlePath, btnTechKakaoBlog, btnTechKakaoPayBlog, btnYozmArticle, btnD2NaverArticle
-    , btnCopyMessage 
+    , btnKotzillaBlog , btnLogrocketBlog, btnRealPythonBlog, btnDockerBlog, btnEventDrivenBlog, btnGosolveBlog, btnBramusBlog
+    , btnUnaBlog, btnItsFossBlog , btnTecmintBlog, btnOutcomeSchoolBlog, labelArticlePath, btnTechKakaoBlog, btnTechKakaoPayBlog
+    , btnYozmArticle, btnD2NaverArticle, btnCopyMessage 
   ].forEach((e) => {
     e.style.display = 'none';
   });
@@ -319,6 +321,26 @@ document.addEventListener('DOMContentLoaded', () => {
       btnGosolveBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|(gosolve\.io\/)|/g, '')
+    } else if (/bram\.us\//g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(17,17,17,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://bram.us/favicon.ico")}<span>bram.us</span>`;
+      btnBramusBlog.disabled = false
+      btnBramusBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(bram\.us\/)|(\d{4}\/\d{2}\/\d{2}\/)/g, '')
+    } else if (/una\.im\//g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(156,90,242,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://una.im/favicon.svg")}<span>una.im</span>`;
+      btnUnaBlog.disabled = false
+      btnUnaBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(bram\.us\/)|(\d{4}\/\d{2}\/\d{2}\/)/g, '')
     } else if (/itsfoss\.com/g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
@@ -502,6 +524,8 @@ btnRealPythonBlog.addEventListener('click', async () =>        await onClickWebS
 btnDockerBlog.addEventListener('click', async () =>            await onClickWebScraping('FETCH_DOCKER_BLOG'));
 btnEventDrivenBlog.addEventListener('click', async () =>       await onClickWebScraping('FETCH_EVENT_DRIVEN_BLOG'));
 btnGosolveBlog.addEventListener('click', async () =>           await onClickWebScraping('FETCH_GOSOLVE_BLOG'));
+btnBramusBlog.addEventListener('click', async () =>            await onClickWebScraping('FETCH_BRAMUS_BLOG'));
+btnUnaBlog.addEventListener('click', async () =>               await onClickWebScraping('FETCH_UNA_BLOG'));
 btnItsFossBlog.addEventListener('click', async() =>            await onClickWebScraping('FETCH_ITS_FOSS_BLOG'));
 btnTecmintBlog.addEventListener('click', async() =>            await onClickWebScraping('FETCH_TECMINT_BLOG'));
 btnTechKakaoBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_TECH_KAKAO'));

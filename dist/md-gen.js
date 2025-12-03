@@ -87,6 +87,21 @@ function fetchFreeCodeCampNews() {
       bgRGBA: '10,10,35',
       coverUrl: `${ogData['og:image']}`
     }
+
+    const ytWrapper = [...document.querySelectorAll('.embed-wrapper > iframe')]
+    const ytTags2Replace = ytWrapper.map((e) => {
+      const idFound = e.getAttribute("src")
+        ?.replace(/(https:\/\/)|(www\.)|(youtube\.com\/embed\/)|(\?si=.*)/g, "")
+      return `<VidStack src="youtube/${idFound}" />`
+    })
+    for (let e of ytWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      const pEl = document.createElement('p');
+      pEl.textContent = `Youtube Embed Fallback`;
+      e.replaceWith(pEl)
+    }
+
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('.post-content').innerHTML
@@ -95,7 +110,15 @@ function fetchFreeCodeCampNews() {
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = mdContent.replace(/\[freeCodeCamp\.org\]/g, '[<FontIcon icon="fa-brands fa-free-code-camp"/>freeCodeCamp.org]')
-      return {
+    
+    let i = 0; // Initialize counter
+    mdContent = mdContent.replace(/Youtube\sEmbed\sFallback/g, (match) => {
+        const currentReplacement = ytTags2Replace[i];
+        i++; // Increment for next time
+        return currentReplacement;
+    });
+
+    return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
     };
@@ -1247,6 +1270,203 @@ function fetchGosolveBlog(path = "") {
   }
 }
 
+function fetchBramusBlog(path = "") {
+  console.log(`fetchBramusBlog ... path: ${path}`)
+  const topics = [...document.querySelectorAll('.tags-links > a')]?.map((e) => e?.textContent?.toLowerCase())
+  
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: (`${ogData['og:title']}` ?? (document.querySelector('h1')?.textContent)?.trim()).replace(/"/g, "”"),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: topics[0] || 'css',
+      author: document.querySelector('.author.vcard > a')?.textContent || '',
+      authorUrl: document.querySelector('.author.vcard > a')?.getAttribute("href")?.replace(/https\:\/\/www\./g, "https://") ?? '',
+      datePublished: convertDateFormat(
+        document.querySelector('time.entry-date.published')?.getAttribute("datetime") ?? ''
+      ),
+      baseUrl: 'https://bram.us',
+      articleBasePath: 'bram.us',
+      articlePath: `${ogData['og:url']}`
+                      .replace(/(https:\/\/)|(www\.)|(una\.im\/)|(\d{4}\/\d{2}\/\d{2}\/)/g, '')
+                      .replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+                      .replace(/(https:\/\/)|(www\.)|(una\.im\/)/g, ''),
+      logo: 'https://bramu.us/favicon.ico',
+      bgRGBA: '17,17,17',
+      coverUrl: `${ogData['og:image'].replace(/https:\/\/www\./g, 'https://')}`
+    }
+
+    const ytWrapper = [...document.querySelectorAll('figure > iframe')]
+    const ytTags2Replace = ytWrapper.map((e) => {
+      const idFound = e.getAttribute("src")
+        ?.replace(/(https:\/\/)|(www\.)|(youtube\.com\/embed\/)|(\?si=.*)/g, "")
+      return `<VidStack src="youtube/${idFound}" />`
+    })
+    for (let e of ytWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      const pEl = document.createElement('p');
+      pEl.textContent = `Youtube Embed Fallback`;
+      e.replaceWith(pEl)
+    }
+
+    const codepenWrapper = [...document.querySelectorAll('p > iframe, .cp_embed_wrapper > iframe')]
+    const cpTags2Replace = codepenWrapper.map((e) => {
+      const [ usernameFound, idFound] = e.getAttribute('src')
+        ?.replace(/(https:\/\/)|(codepen\.io\/)/g, "")
+        ?.replace(/\?.*/g, "").split("/embed/")
+      // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
+      const titleFound = e.getAttribute("title") || "N/A" // SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with 
+      return `<CodePen
+  user="${usernameFound}"
+  slug-hash="${idFound}"
+  title="${titleFound}"
+  :default-tab="['css','result']"
+  :theme="$isDarkmode ? 'dark': 'light'"/>`
+    })
+
+    for (let e of codepenWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      const pEl = document.createElement('p');
+      pEl.textContent = `CodePen Embed Fallback`;
+      e.replaceWith(pEl)
+    }
+    
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.entry-content').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
+    mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
+          .replace(/\[\]\(#.*\)/g, '')
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+
+    let i = 0; // Initialize counter
+    mdContent = mdContent.replace(/Youtube\sEmbed\sFallback/g, (match) => {
+        const currentReplacement = ytTags2Replace[i];
+        i++; // Increment for next time
+        return currentReplacement;
+    });
+    i=0;
+    mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
+      const currentReplacement = cpTags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
+    });
+    
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+function fetchUnaBlog(path = "") {
+  console.log(`fetchUnaBlog ... path: ${path}`)
+  const topics = [...document.querySelectorAll('.tags-links > a')]?.map((e) => e?.textContent?.toLowerCase())
+  
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: (`${ogData['og:title'].replace(/una\.im\s\|\s/g, "")}` ?? (document.querySelector('h1')?.textContent)?.trim()).replace(/"/g, "”"),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: topics[0] || 'css',
+      author: "Una Kravets",
+      authorUrl: "https://una.im/about",
+      datePublished: convertDateFormat(
+        document.querySelector('.date time')?.getAttribute("datetime") ?? ''
+      ),
+      baseUrl: 'https://una.im',
+      articleBasePath: 'una.im',
+      articlePath: `${ogData['og:url']}`
+                      .replace(/(https:\/\/)|(www\.)|(una\.im\/)/g, '')
+                      .replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+                      .replace(/(https:\/\/)|(www\.)|(una\.im\/)/g, ''),
+      logo: 'https://una.im/favicon.svg',
+      bgRGBA: '156,90,242',
+      coverUrl: `${ogData['og:image'].replace(/https:\/\/www\./g, 'https://')}`
+    }
+
+    const ytWrapper = [...document.querySelectorAll('figure > iframe')]
+    const ytTags2Replace = ytWrapper.map((e) => {
+      const idFound = e.getAttribute("src")
+        ?.replace(/(https:\/\/)|(www\.)|(youtube\.com\/embed\/)|(\?si=.*)/g, "")
+      return `<VidStack src="youtube/${idFound}" />`
+    })
+    for (let e of ytWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      const pEl = document.createElement('p');
+      pEl.textContent = `Youtube Embed Fallback`;
+      e.replaceWith(pEl)
+    }
+
+    const codepenWrapper = [...document.querySelectorAll('p > iframe, .cp_embed_wrapper > iframe')]
+    const cpTags2Replace = codepenWrapper.map((e) => {
+      const [ usernameFound, idFound] = e.getAttribute('src')
+        ?.replace(/(https:\/\/)|(codepen\.io\/)/g, "")
+        ?.replace(/\?.*/g, "").split("/embed/")
+      // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
+      const titleFound = e.getAttribute("title") || "N/A" // SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with 
+      return `<CodePen
+  user="${usernameFound}"
+  slug-hash="${idFound}"
+  title="${titleFound}"
+  :default-tab="['css','result']"
+  :theme="$isDarkmode ? 'dark': 'light'"/>`
+    })
+
+    for (let e of codepenWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      const pEl = document.createElement('p');
+      pEl.textContent = `CodePen Embed Fallback`;
+      e.replaceWith(pEl)
+    }
+    
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('main > article').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
+    mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
+          .replace(/\[\]\(#.*\)/g, '')
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+
+    let i = 0; // Initialize counter
+    mdContent = mdContent.replace(/Youtube\sEmbed\sFallback/g, (match) => {
+        const currentReplacement = ytTags2Replace[i];
+        i++; // Increment for next time
+        return currentReplacement;
+    });
+    i=0;
+    mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
+      const currentReplacement = cpTags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
+    });
+    
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
 
 function fetchItsFossBlog() {
   console.log('fetchItsFossBlog ... ')
