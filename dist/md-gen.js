@@ -1291,10 +1291,10 @@ function fetchBramusBlog(path = "") {
       baseUrl: 'https://bram.us',
       articleBasePath: 'bram.us',
       articlePath: `${ogData['og:url']}`
-                      .replace(/(https:\/\/)|(www\.)|(una\.im\/)|(\d{4}\/\d{2}\/\d{2}\/)/g, '')
+                      .replace(/(https:\/\/)|(www\.)|(bram\.us\/)|(\d{4}\/\d{2}\/\d{2}\/)/g, '')
                       .replace(/\//g, ''),
       articleOriginPath: `${ogData['og:url']}`
-                      .replace(/(https:\/\/)|(www\.)|(una\.im\/)/g, ''),
+                      .replace(/(https:\/\/)|(www\.)|(bram\.us\/)/g, ''),
       logo: 'https://bramu.us/favicon.ico',
       bgRGBA: '17,17,17',
       coverUrl: `${ogData['og:image'].replace(/https:\/\/www\./g, 'https://')}`
