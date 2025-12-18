@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "chan-content-mgr: My Personal Content Manager",
   "description": "Run JavaScript to manage contents",
-  "version": "1.0.25",
+  "version": "1.0.26",
   "permissions": ["tabs", "clipboardWrite", "storage", "activeTab", "scripting"],
   "action": {
     "default_popup": "popup.html",

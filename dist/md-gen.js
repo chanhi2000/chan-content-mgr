@@ -1468,6 +1468,110 @@ function fetchUnaBlog(path = "") {
   }
 }
 
+function fetchCssTipBlog(path = "") {
+  console.log(`fetchCssTipBlog ... path: ${path}`)
+  
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: (`${ogData['og:title']}` ?? (document.querySelector('main > h1')?.textContent)?.trim()).replace(/"/g, "”"),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'css',
+      author: document.querySelector('meta[name="author"]')?.content,
+      authorUrl: "https://css-tip.com/about",
+      datePublished: convertDateFormat(
+        document.querySelectorAll('main > time')[0]?.getAttribute("datetime") ?? ''
+      ),
+      baseUrl: 'https://css-tip.com',
+      articleBasePath: 'css-tip.com',
+      articlePath: `${ogData['og:url']}`
+                      .replace(/(https:\/\/)|(www\.)|(css-tip\.com\/)/g, '')
+                      .replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+                      .replace(/(https:\/\/)|(www\.)|(css-tip\.com\/)/g, ''),
+      logo: 'https://css-tip.com/img/fav.png',
+      bgRGBA: '111,162,204',
+      coverUrl: `https://css-tip.com${ogData['og:image'].replace(/https:\/\/www\./g, 'https://')}`
+    }
+    
+    const pretags = [...document.querySelectorAll('pre')]
+    pretags?.forEach((e) => {
+      console.log(e.innerHTML)
+      let currentHtml = e.innerHTML;
+    })
+
+    /* const ytWrapper = [...document.querySelectorAll('figure > iframe')]
+    const ytTags2Replace = ytWrapper.map((e) => {
+      const idFound = e.getAttribute("src")
+        ?.replace(/(https:\/\/)|(www\.)|(youtube\.com\/embed\/)|(\?si=.*)/g, "")
+      return `<VidStack src="youtube/${idFound}" />`
+    })
+    for (let e of ytWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      const pEl = document.createElement('p');
+      pEl.textContent = `Youtube Embed Fallback`;
+      e.replaceWith(pEl)
+    } */
+
+    const codepenWrapper = [...document.querySelectorAll('.cp_embed_wrapper > iframe')]
+    const cpTags2Replace = codepenWrapper.map((e) => {
+      const [ usernameFound, idFound] = e.getAttribute('src')
+        ?.replace(/(https:\/\/)|(codepen\.io\/)/g, "")
+        ?.replace(/\?.*/g, "").split("/embed/")
+      // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
+      const titleFound = e.getAttribute("title") || "N/A" // SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with 
+      return `<CodePen
+  user="${usernameFound}"
+  slug-hash="${idFound}"
+  title="${titleFound}"
+  :default-tab="['css','result']"
+  :theme="$isDarkmode ? 'dark': 'light'"/>`
+    })
+
+    for (let e of codepenWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      const pEl = document.createElement('p');
+      pEl.textContent = `CodePen Embed Fallback`;
+      e.replaceWith(pEl)
+    }
+    
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('main').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
+    mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
+          .replace(/\[\]\(#.*\)/g, '')
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+
+    /* let i = 0; // Initialize counter
+    mdContent = mdContent.replace(/Youtube\sEmbed\sFallback/g, (match) => {
+        const currentReplacement = ytTags2Replace[i];
+        i++; // Increment for next time
+        return currentReplacement;
+    }); */
+    let i=0;
+    mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
+      const currentReplacement = cpTags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
+    });
+    
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
 function fetchItsFossBlog() {
   console.log('fetchItsFossBlog ... ')
   try {
