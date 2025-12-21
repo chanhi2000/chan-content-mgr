@@ -547,7 +547,7 @@ function fetchCssTricks(path = '') {
 
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
-    const articleContent = document.querySelector('article .article-content').innerHTML
+    const articleContent = document.querySelector('article .article-content, .article-content-wrap .article-content').innerHTML
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
@@ -1114,7 +1114,7 @@ function fetchDockerBlog(path='') {
 
     const meta = {
       lang: 'en-US',
-      title: (`${ogData['og:title']}`?.replace(/( \| )|(Docker Blog)/g, '') ?? 
+      title: (`${ogData['og:title']}`?.replace(/(\s\|\s)|(Docker\sBlog)/g, '') ?? 
         (document.querySelector('h1')?.textContent)?.trim()).replace(/"/g, "”"),
       description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: 'docker', // topics[0] ?? '',
@@ -1396,6 +1396,105 @@ function fetchUnaBlog(path = "") {
                       .replace(/(https:\/\/)|(www\.)|(una\.im\/)/g, ''),
       logo: 'https://una.im/favicon.svg',
       bgRGBA: '156,90,242',
+      coverUrl: `${ogData['og:image'].replace(/https:\/\/www\./g, 'https://')}`
+    }
+
+    const ytWrapper = [...document.querySelectorAll('figure > iframe')]
+    const ytTags2Replace = ytWrapper.map((e) => {
+      const idFound = e.getAttribute("src")
+        ?.replace(/(https:\/\/)|(www\.)|(youtube\.com\/embed\/)|(\?si=.*)/g, "")
+      return `<VidStack src="youtube/${idFound}" />`
+    })
+    for (let e of ytWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      const pEl = document.createElement('p');
+      pEl.textContent = `Youtube Embed Fallback`;
+      e.replaceWith(pEl)
+    }
+
+    const codepenWrapper = [...document.querySelectorAll('p > iframe, .cp_embed_wrapper > iframe')]
+    const cpTags2Replace = codepenWrapper.map((e) => {
+      const [ usernameFound, idFound] = e.getAttribute('src')
+        ?.replace(/(https:\/\/)|(codepen\.io\/)/g, "")
+        ?.replace(/\?.*/g, "").split("/embed/")
+      // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
+      const titleFound = e.getAttribute("title") || "N/A" // SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with 
+      return `<CodePen
+  user="${usernameFound}"
+  slug-hash="${idFound}"
+  title="${titleFound}"
+  :default-tab="['css','result']"
+  :theme="$isDarkmode ? 'dark': 'light'"/>`
+    })
+
+    for (let e of codepenWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      const pEl = document.createElement('p');
+      pEl.textContent = `CodePen Embed Fallback`;
+      e.replaceWith(pEl)
+    }
+    
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('main > article').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
+    mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
+          .replace(/\[\]\(#.*\)/g, '')
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+
+    let i = 0; // Initialize counter
+    mdContent = mdContent.replace(/Youtube\sEmbed\sFallback/g, (match) => {
+        const currentReplacement = ytTags2Replace[i];
+        i++; // Increment for next time
+        return currentReplacement;
+    });
+    i=0;
+    mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
+      const currentReplacement = cpTags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
+    });
+    
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+function fetchJoshWComeauBlog(path = "") {
+  console.log(`fetchJoshWComeauBlog ... path: ${path}`)
+  const topics = [...document.querySelectorAll('.tags-links > a')]?.map((e) => e?.textContent?.toLowerCase())
+  
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: (`${ogData['og:title'].replace(/\s•\sJosh\sW\.\sComeau/g, "")}` ?? (document.querySelector('h1')?.textContent)?.trim()).replace(/"/g, "”"),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: topics[0] || 'css',
+      author: "Josh W. Comeau",
+      authorUrl: "https://joshwcomeau.com/about-josh",
+      datePublished: convertDateFormat(
+        document.querySelector('.date time')?.getAttribute("datetime") ?? ''
+      ),
+      baseUrl: 'https://joshcomeau.com',
+      articleBasePath: 'joshcomeau.com',
+      articlePath: `${ogData['og:url']}`
+                      .replace(/(https:\/\/)|(www\.)|(joshcomeau\.com\/)/g, '')
+                      .replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+                      .replace(/(https:\/\/)|(www\.)|(joshcomeau\.com\/)/g, ''),
+      logo: 'https://joshcomeau.com/favicon.png',
+      bgRGBA: '128,159,255',
       coverUrl: `${ogData['og:image'].replace(/https:\/\/www\./g, 'https://')}`
     }
 
