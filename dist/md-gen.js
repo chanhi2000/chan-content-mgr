@@ -109,6 +109,7 @@ function fetchFreeCodeCampNews() {
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
     mdContent = mdContent.replace(/\[freeCodeCamp\.org\]/g, '[<FontIcon icon="fa-brands fa-free-code-camp"/>freeCodeCamp.org]')
     
     let i = 0; // Initialize counter
@@ -164,6 +165,7 @@ function fetchMilanJovanovicBlog() {
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
     mdContent = mdContent.replace(/\]\(\/blogs\/mnw/g, `](https://milanjovanovic.tech/blogs/mnw`)
     return {
       filename: `${meta.articlePath}.md`,
@@ -235,6 +237,7 @@ function fetchCodeMazeBlog() {
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
     mdContent = mdContent.replace(/\]\(\/blogs\/mnw/g, `](https://milanjovanovic.tech/blogs/mnw`)
     return {
       filename: `${meta.articlePath}.md`,
@@ -309,6 +312,7 @@ function fetchCSharpcornerBlog() {
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
     mdContent = mdContent.replace(/\]\(\/blogs\/mnw/g, `](https://milanjovanovic.tech/blogs/mnw`)
     return {
       filename: `${meta.articlePath}.md`,
@@ -365,6 +369,7 @@ function fetchHackingWithSwiftBlog(path = '') {
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -419,6 +424,7 @@ function fetchDroidconBlog(path = '') {
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -480,8 +486,10 @@ function fetchFrontendMastersBlog(path = '') {
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
     mdContent = mdContent.replace(/(\`Code language\:.*\(*\))/g, '\n\`\`\`')
       .replace(/\[\]\(\#.*\)/g, "") // remove empty tag
+      .replace(/\s\[\#\]\(\#.*\)/g, "") // remove empty tag
 
     let i = 0; // Initialize counter
     mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
@@ -552,6 +560,7 @@ function fetchCssTricks(path = '') {
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
     mdContent = mdContent.replace(/\[\]\(#.*\)/g, '')
     
     let i = 0; // Initialize counter
@@ -667,6 +676,7 @@ function fetchPiccalilLiBlog(path="") {
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
     mdContent = mdContent.replace(/\[permalink\]\(#.*\)/g, '')
       .replace(/\[Advert\!\[.*\)/g, '')
       .replace(/\t/g, "  ") // tab -> 2-space indentation
@@ -687,7 +697,7 @@ function fetchSmashingMagazineBlog() {
     const ogData = parseOgData();
 
     const meta = {
-      lang: 'ko-KR',
+      lang: 'en-US',
       title: `${ogData['og:title']}`.replace(/ — Smashing Magazine/g, ''),
       description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: '',
@@ -730,6 +740,10 @@ function fetchSmashingMagazineBlog() {
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+    mdContent = mdContent.replace(/\[\]\(\#.*\)/g, "") // remove empty tag
+      .replace(/\s\[\#\]\(\#.*\)/g, "") // remove empty tag
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -769,6 +783,7 @@ function fetchDigitalOceanBlog(path = '') {
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -823,6 +838,7 @@ function fetchLearnK8sBlog() {
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -880,6 +896,7 @@ function fetchKtAcademyBlog() {
       .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -933,6 +950,8 @@ function fetchKotzillaBlog() {
       .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -986,6 +1005,8 @@ function fetchOutcomeSchoolBlog() {
       .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -1042,6 +1063,8 @@ function fetchLogRocketBlog(path = '') {
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -1093,6 +1116,7 @@ function fetchRealPythonBlog(path = '') {
           .replace(/\[\]\(#.*"Permanent link"\)/g, '')
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
     
     return {
       filename: `${meta.articlePath}.md`,
@@ -1153,6 +1177,7 @@ function fetchDockerBlog(path='') {
           .replace(/\[\]\(#.*"Permanent link"\)/g, '')
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
     
     return {
       filename: `${meta.articlePath}.md`,
@@ -1203,6 +1228,7 @@ function fetchEventDrivenBlog(path = '') {
           .replace(/\[\]\(#.*\)/g, '')
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
     
     return {
       filename: `${meta.articlePath}.md`,
@@ -1260,6 +1286,7 @@ function fetchGosolveBlog(path = "") {
           .replace(/\[\]\(#.*\)/g, '')
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
     
     return {
       filename: `${meta.articlePath}.md`,
@@ -1346,6 +1373,7 @@ function fetchBramusBlog(path = "") {
           .replace(/\[\]\(#.*\)/g, '')
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
 
     let i = 0; // Initialize counter
     mdContent = mdContent.replace(/Youtube\sEmbed\sFallback/g, (match) => {
@@ -1445,6 +1473,7 @@ function fetchUnaBlog(path = "") {
           .replace(/\[\]\(#.*\)/g, '')
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
 
     let i = 0; // Initialize counter
     mdContent = mdContent.replace(/Youtube\sEmbed\sFallback/g, (match) => {
@@ -1544,6 +1573,7 @@ function fetchJoshWComeauBlog(path = "") {
           .replace(/\[\]\(#.*\)/g, '')
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
 
     let i = 0; // Initialize counter
     mdContent = mdContent.replace(/Youtube\sEmbed\sFallback/g, (match) => {
@@ -1648,6 +1678,7 @@ function fetchCssTipBlog(path = "") {
           .replace(/\[\]\(#.*\)/g, '')
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
 
     /* let i = 0; // Initialize counter
     mdContent = mdContent.replace(/Youtube\sEmbed\sFallback/g, (match) => {
@@ -1671,6 +1702,75 @@ function fetchCssTipBlog(path = "") {
   }
 }
 
+function fetchAdamArgyleBlog(path = "") {
+  console.log(`fetchAdamArgyleBlog ... path: ${path}`)
+  
+  const topics = [...document.querySelectorAll('section.BlogMeta.block-stack .Tags.inline-wrap span')]?.map((e) => e?.textContent?.replace(/\#/g, '')) 
+  
+  try {
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: (ogData['og:title'] ?? (document.querySelector('section.BlogMeta.block-stack h1')?.textContent)?.trim())?.replace(/"/g, "”")?.replace(/\s·\s.*/g, ''),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: topics,
+      author: 'Adam Argyle',
+      authorUrl: "https://front-end.social/@argyleink",
+      datePublished: convertDateFormat(
+        document.querySelectorAll('section.BlogMeta.block-stack .date-time time')[0]?.getAttribute("datetime") ?? ''
+      ),
+      baseUrl: 'https://nerdy.dev',
+      articleBasePath: 'nerdy.dev',
+      articlePath: path.replace(/\//g, ''),
+      articleOriginPath: path.replace(/\//g, ''),
+      logo: 'https://nerdy.dev/favicon.svg',
+      bgRGBA: '137,41,255',
+      coverUrl: `${ogData['og:image'].replace(/https:\/\/www\./g, 'https://')}`
+    }
+
+    const codepenWrapper = [...document.querySelectorAll('iframe.codepen-embed')]
+    const tags2Replace = codepenWrapper.map((e) => {
+      const [ usernameFound, idFound] = e.getAttribute('src')?.replace(/\/\/codepen\.io\//g, "")
+        ?.replace(/\?.*/g, "").split("/embed/")
+      // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
+      const titleFound = "N/A" // SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with 
+      return `<CodePen
+  user="${usernameFound}"
+  slug-hash="${idFound}"
+  title="${titleFound}"
+  :default-tab="['css','result']"
+  :theme="$isDarkmode ? 'dark': 'light'"/>`
+    })
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('cq-document-vi article.block-stack').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+    mdContent = mdContent.replace(/(\`Code language\:.*\(*\))/g, '\n\`\`\`')
+      .replace(/\[\]\(\#.*\)/g, "") // remove empty tag
+      .replace(/\s\[\#\]\(\#.*\)/g, "") // remove empty tag
+
+    let i = 0; // Initialize counter
+    mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
+        const currentReplacement = tags2Replace[i];
+        i++; // Increment for next time
+        return currentReplacement;
+    });
+    
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+
+}
 function fetchItsFossBlog() {
   console.log('fetchItsFossBlog ... ')
   try {
@@ -1712,6 +1812,7 @@ function fetchItsFossBlog() {
       .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -1773,6 +1874,7 @@ function fetchTecmintBlog() {
       .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -1823,6 +1925,7 @@ function fetchYozmArticle() {
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -1873,6 +1976,7 @@ function fetchD2Article(path = '') {
     mdContent = mdContent.replace(/!\[\]\(\/content\//g, '![](https://d2.naver.com/content/') // ol처리
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
     
     return {
       filename: `${meta.articlePath}.md`,
@@ -1920,6 +2024,7 @@ function fetchTechKakao() {
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -1966,6 +2071,7 @@ function fetchTechKakaoPay() {
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -2031,6 +2137,18 @@ function simplifyCodeblockLang(md = '') {
     .replace(/```(shell|bash)/g, '```sh')
     .replace(/```csharp/g, '```cs')
 
+}
+
+function transformLinks(md = '') {
+  console.log('md-gen > transformLinks ...')
+  if (md == '') {
+    console.log('EXIT: no content found ...')
+    return;
+  }
+  return md.replace(/\[(?=[^\]]*\]\(https:\/\/developer\.mozilla\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-firefox"/>') // Firefox
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*google\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-google"/>') // Google
+    .replace(/\[(?=[^\]]*\]\(https:\/\/(.*youtube\.com|youtu\.be)\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-youtube"/>') // Youtube
+    .replace(/\[(?=[^\]]*\]\(https:\/\/(en|kr)\.wikipedia\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-wikipedia-w"/>') // Wikipedia
 }
 
 function getTurndownResult(articleContent = '') {
