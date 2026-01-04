@@ -741,9 +741,9 @@ function fetchSmashingMagazineBlog() {
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
-    mdContent = mdContent.replace(/\[\]\(\#.*\)/g, "") // remove empty tag
-      .replace(/\s\[\#\]\(\#.*\)/g, "") // remove empty tag
-
+    mdContent = mdContent?.replace(/\[\]\(\#.*\)/g, "") // remove empty tag
+      ?.replace(/```\n\n(Copy)\n/g, "```\n")
+      
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -759,31 +759,56 @@ function fetchDigitalOceanBlog(path = '') {
     // Extract Open Graph metadata
     const ogData = parseOgData();
 
+    const siteMeta = JSON.parse(document.querySelector('script[type="application/ld+json"]')?.textContent) || {}
+
+    document.querySelector('#footer')?.remove()
+
     const meta = {
       lang: 'en-US',
       title: document.querySelector('h1').textContent,
       description: `${ogData['og:description']}`.replace(/"/g, "”"),
-      topic: '',
-      author: document.querySelector('.author').textContent.replace(/By\s/g, '') ?? '',
+      topic: siteMeta?.keywords?.toLowerCase() || '',
+      author: siteMeta?.author[0]?.name || "",
       datePublished: convertDateFormat(
-        document.querySelector('.jnatsz').textContent.replace(/Published on /g, '') ?? ''
+        siteMeta?.datePublished
       ),
       baseUrl: 'https://digitalocean.com',
       articleBasePath: 'digitalocean.com',
       articlePath: path.replace(/\//g, ''),
-      articleOriginPath: path.replace(/(https:\/\/)|(www\.)|(digitalocean\.com\/)|(community\/)|(tutorial\/)|(articles\/)/g, ''),
+      articleOriginPath: `community/tutorials/${path.replace(/(https:\/\/)|(www\.)|(digitalocean\.com\/)|(community\/)|(tutorial\/)|(articles\/)/g, '')}`,
       logo: 'https://digitalocean.com/_next/static/media/favicon.594d6067.ico',
       bgRGBA: '44,103,246',
       coverUrl: `${ogData['og:image']?.replace(/\https:\/\/www\./g, 'https://')}`
     }
+
+    const codeBlockWrapper = [...document.querySelectorAll('.code-toolbar')]
+    codeBlockWrapper.forEach((e) => {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      // pre안 내용정리
+      let pre = e.querySelector('pre')
+      let code = pre.querySelector('code')
+      code.className = pre.className;
+      console.log(pre)
+      // pre를 밖으로
+      e.parentNode.insertBefore(pre, e)
+      e.remove()
+      // e.innerHTML = pre.outerHTML
+    })
+
+    const elArticle = document.querySelectorAll('details')[0]?.parentNode
+
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
-    const articleContent = document.querySelector('.kfTVTG').innerHTML
+    const articleContent = (elArticle ?? document.querySelector('.bQhQdd'))?.innerHTML
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
+    mdContent = mdContent?.replace(/```\n\n(Copy)\n/g, "```\n")
+          ?.replace(/\[\]\(#.*\)/g, '')
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -2148,7 +2173,22 @@ function transformLinks(md = '') {
   return md.replace(/\[(?=[^\]]*\]\(https:\/\/developer\.mozilla\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-firefox"/>') // Firefox
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*google\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-google"/>') // Google
     .replace(/\[(?=[^\]]*\]\(https:\/\/(.*youtube\.com|youtu\.be)\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-youtube"/>') // Youtube
-    .replace(/\[(?=[^\]]*\]\(https:\/\/(en|kr)\.wikipedia\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-wikipedia-w"/>') // Wikipedia
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*\.wikipedia\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-wikipedia-w"/>') // Wikipedia
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*stackoverflow\.(co|com)\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-stack-overflow"/>') // Stackoverflow
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*reactjs\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-react"/>') // React.js
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*redux\.js\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-redux"/>') // Redux
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*expressjs\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-expressjs"/>') // Express.js
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*mongodb\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-mongodb"/>') // MongoDB
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*djangoproject\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-django"/>') // Django
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*openai\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-openai"/>') // OpenAI
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*docker\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-docker"/>') // Docker
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*kubernetes\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-k8s"/>') // Kubernetes
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*golang\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-golang"/>') // Kubernetes
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*codesandbox\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-codesandbox"/>') // CodeSandbox
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*w3\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-w3c"/>') // W3
+    .replace(/\](?=\(https:\/\/github\.com\/([^/)]+\/[^/)]+))/g, ' (<VPIcon icon="iconfont icon-github" />`$1`)]') // Github
+    .replace(/\](?=\(https:\/\/codepen\.io\/([^/]+)\/pen\/)/g, ' (<VPIcon icon="fa-brands fa-codepen" />`$1`)]') // Codepen
+    .replace(/\](?=\(https:\/\/medium\.com\/([^/]+))/g, ' (<VPIcon icon="fa-brands fa-medium" />`$1`)]') // Medium
 }
 
 function getTurndownResult(articleContent = '') {
