@@ -15,13 +15,13 @@ function fetchSiteInfo(url) {
     const ogData = parseOgData();
 
     let _title = ogData['og:title'] ?? ''
-    if (_title === undefined || _title === "undefined" || _title === "") 
+    if (_title === undefined || _title === "undefined" || _title === "")
       _title = document.querySelector('title')?.textContent?.trim() ?? ''
 
     let _description = `${ogData['og:description']}`?.replace(/"/g, "”") ?? ''
-    if (_description === undefined || _description === "undefined" || _description === "") 
+    if (_description === undefined || _description === "undefined" || _description === "")
       _description = document.querySelector('meta[name="description"]')?.getAttribute("content") ?? ''
-    
+
     let _url = ogData['og:url']?.replace(/www\./, '') ?? url
 
     const meta = {
@@ -42,9 +42,9 @@ function fetchSiteInfo(url) {
     var favicon = '';
     var nodeList = document.getElementsByTagName("link");
     for (var i = 0; i < nodeList.length; i++) {
-        if((nodeList[i].getAttribute("rel") == "icon")||(nodeList[i].getAttribute("rel") == "shortcut icon")) {
-            favicon = nodeList[i].getAttribute("href");
-        }
+      if ((nodeList[i].getAttribute("rel") == "icon") || (nodeList[i].getAttribute("rel") == "shortcut icon")) {
+        favicon = nodeList[i].getAttribute("href");
+      }
     }
     return favicon;
   }
@@ -57,28 +57,28 @@ function fetchFreeCodeCampNews() {
     // Extract Open Graph metadata
     const ogData = parseOgData();
 
-    const path= `${ogData['og:url']}`
-                    .replace(/https:\/\/www\.freecodecamp\.org\/news\//g, '')
-                    .replace(/\//g, '')
+    const path = `${ogData['og:url']}`
+      .replace(/https:\/\/www\.freecodecamp\.org\/news\//g, '')
+      .replace(/\//g, '')
 
     const meta = {
       title: document.querySelector('h1.post-full-title')
-          ?.textContent
-          ?.trim(),
+        ?.textContent
+        ?.trim(),
       description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: document.querySelector('.post-full-meta>a')
-          ?.textContent
-          ?.trim()
-          ?.toLowerCase()
-          ?.replace(/\#/g, '') ?? '',
+        ?.textContent
+        ?.trim()
+        ?.toLowerCase()
+        ?.replace(/\#/g, '') ?? '',
       author: document.querySelector('.author-card-name>a')
-          ?.textContent
-          ?.trim()
-          ?.split("\n")[0] ?? '',
+        ?.textContent
+        ?.trim()
+        ?.split("\n")[0] ?? '',
       authorUrl: `https://freecodecamp.org${document.querySelector('.author-card-name>a')?.getAttribute('href') ?? ''}`,
       datePublished: convertDateFormat(
         document.querySelector('.post-full-meta-date')
-        ?.getAttribute('datetime') ?? ''),
+          ?.getAttribute('datetime') ?? ''),
       baseUrl: 'https://freecodecamp.org',
       articleBasePath: 'freecodecamp.org',
       articleOriginPath: `news/${path}`,
@@ -111,12 +111,12 @@ function fetchFreeCodeCampNews() {
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
     mdContent = mdContent.replace(/\[freeCodeCamp\.org\]/g, '[<FontIcon icon="fa-brands fa-free-code-camp"/>freeCodeCamp.org]')
-    
+
     let i = 0; // Initialize counter
     mdContent = mdContent.replace(/Youtube\sEmbed\sFallback/g, (match) => {
-        const currentReplacement = ytTags2Replace[i];
-        i++; // Increment for next time
-        return currentReplacement;
+      const currentReplacement = ytTags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
     });
 
     return {
@@ -138,18 +138,18 @@ function fetchMilanJovanovicBlog() {
     const ogData = parseOgData();
 
     const path = `${ogData['og:url']}`
-                    .replace(/https:\/\/www\.milanjovanovic\.tech\/blog\//g, '')
-                    .replace(/\//g, '')
+      .replace(/https:\/\/www\.milanjovanovic\.tech\/blog\//g, '')
+      .replace(/\//g, '')
     const meta = {
       title: document.querySelector('h1')
-          ?.textContent
-          ?.trim(),
+        ?.textContent
+        ?.trim(),
       description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: 'csharp',
       author: 'Milan Jovanović',
       datePublished: convertDateFormat(
         document.querySelector('time.uppercase')
-        ?.getAttribute('datetime') ?? ''),
+          ?.getAttribute('datetime') ?? ''),
       baseUrl: 'https://milanjovanovic.tech',
       articleBasePath: 'milanjovanovic.tech',
       articleOriginPath: `blog/${path}`,
@@ -192,12 +192,12 @@ function fetchCodeMazeBlog() {
     const ogData = parseOgData();
 
     const path = `${ogData['og:url']}`
-                    .replace(/(https:\/\/)|(www\.)|(code-maze\.com\/)/g, '')
-                    .replace(/\//g, '')
+      .replace(/(https:\/\/)|(www\.)|(code-maze\.com\/)/g, '')
+      .replace(/\//g, '')
     const meta = {
       title: document.querySelector('.post-header .entry-title')
-          ?.textContent
-          ?.trim(),
+        ?.textContent
+        ?.trim(),
       description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: 'csharp',
       author: document.querySelector('.post-meta.vcard .url.fn')?.textContent.trim() ?? '',
@@ -213,7 +213,7 @@ function fetchCodeMazeBlog() {
       bgRGBA: '22,22,22',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
     }
-    
+
     const pres = [...document.querySelectorAll('pre')]
     pres.forEach((e) => {
       console.log(e.innerHTML)
@@ -256,25 +256,25 @@ function fetchCSharpcornerBlog() {
     const ogData = parseOgData();
 
     const path = `${ogData['og:url']}`
-                    .replace(/(https:\/\/)|(www\.)|(c-sharpcorner\.com\/)/g, '')
-                    .replace(/article\//g, '')
-                    .replace(/\//g, '')
+      .replace(/(https:\/\/)|(www\.)|(c-sharpcorner\.com\/)/g, '')
+      .replace(/article\//g, '')
+      .replace(/\//g, '')
     const meta = {
       title: document.querySelector('.post-title')?.textContent
-          ?.trim(),
+        ?.trim(),
       description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: document.querySelector('.post-data-listing-wrap .media .media-left #CategoryLink')
-          ?.getAttribute('href')
-          ?.trim()
-          ?.replace(/(https:\/\/)|(www\.)|(c-sharpcorner\.com\/)|(technologies\/)/g, '')
-          ?.toLowerCase() || 'csharp', 
+        ?.getAttribute('href')
+        ?.trim()
+        ?.replace(/(https:\/\/)|(www\.)|(c-sharpcorner\.com\/)|(technologies\/)/g, '')
+        ?.toLowerCase() || 'csharp',
       author: document.querySelector('.user-details .publish-info .profile-control a.user-name')
-          ?.textContent
-          ?.trim() || '',
+        ?.textContent
+        ?.trim() || '',
       authorUrl: document.querySelector('.user-details .publish-info .profile-control a.user-name')
-          ?.getAttribute('href')
-          ?.replace(/(www\.)/, "")
-          ?? '',
+        ?.getAttribute('href')
+        ?.replace(/(www\.)/, "")
+        ?? '',
       datePublished: convertDateFormat(
         JSON.parse(document.querySelector('script[type="application/ld+json"]')?.textContent)?.datePublished
       ),
@@ -286,7 +286,7 @@ function fetchCSharpcornerBlog() {
       bgRGBA: '0,121,199',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
     }
-    
+
     /*
     const pres = [...document.querySelectorAll('pre')]
     pres.forEach((e) => {
@@ -332,15 +332,15 @@ function fetchHackingWithSwiftBlog(path = '') {
 
     const meta = {
       title: document.querySelector('h1.title')
-          ?.textContent
-          ?.trim(),
+        ?.textContent
+        ?.trim(),
       description: document.querySelector('h1.title')
-          ?.textContent
-          ?.trim().replace(/"/g, "”"),
+        ?.textContent
+        ?.trim().replace(/"/g, "”"),
       topic: 'swift',
       author: 'Paul Hudson',
       datePublished: convertDateFormat(
-          document.querySelector('time')
+        document.querySelector('time')
           ?.getAttribute('datetime') ?? ''),
       baseUrl: 'https://hackingwithswift.com',
       articleBasePath: 'hackingwithswift.com',
@@ -354,7 +354,7 @@ function fetchHackingWithSwiftBlog(path = '') {
     const customVpCard = {
       title: '',
       desc: 'Learn Swift coding for iOS with these free tutorials – learn Swift, iOS, and Xcode',
-      link:  `/${meta.articleBasePath}/${(meta.articlePath+'.md').replace(/[\w-]+\.md/g, '')}README.md`,
+      link: `/${meta.articleBasePath}/${(meta.articlePath + '.md').replace(/[\w-]+\.md/g, '')}README.md`,
       logo: meta.logo,
       background: "174,10,10"
     }
@@ -388,13 +388,13 @@ function fetchDroidconBlog(path = '') {
     const meta = {
       lang: 'en-US',
       title: ogData['og:title']?.trim()
-          ?.replace(/ – droidcon/g, ''),
+        ?.replace(/ – droidcon/g, ''),
       description: ogData['og:description'].replace(/"/g, "”"),
       topic: 'android',
       author: document.querySelector('.post-author-name.fn')?.textContent.trim() ?? '',
       datePublished: convertDateFormat(
         document.querySelector('time.post_date.published')
-        ?.getAttribute('datetime') ?? ''),
+          ?.getAttribute('datetime') ?? ''),
       baseUrl: 'https://droidcon.com',
       articleBasePath: 'droidcon.com',
       articlePath: path.replace(/(https:\/\/)|(www\.)|(droidcon\.com\/)|(\d{4}\/\d{2}\/\d{2}\/)/g, '')
@@ -444,10 +444,10 @@ function fetchFrontendMastersBlog(path = '') {
     const meta = {
       lang: 'en-US',
       title: document.querySelector('title')
-          ?.textContent
-          ?.trim()
-          ?.replace(/ – Frontend Masters Boost/g, '')
-          ?.replace(/ – Frontend Masters Blog/g, ''),
+        ?.textContent
+        ?.trim()
+        ?.replace(/ – Frontend Masters Boost/g, '')
+        ?.replace(/ – Frontend Masters Blog/g, ''),
       description: `${document.querySelector('meta[name="description"]')?.getAttribute("content") ?? ''}`.replace(/"/g, "”"),
       topic: 'css',
       author: document.querySelector('.author-and-time a.author-link')
@@ -455,7 +455,7 @@ function fetchFrontendMastersBlog(path = '') {
       authorUrl: document.querySelector('.author-and-time a.author-link')?.getAttribute('href') ?? '',
       datePublished: convertDateFormat(
         document.querySelector('.author-and-time time')
-        ?.getAttribute('datetime') ?? ''),
+          ?.getAttribute('datetime') ?? ''),
       baseUrl: 'https://frontendmasters.com',
       articleBasePath: 'frontendmasters.com',
       articlePath: path.replace(/\//g, ''),
@@ -467,7 +467,7 @@ function fetchFrontendMastersBlog(path = '') {
 
     const codepenWrapper = [...document.querySelectorAll('.cp_embed_wrapper > iframe')]
     const tags2Replace = codepenWrapper.map((e) => {
-      const [ usernameFound, idFound] = e.getAttribute('src')?.replace(/\/\/codepen\.io\//g, "")
+      const [usernameFound, idFound] = e.getAttribute('src')?.replace(/\/\/codepen\.io\//g, "")
         ?.replace(/\?.*/g, "").split("/embed/")
       // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
       const titleFound = "N/A" // SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with 
@@ -493,9 +493,9 @@ function fetchFrontendMastersBlog(path = '') {
 
     let i = 0; // Initialize counter
     mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
-        const currentReplacement = tags2Replace[i];
-        i++; // Increment for next time
-        return currentReplacement;
+      const currentReplacement = tags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
     });
 
     return {
@@ -516,7 +516,7 @@ function fetchCssTricks(path = '') {
     const meta = {
       lang: 'en-US',
       title: ogData['og:title']
-          ?.replace(/ \| CSS-Tricks/g, ''),
+        ?.replace(/ \| CSS-Tricks/g, ''),
       description: `${document.querySelector('meta[name="description"]')?.getAttribute("content") ?? ''}`
         .replace(/"/g, "”"),
       topic: 'css',
@@ -526,9 +526,9 @@ function fetchCssTricks(path = '') {
         ?.getAttribute('href') ?? '',
       datePublished: convertDateFormat(
         document.querySelector('header.mega-header .author-row time')
-        ?.getAttribute('datetime') || 
+          ?.getAttribute('datetime') ||
         document.querySelector('header.mega-header .author-row time')
-        ?.textContent?.trim() || ''
+          ?.textContent?.trim() || ''
       ),
       baseUrl: 'https://css-tricks.com',
       articleBasePath: 'css-tricks.com',
@@ -541,7 +541,7 @@ function fetchCssTricks(path = '') {
 
     const codepenWrapper = [...document.querySelectorAll('.cp_embed_wrapper > iframe')]
     const tags2Replace = codepenWrapper.map((e) => {
-      const [ usernameFound, idFound] = e.getAttribute('src')?.replace(/\/\/codepen\.io\//g, "")
+      const [usernameFound, idFound] = e.getAttribute('src')?.replace(/\/\/codepen\.io\//g, "")
         ?.replace(/\?.*/g, "").split("/embed/")
       // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
       const titleFound = "N/A" // SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with 
@@ -562,12 +562,12 @@ function fetchCssTricks(path = '') {
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
     mdContent = mdContent.replace(/\[\]\(#.*\)/g, '')
-    
+
     let i = 0; // Initialize counter
     mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
-        const currentReplacement = tags2Replace[i];
-        i++; // Increment for next time
-        return currentReplacement;
+      const currentReplacement = tags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
     });
 
     return {
@@ -579,13 +579,13 @@ function fetchCssTricks(path = '') {
   }
 }
 
-function fetchPiccalilLiBlog(path="") {
+function fetchPiccalilLiBlog(path = "") {
   console.log(`fetchPiccalilLiBlog ... path: ${path}`)
   try {
     // Extract Open Graph metadata
     const ogData = parseOgData();
 
-    const [ author, topic ] = [...document.querySelectorAll('.hero__meta.cluster a')].map((e) => {
+    const [author, topic] = [...document.querySelectorAll('.hero__meta.cluster a')].map((e) => {
       return {
         content: e?.textContent,
         link: `https://piccalil.li${e?.getAttribute('href')}`
@@ -600,7 +600,7 @@ function fetchPiccalilLiBlog(path="") {
       authorUrl: author?.link,
       datePublished: convertDateFormat(
         document.querySelector('.hero__meta.cluster time')
-        ?.getAttribute('datetime') ?? ''),
+          ?.getAttribute('datetime') ?? ''),
       baseUrl: 'https://piccalil.li',
       articleBasePath: 'piccalil.li',
       articleOriginPath: `blog/${path}`,
@@ -609,7 +609,7 @@ function fetchPiccalilLiBlog(path="") {
       bgRGBA: '253,208,0',
       coverUrl: `${ogData['og:image']}`
     }
-    
+
     const codeBlockWrapper = [...document.querySelectorAll('.code-block-wrapper')]
     codeBlockWrapper.forEach((e) => {
       let currentHtml = e.innerHTML;
@@ -628,8 +628,8 @@ function fetchPiccalilLiBlog(path="") {
     codepenWrapper.forEach((e) => {
       const raw = JSON.parse(e?.querySelector('astro-island')?.getAttribute("props"))
       const link = e?.querySelector('a.edit-on-codepen')?.getAttribute("href") ?? ""
-      const [ usernameFound, idFound ] = link.replace(/(https:\/\/)|(codepen\.io\/)/g, '').split('/pen/')
-      const json = { 
+      const [usernameFound, idFound] = link.replace(/(https:\/\/)|(codepen\.io\/)/g, '').split('/pen/')
+      const json = {
         ...raw,
         view: raw?.view[1],
         title: raw?.title[1],
@@ -705,14 +705,14 @@ function fetchSmashingMagazineBlog() {
       authorUrl: `https://smashingmagazine.com${document.querySelector('a.bio-image-link').getAttribute('href') ?? ''}`,
       datePublished: convertDateFormat(
         document.querySelector('time.article-header--date')
-        ?.getAttribute('datetime') ?? ''),
+          ?.getAttribute('datetime') ?? ''),
       baseUrl: 'https://smashingmagazine.com',
       articleBasePath: 'smashingmagazine.com',
       articlePath: `${ogData['og:url']}`
-                      .replace(/(https:\/\/)|(www\.)|(smashingmagazine\.com\/)|(\d{4}\/\d{2}\/)/g, '')
-                      .replace(/\//g, ''),
+        .replace(/(https:\/\/)|(www\.)|(smashingmagazine\.com\/)|(\d{4}\/\d{2}\/)/g, '')
+        .replace(/\//g, ''),
       articleOriginPath: `${ogData['og:url']}`
-                      .replace(/(https:\/\/)|(www\.)|(smashingmagazine\.com\/)/g, ''),
+        .replace(/(https:\/\/)|(www\.)|(smashingmagazine\.com\/)/g, ''),
       logo: 'https://smashingmagazine.com/images/favicon/favicon.svg',
       bgRGBA: '211,58,44',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
@@ -744,7 +744,7 @@ function fetchSmashingMagazineBlog() {
     mdContent = mdContent?.replace(/\[\]\(\#.*\)/g, "") // remove empty tag
       ?.replace(/\s\[\#\]\(\#.*\)/g, "") // remove empty tag
       ?.replace(/```\n\n(Copy)\n/g, "```\n")
-      
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -754,7 +754,7 @@ function fetchSmashingMagazineBlog() {
   }
 }
 
-function fetchOddBirdBlog(path="") {
+function fetchOddBirdBlog(path = "") {
   console.log(`fetchOddBirdBlog ... path: ${path}`)
 
   const topics = [...document.querySelectorAll('ul[inline-list="pill-set"]>li.pill-item>a.pill')].map((e) => {
@@ -769,19 +769,19 @@ function fetchOddBirdBlog(path="") {
       lang: 'en-US',
       title: `${ogData['og:title']}`?.replace(/(\s\|\sOddBird)/g, ''),
       description: `${ogData['og:description']}`?.replace(/"/g, "”"),
-      topic: topics.find((e) => ['css','javascript'].includes(e)),
+      topic: topics.find((e) => ['css', 'javascript'].includes(e)),
       author: document.querySelector('a.p-author').textContent ?? '',
       authorUrl: `https://oddbird.net${document.querySelector('a.p-author').getAttribute('href') ?? ''}`,
       datePublished: convertDateFormat(
         document.querySelector('#meta>.byline>time')
-        ?.getAttribute('datetime') ?? ''),
+          ?.getAttribute('datetime') ?? ''),
       baseUrl: 'https://oddbird.net',
       articleBasePath: 'oddbird.net',
       articlePath: `${ogData['og:url']}`
-                      .replace(/(https:\/\/)|(www\.)|(oddbird\.net\/)|(\d{4}\/\d{2}\/\d{2}\/)/g, '')
-                      .replace(/\//g, ''),
+        .replace(/(https:\/\/)|(www\.)|(oddbird\.net\/)|(\d{4}\/\d{2}\/\d{2}\/)/g, '')
+        .replace(/\//g, ''),
       articleOriginPath: `${ogData['og:url']}`
-                      .replace(/(https:\/\/)|(www\.)|(oddbird\.net\/)/g, ''),
+        .replace(/(https:\/\/)|(www\.)|(oddbird\.net\/)/g, ''),
       logo: 'https://oddbird.net/safari-pinned-tab.svg',
       bgRGBA: '145,208,222',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
@@ -837,7 +837,7 @@ function fetchOddBirdBlog(path="") {
       i++; // Increment for next time
       return currentReplacement;
     });
-      
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -901,7 +901,7 @@ function fetchDigitalOceanBlog(path = '') {
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
     mdContent = mdContent?.replace(/```\n\n(Copy)\n/g, "```\n")
-          ?.replace(/\[\]\(#.*\)/g, '')
+      ?.replace(/\[\]\(#.*\)/g, '')
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -912,8 +912,8 @@ function fetchDigitalOceanBlog(path = '') {
   }
 }
 
-function fetchLearnK8sBlog() {
-  console.log('fetchLearnK8sBlog ... ')
+function fetchLearnkubeBlog() {
+  console.log('fetchLearnkubeBlog ... ')
   try {
     // Extract Open Graph metadata
     const ogData = parseOgData();
@@ -928,15 +928,15 @@ function fetchLearnK8sBlog() {
       datePublished: convertDateFormat(
         document.querySelector('.f7.black-60.tc.ttu.b').textContent ?? ''
       ),
-      baseUrl: 'https://learnk8s.io',
-      articleBasePath: 'learnk8s.io',
+      baseUrl: 'https://learnkube.com',
+      articleBasePath: 'learnkube.com',
       articlePath: `${ogData['og:url']}`
-          .replace(/(https:\/\/)|(www\.)|(learnk8s\.io)/g, '')
-          .replace(/\//g, ''),
+        .replace(/(https:\/\/)|(www\.)|(learnkube\.com)/g, '')
+        .replace(/\//g, ''),
       articleOriginPath: `${ogData['og:url']}`
-          .replace(/(https:\/\/)|(www\.)|(learnk8s\.io)/g, '')
-          .replace(/\//g, ''),
-      logo: 'https://static.learnk8s.io/f7e5160d4744cf05c46161170b5c11c9.svg',
+        .replace(/(https:\/\/)|(www\.)|(learnkube\.com)/g, '')
+        .replace(/\//g, ''),
+      logo: 'https://static.learnkube.com/f7e5160d4744cf05c46161170b5c11c9.svg',
       bgRGBA: '102,152,204',
       coverUrl: `${ogData['og:image']?.replace(/\https:\/\/www\./g, 'https://')}`
     }
@@ -983,10 +983,10 @@ function fetchKtAcademyBlog() {
       baseUrl: 'https://kt.academy',
       articleBasePath: 'kt.academy',
       articlePath: `${ogData['og:url']}`
-                      .replace(/https:\/\/kt\.academy\/article\//g, '')
-                      .replace(/\//g, ''),
+        .replace(/https:\/\/kt\.academy\/article\//g, '')
+        .replace(/\//g, ''),
       articleOriginPath: `${ogData['og:url']}`
-                      .replace(/https:\/\/kt\.academy\/article\//g, ''),
+        .replace(/https:\/\/kt\.academy\/article\//g, ''),
       logo: 'https://kt.academy/logo.png',
       bgRGBA: '243,139,49',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
@@ -1044,10 +1044,10 @@ function fetchKotzillaBlog() {
       baseUrl: 'https://blog.kotzilla.io',
       articleBasePath: 'blog.kotzilla.io',
       articlePath: `${ogData['og:url']}`
-                      .replace(/https:\/\/blog\.kotzilla\.io\//g, '')
-                      .replace(/\//g, ''),
+        .replace(/https:\/\/blog\.kotzilla\.io\//g, '')
+        .replace(/\//g, ''),
       articleOriginPath: `${ogData['og:url']}`
-                      .replace(/https:\/\/blog\.kotzilla\.io\//g, ''),
+        .replace(/https:\/\/blog\.kotzilla\.io\//g, ''),
       logo: 'https://blog.kotzilla.io/hubfs/favicon.png',
       bgRGBA: '238,181,80',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
@@ -1098,8 +1098,8 @@ function fetchOutcomeSchoolBlog() {
       baseUrl: 'https://outcomeschool.com',
       articleBasePath: 'outcomeschool.com',
       articlePath: `${ogData['og:url']}`
-                      .replace(/(https:\/\/)|(www\.)|(outcomeschool\.com\/)|(blog\/)|/g, '')
-                      .replace(/\//g, ''),
+        .replace(/(https:\/\/)|(www\.)|(outcomeschool\.com\/)|(blog\/)|/g, '')
+        .replace(/\//g, ''),
       // articleOriginPath: `${ogData['og:url']}`
       //                 .replace(/(https:\/\/)|(www\.)|(outcomeschool\.com\/)|(blog\/)|/g, '')
       //                 .replace(/https:\/\/outcomeschool\.com\//g, ''),
@@ -1156,7 +1156,7 @@ function fetchLogRocketBlog(path = '') {
       baseUrl: 'https://blog.logrocket.com',
       articleBasePath: 'blog.logrocket.com',
       articlePath: path.replace(/https:\/\/blog\.logrocket\.com\//g, '')
-                      .replace(/\//g, ''),
+        .replace(/\//g, ''),
       logo: '/assets/image/blog.logrocket.com/favicon.png',
       bgRGBA: '112,76,182',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
@@ -1177,7 +1177,7 @@ function fetchLogRocketBlog(path = '') {
 
     const codepenWrapper = [...document.querySelectorAll('p > iframe, .cp_embed_wrapper > iframe')]
     const cpTags2Replace = codepenWrapper.map((e) => {
-      const [ usernameFound, idFound] = e.getAttribute('src')
+      const [usernameFound, idFound] = e.getAttribute('src')
         ?.replace(/(https:\/\/)|(codepen\.io\/)/g, "")
         ?.replace(/\?.*/g, "").split("/embed/")
       // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
@@ -1197,7 +1197,7 @@ function fetchLogRocketBlog(path = '') {
       pEl.textContent = `CodePen Embed Fallback`;
       e.replaceWith(pEl)
     }
-    
+
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('.lr-content').innerHTML
@@ -1207,7 +1207,7 @@ function fetchLogRocketBlog(path = '') {
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
 
-    let i=0;
+    let i = 0;
     mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
       const currentReplacement = cpTags2Replace[i];
       i++; // Increment for next time
@@ -1245,28 +1245,28 @@ function fetchRealPythonBlog(path = '') {
       baseUrl: 'https://realpython.com',
       articleBasePath: 'realpython.com',
       articlePath: path.replace(/https:\/\/realpython\.com/g, '')
-                      .replace(/\//g, ''),
+        .replace(/\//g, ''),
       logo: 'https://realpython.com/static/favicon.68cbf4197b0c.png',
       bgRGBA: '31,52,74',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
     }
 
     ElRemoveAll('#toc, .sidebar-module-inset.p-0, .rounded.border.border-light');
-    
+
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('.article-body').innerHTML
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
     mdContent = mdContent.replace(/\n\[Remove ads\]\(\/account\/join\/\)\n/g, '') // 광고 링크 처리
-          .replace(/Python\n\n\`/g, '```py\n')
-          .replace(/Shell\n\n\`/g, '```sh\n')
-          .replace(/\` \n\n/g, '\n```\n\n')
-          .replace(/\[\]\(#.*"Permanent link"\)/g, '')
+      .replace(/Python\n\n\`/g, '```py\n')
+      .replace(/Shell\n\n\`/g, '```sh\n')
+      .replace(/\` \n\n/g, '\n```\n\n')
+      .replace(/\[\]\(#.*"Permanent link"\)/g, '')
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
-    
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -1277,7 +1277,7 @@ function fetchRealPythonBlog(path = '') {
 }
 
 
-function fetchDockerBlog(path='') {
+function fetchDockerBlog(path = '') {
   console.log(`fetchDockerBlog ... path: ${path}`)
   try {
     // Extract Open Graph metadata
@@ -1287,7 +1287,7 @@ function fetchDockerBlog(path='') {
 
     const meta = {
       lang: 'en-US',
-      title: (`${ogData['og:title']}`?.replace(/(\s\|\s)|(Docker\sBlog)/g, '') ?? 
+      title: (`${ogData['og:title']}`?.replace(/(\s\|\s)|(Docker\sBlog)/g, '') ??
         (document.querySelector('h1')?.textContent)?.trim()).replace(/"/g, "”"),
       description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: 'docker', // topics[0] ?? '',
@@ -1300,13 +1300,13 @@ function fetchDockerBlog(path='') {
       baseUrl: 'https://docker.com/blog',
       articleBasePath: 'docker.com',
       articlePath: path.replace(/(https:\/\/)|(www\.)|(docker\.com)/g, '')
-                      .replace(/\/blog/g, '')
-                      .replace(/\//g, ''),
+        .replace(/\/blog/g, '')
+        .replace(/\//g, ''),
       logo: 'https://docker.com/app/uploads/2024/02/cropped-docker-logo-favicon-192x192.png',
       bgRGBA: '29,99,237',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
     }
-    
+
     const pretags = [...document.querySelectorAll('pre')]
     pretags?.forEach((e) => {
       console.log(e.innerHTML)
@@ -1315,19 +1315,19 @@ function fetchDockerBlog(path='') {
     })
 
     // ElRemoveAll('#toc, .sidebar-module-inset.p-0, .rounded.border.border-light');
-    
+
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('.entry-content.wp-block-post-content').innerHTML
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
     mdContent = mdContent.replace(/\n\[Remove ads\]\(\/account\/join\/\)\n/g, '') // 광고 링크 처리
-          .replace(/\` \n\n/g, '\n```\n\n')
-          .replace(/\[\]\(#.*"Permanent link"\)/g, '')
+      .replace(/\` \n\n/g, '\n```\n\n')
+      .replace(/\[\]\(#.*"Permanent link"\)/g, '')
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
-    
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -1359,26 +1359,26 @@ function fetchEventDrivenBlog(path = '') {
       baseUrl: 'https://event-driven.io/en',
       articleBasePath: 'event-driven.io',
       articlePath: path.replace(/(https:\/\/)|(event-driven\.io)|(en\/)/g, '')
-                      .replace(/\//g, ''),
+        .replace(/\//g, ''),
       logo: '/assets/image/event-driven.io/favicon.jfif',
       bgRGBA: '255,255,0',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
     }
 
     ElRemoveAll('#toc, .sidebar-module-inset.p-0, .rounded.border.border-light');
-    
+
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('.bodytext').innerHTML
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
     mdContent = mdContent.replace(/\n\[Remove ads\]\(\/account\/join\/\)\n/g, '') // 광고 링크 처리
-          .replace(/\` \n\n/g, '\n```\n\n')
-          .replace(/\[\]\(#.*\)/g, '')
+      .replace(/\` \n\n/g, '\n```\n\n')
+      .replace(/\[\]\(#.*\)/g, '')
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
-    
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -1407,13 +1407,13 @@ function fetchGosolveBlog(path = "") {
       baseUrl: 'https://gosolve.io',
       articleBasePath: 'gosolve.io',
       articlePath: path.replace(/(https:\/\/)|(gosolve\.io)/g, '')
-                      .replace(/\//g, ''),
+        .replace(/\//g, ''),
       logo: 'https://gosolve.io/wp-content/uploads/2022/03/cropped-ikona1-192x192.png',
       bgRGBA: '56,119,242',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
     }
 
-    
+
     const pres = [...document.querySelectorAll('pre')]
     pres.forEach((e) => {
       console.log(e.innerHTML)
@@ -1432,11 +1432,11 @@ function fetchGosolveBlog(path = "") {
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
     mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
-          .replace(/\[\]\(#.*\)/g, '')
+      .replace(/\[\]\(#.*\)/g, '')
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
-    
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -1449,7 +1449,7 @@ function fetchGosolveBlog(path = "") {
 function fetchBramusBlog(path = "") {
   console.log(`fetchBramusBlog ... path: ${path}`)
   const topics = [...document.querySelectorAll('.tags-links > a')]?.map((e) => e?.textContent?.toLowerCase())
-  
+
   try {
     // Extract Open Graph metadata
     const ogData = parseOgData();
@@ -1467,10 +1467,10 @@ function fetchBramusBlog(path = "") {
       baseUrl: 'https://bram.us',
       articleBasePath: 'bram.us',
       articlePath: `${ogData['og:url']}`
-                      .replace(/(https:\/\/)|(www\.)|(bram\.us\/)|(\d{4}\/\d{2}\/\d{2}\/)/g, '')
-                      .replace(/\//g, ''),
+        .replace(/(https:\/\/)|(www\.)|(bram\.us\/)|(\d{4}\/\d{2}\/\d{2}\/)/g, '')
+        .replace(/\//g, ''),
       articleOriginPath: `${ogData['og:url']}`
-                      .replace(/(https:\/\/)|(www\.)|(bram\.us\/)/g, ''),
+        .replace(/(https:\/\/)|(www\.)|(bram\.us\/)/g, ''),
       logo: 'https://bramu.us/favicon.ico',
       bgRGBA: '17,17,17',
       coverUrl: `${ogData['og:image'].replace(/https:\/\/www\./g, 'https://')}`
@@ -1492,7 +1492,7 @@ function fetchBramusBlog(path = "") {
 
     const codepenWrapper = [...document.querySelectorAll('p > iframe, .cp_embed_wrapper > iframe')]
     const cpTags2Replace = codepenWrapper.map((e) => {
-      const [ usernameFound, idFound] = e.getAttribute('src')
+      const [usernameFound, idFound] = e.getAttribute('src')
         ?.replace(/(https:\/\/)|(codepen\.io\/)/g, "")
         ?.replace(/\?.*/g, "").split("/embed/")
       // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
@@ -1512,31 +1512,31 @@ function fetchBramusBlog(path = "") {
       pEl.textContent = `CodePen Embed Fallback`;
       e.replaceWith(pEl)
     }
-    
+
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('.entry-content').innerHTML
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
     mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
-          .replace(/\[\]\(#.*\)/g, '')
+      .replace(/\[\]\(#.*\)/g, '')
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
 
     let i = 0; // Initialize counter
     mdContent = mdContent.replace(/Youtube\sEmbed\sFallback/g, (match) => {
-        const currentReplacement = ytTags2Replace[i];
-        i++; // Increment for next time
-        return currentReplacement;
+      const currentReplacement = ytTags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
     });
-    i=0;
+    i = 0;
     mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
       const currentReplacement = cpTags2Replace[i];
       i++; // Increment for next time
       return currentReplacement;
     });
-    
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -1549,7 +1549,7 @@ function fetchBramusBlog(path = "") {
 function fetchUnaBlog(path = "") {
   console.log(`fetchUnaBlog ... path: ${path}`)
   const topics = [...document.querySelectorAll('.tags-links > a')]?.map((e) => e?.textContent?.toLowerCase())
-  
+
   try {
     // Extract Open Graph metadata
     const ogData = parseOgData();
@@ -1567,10 +1567,10 @@ function fetchUnaBlog(path = "") {
       baseUrl: 'https://una.im',
       articleBasePath: 'una.im',
       articlePath: `${ogData['og:url']}`
-                      .replace(/(https:\/\/)|(www\.)|(una\.im\/)/g, '')
-                      .replace(/\//g, ''),
+        .replace(/(https:\/\/)|(www\.)|(una\.im\/)/g, '')
+        .replace(/\//g, ''),
       articleOriginPath: `${ogData['og:url']}`
-                      .replace(/(https:\/\/)|(www\.)|(una\.im\/)/g, ''),
+        .replace(/(https:\/\/)|(www\.)|(una\.im\/)/g, ''),
       logo: 'https://una.im/favicon.svg',
       bgRGBA: '156,90,242',
       coverUrl: `${ogData['og:image'].replace(/https:\/\/www\./g, 'https://')}`
@@ -1592,7 +1592,7 @@ function fetchUnaBlog(path = "") {
 
     const codepenWrapper = [...document.querySelectorAll('p > iframe, .cp_embed_wrapper > iframe')]
     const cpTags2Replace = codepenWrapper.map((e) => {
-      const [ usernameFound, idFound] = e.getAttribute('src')
+      const [usernameFound, idFound] = e.getAttribute('src')
         ?.replace(/(https:\/\/)|(codepen\.io\/)/g, "")
         ?.replace(/\?.*/g, "").split("/embed/")
       // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
@@ -1612,31 +1612,31 @@ function fetchUnaBlog(path = "") {
       pEl.textContent = `CodePen Embed Fallback`;
       e.replaceWith(pEl)
     }
-    
+
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('main > article').innerHTML
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
     mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
-          .replace(/\[\]\(#.*\)/g, '')
+      .replace(/\[\]\(#.*\)/g, '')
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
 
     let i = 0; // Initialize counter
     mdContent = mdContent.replace(/Youtube\sEmbed\sFallback/g, (match) => {
-        const currentReplacement = ytTags2Replace[i];
-        i++; // Increment for next time
-        return currentReplacement;
+      const currentReplacement = ytTags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
     });
-    i=0;
+    i = 0;
     mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
       const currentReplacement = cpTags2Replace[i];
       i++; // Increment for next time
       return currentReplacement;
     });
-    
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -1649,7 +1649,7 @@ function fetchUnaBlog(path = "") {
 function fetchJoshWComeauBlog(path = "") {
   console.log(`fetchJoshWComeauBlog ... path: ${path}`)
   const topics = [...document.querySelectorAll('.tags-links > a')]?.map((e) => e?.textContent?.toLowerCase())
-  
+
   try {
     // Extract Open Graph metadata
     const ogData = parseOgData();
@@ -1667,10 +1667,10 @@ function fetchJoshWComeauBlog(path = "") {
       baseUrl: 'https://joshcomeau.com',
       articleBasePath: 'joshcomeau.com',
       articlePath: `${ogData['og:url']}`
-                      .replace(/(https:\/\/)|(www\.)|(joshcomeau\.com\/)/g, '')
-                      .replace(/\//g, ''),
+        .replace(/(https:\/\/)|(www\.)|(joshcomeau\.com\/)/g, '')
+        .replace(/\//g, ''),
       articleOriginPath: `${ogData['og:url']}`
-                      .replace(/(https:\/\/)|(www\.)|(joshcomeau\.com\/)/g, ''),
+        .replace(/(https:\/\/)|(www\.)|(joshcomeau\.com\/)/g, ''),
       logo: 'https://joshcomeau.com/favicon.png',
       bgRGBA: '128,159,255',
       coverUrl: `${ogData['og:image'].replace(/https:\/\/www\./g, 'https://')}`
@@ -1692,7 +1692,7 @@ function fetchJoshWComeauBlog(path = "") {
 
     const codepenWrapper = [...document.querySelectorAll('p > iframe, .cp_embed_wrapper > iframe')]
     const cpTags2Replace = codepenWrapper.map((e) => {
-      const [ usernameFound, idFound] = e.getAttribute('src')
+      const [usernameFound, idFound] = e.getAttribute('src')
         ?.replace(/(https:\/\/)|(codepen\.io\/)/g, "")
         ?.replace(/\?.*/g, "").split("/embed/")
       // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
@@ -1712,31 +1712,31 @@ function fetchJoshWComeauBlog(path = "") {
       pEl.textContent = `CodePen Embed Fallback`;
       e.replaceWith(pEl)
     }
-    
+
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('main > article').innerHTML
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
     mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
-          .replace(/\[\]\(#.*\)/g, '')
+      .replace(/\[\]\(#.*\)/g, '')
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
 
     let i = 0; // Initialize counter
     mdContent = mdContent.replace(/Youtube\sEmbed\sFallback/g, (match) => {
-        const currentReplacement = ytTags2Replace[i];
-        i++; // Increment for next time
-        return currentReplacement;
+      const currentReplacement = ytTags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
     });
-    i=0;
+    i = 0;
     mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
       const currentReplacement = cpTags2Replace[i];
       i++; // Increment for next time
       return currentReplacement;
     });
-    
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -1748,7 +1748,7 @@ function fetchJoshWComeauBlog(path = "") {
 
 function fetchCssTipBlog(path = "") {
   console.log(`fetchCssTipBlog ... path: ${path}`)
-  
+
   try {
     // Extract Open Graph metadata
     const ogData = parseOgData();
@@ -1766,15 +1766,15 @@ function fetchCssTipBlog(path = "") {
       baseUrl: 'https://css-tip.com',
       articleBasePath: 'css-tip.com',
       articlePath: `${ogData['og:url']}`
-                      .replace(/(https:\/\/)|(www\.)|(css-tip\.com\/)/g, '')
-                      .replace(/\//g, ''),
+        .replace(/(https:\/\/)|(www\.)|(css-tip\.com\/)/g, '')
+        .replace(/\//g, ''),
       articleOriginPath: `${ogData['og:url']}`
-                      .replace(/(https:\/\/)|(www\.)|(css-tip\.com\/)/g, ''),
+        .replace(/(https:\/\/)|(www\.)|(css-tip\.com\/)/g, ''),
       logo: 'https://css-tip.com/img/fav.png',
       bgRGBA: '111,162,204',
       coverUrl: `https://css-tip.com${ogData['og:image'].replace(/https:\/\/www\./g, 'https://')}`
     }
-    
+
     const pretags = [...document.querySelectorAll('pre')]
     pretags?.forEach((e) => {
       console.log(e.innerHTML)
@@ -1797,7 +1797,7 @@ function fetchCssTipBlog(path = "") {
 
     const codepenWrapper = [...document.querySelectorAll('.cp_embed_wrapper > iframe')]
     const cpTags2Replace = codepenWrapper.map((e) => {
-      const [ usernameFound, idFound] = e.getAttribute('src')
+      const [usernameFound, idFound] = e.getAttribute('src')
         ?.replace(/(https:\/\/)|(codepen\.io\/)/g, "")
         ?.replace(/\?.*/g, "").split("/embed/")
       // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
@@ -1817,14 +1817,14 @@ function fetchCssTipBlog(path = "") {
       pEl.textContent = `CodePen Embed Fallback`;
       e.replaceWith(pEl)
     }
-    
+
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('main').innerHTML
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
     mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
-          .replace(/\[\]\(#.*\)/g, '')
+      .replace(/\[\]\(#.*\)/g, '')
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
@@ -1835,13 +1835,13 @@ function fetchCssTipBlog(path = "") {
         i++; // Increment for next time
         return currentReplacement;
     }); */
-    let i=0;
+    let i = 0;
     mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
       const currentReplacement = cpTags2Replace[i];
       i++; // Increment for next time
       return currentReplacement;
     });
-    
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -1853,9 +1853,9 @@ function fetchCssTipBlog(path = "") {
 
 function fetchAdamArgyleBlog(path = "") {
   console.log(`fetchAdamArgyleBlog ... path: ${path}`)
-  
-  const topics = [...document.querySelectorAll('section.BlogMeta.block-stack .Tags.inline-wrap span')]?.map((e) => e?.textContent?.replace(/\#/g, '')) 
-  
+
+  const topics = [...document.querySelectorAll('section.BlogMeta.block-stack .Tags.inline-wrap span')]?.map((e) => e?.textContent?.replace(/\#/g, ''))
+
   try {
     const ogData = parseOgData();
 
@@ -1880,7 +1880,7 @@ function fetchAdamArgyleBlog(path = "") {
 
     const codepenWrapper = [...document.querySelectorAll('iframe.codepen-embed')]
     const tags2Replace = codepenWrapper.map((e) => {
-      const [ usernameFound, idFound] = e.getAttribute('src')?.replace(/\/\/codepen\.io\//g, "")
+      const [usernameFound, idFound] = e.getAttribute('src')?.replace(/\/\/codepen\.io\//g, "")
         ?.replace(/\?.*/g, "").split("/embed/")
       // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
       const titleFound = "N/A" // SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with 
@@ -1906,11 +1906,11 @@ function fetchAdamArgyleBlog(path = "") {
 
     let i = 0; // Initialize counter
     mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
-        const currentReplacement = tags2Replace[i];
-        i++; // Increment for next time
-        return currentReplacement;
+      const currentReplacement = tags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
     });
-    
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -1938,8 +1938,8 @@ function fetchItsFossBlog() {
       baseUrl: 'https://itsfoss.com',
       articleBasePath: 'itsfoss.com',
       articlePath: `${ogData['og:url']}`
-                      .replace(/(https:\/\/)|(www\.)|(itsfoss\.com\/)/g, '')
-                      .replace(/\//g, ''),
+        .replace(/(https:\/\/)|(www\.)|(itsfoss\.com\/)/g, '')
+        .replace(/\//g, ''),
       logo: 'https://itsfoss.com/content/images/size/w256h256/2022/12/android-chrome-192x192.png',
       bgRGBA: '53,121,127',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
@@ -1986,15 +1986,15 @@ function fetchTecmintBlog() {
       topic: 'linux-fedora',
       author: document.querySelector('span.author span.author-name')?.textContent ?? '',
       authorUrl: document.querySelector('span.author > a')?.getAttribute("href")
-                      .replace(/(www\.)/g, '') ?? '',
+        .replace(/(www\.)/g, '') ?? '',
       datePublished: convertDateFormat(
         document.querySelector('time.entry-date.updated-date')?.getAttribute('datetime') ?? ''
       ),
       baseUrl: 'https://tecmint.com',
       articleBasePath: 'tecmint.com',
       articlePath: `${ogData['og:url']}`
-                      .replace(/(https:\/\/)|(www\.)|(tecmint\.com\/)/g, '')
-                      .replace(/\//g, ''),
+        .replace(/(https:\/\/)|(www\.)|(tecmint\.com\/)/g, '')
+        .replace(/\//g, ''),
       logo: 'https://tecmint.com/wp-content/uploads/2020/07/favicon.ico',
       bgRGBA: '5,86,243',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
@@ -2007,7 +2007,7 @@ function fetchTecmintBlog() {
       let currentHtml = e.innerHTML;
       e.innerHTML = `<code class="language-shell">${currentHtml}</code>`
     })
-    
+
 
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
@@ -2046,8 +2046,8 @@ function fetchYozmArticle() {
     const meta = {
       lang: 'ko-KR',
       title: document.querySelector('h1')
-          ?.textContent
-          ?.trim(),
+        ?.textContent
+        ?.trim(),
       description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: '',
       author: document.querySelector('span[data-testid="contents-author-name"]').textContent ?? '',
@@ -2058,10 +2058,10 @@ function fetchYozmArticle() {
       baseUrl: 'https://yozm.wishket.com',
       articleBasePath: 'yozm.wishket.com',
       articlePath: `${ogData['og:url']}`
-                      .replace(/https:\/\/yozm\.wishket\.com\/magazine\/detail\//g, '')
-                      .replace(/\//g, ''),
+        .replace(/https:\/\/yozm\.wishket\.com\/magazine\/detail\//g, '')
+        .replace(/\//g, ''),
       articleOriginPath: `${ogData['og:url']}`
-                      .replace(/https:\/\/yozm\.wishket\.com\//g, ''),
+        .replace(/https:\/\/yozm\.wishket\.com\//g, ''),
       logo: 'https://yozm.wishket.com/favicon.ico',
       bgRGBA: '84,7,224',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
@@ -2094,13 +2094,13 @@ function fetchD2Article(path = '') {
     const meta = {
       lang: 'ko-KR',
       title: (document.querySelector('title')
-          ?.textContent ?? document.querySelector('meta[name="description"]')
+        ?.textContent ?? document.querySelector('meta[name="description"]')
           ?.getAttribute("content")
-          )?.trim().replace(/"/g, "”"),
+      )?.trim().replace(/"/g, "”"),
       description: (document.querySelector('title')
-          ?.textContent ?? document.querySelector('meta[name="description"]')
+        ?.textContent ?? document.querySelector('meta[name="description"]')
           ?.getAttribute("content")
-          )?.trim().replace(/"/g, "”"),
+      )?.trim().replace(/"/g, "”"),
       topic: '',
       author: [...document.querySelectorAll('.writer_info>.people_info>dl .name')].map((e) => e.textContent).join(', ') ?? '',
       datePublished: convertDateFormat(
@@ -2109,14 +2109,14 @@ function fetchD2Article(path = '') {
       baseUrl: 'https://d2.naver.com',
       articleBasePath: 'd2.naver.com',
       articlePath: path.replace(/https:\/\/d2\.naver\.com\/helloworld\//g, '')
-                      .replace(/\//g, ''),
+        .replace(/\//g, ''),
       articleOriginPath: path
-                      .replace(/https:\/\/d2\.naver\.com\//g, ''),
+        .replace(/https:\/\/d2\.naver\.com\//g, ''),
       logo: 'https://d2.naver.com/favicon.ico',
       bgRGBA: '103,262,163',
       coverUrl: '' // `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
     }
-    
+
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('.con_view').innerHTML
@@ -2126,7 +2126,7 @@ function fetchD2Article(path = '') {
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
-    
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -2146,9 +2146,9 @@ function fetchTechKakao() {
     const meta = {
       lang: 'ko-KR',
       title: (document.querySelector('title')
-          ?.textContent ?? document.querySelector('meta[name="description"]')
+        ?.textContent ?? document.querySelector('meta[name="description"]')
           ?.getAttribute("content")
-          )?.replace(/ - tech.kakao.com/g, '')?.trim(),
+      )?.replace(/ - tech.kakao.com/g, '')?.trim(),
       description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: '',
       author: document.querySelector('.tit_author').textContent ?? '',
@@ -2157,10 +2157,10 @@ function fetchTechKakao() {
       baseUrl: 'https://tech.kakao.com',
       articleBasePath: 'tech.kakao.com',
       articlePath: `${ogData['og:url']}`
-                      .replace(/(https:\/\/)|(www\.)|(tech\.kakao\.com\/)|(posts\/)/g, '')
-                      .replace(/\//g, ''),
+        .replace(/(https:\/\/)|(www\.)|(tech\.kakao\.com\/)|(posts\/)/g, '')
+        .replace(/\//g, ''),
       articleOriginPath: `${ogData['og:url']}`
-                      .replace(/https:\/\/tech\.kakao\.com\//g, ''),
+        .replace(/https:\/\/tech\.kakao\.com\//g, ''),
       logo: 'https://kakaocorp.com/page/favicon.ico',
       bgRGBA: '78,70,210',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
@@ -2194,9 +2194,9 @@ function fetchTechKakaoPay() {
     const meta = {
       lang: 'ko-KR',
       title: (document.querySelector('title')
-          ?.textContent ?? document.querySelector('meta[name="description"]')
+        ?.textContent ?? document.querySelector('meta[name="description"]')
           ?.getAttribute("content")
-          )?.replace(/ \| 카카오페이 기술 블로그/g, '')?.trim(),
+      )?.replace(/ \| 카카오페이 기술 블로그/g, '')?.trim(),
       description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: '',
       author: document.querySelector('.author-content>strong').textContent ?? '',
@@ -2204,10 +2204,10 @@ function fetchTechKakaoPay() {
       baseUrl: 'https://tech.kakaopay.com',
       articleBasePath: 'tech.kakaopay.com',
       articlePath: `${ogData['og:url']}`
-                      .replace(/https:\/\/tech\.kakaopay\.com\/post\//g, '')
-                      .replace(/\//g, ''),
+        .replace(/https:\/\/tech\.kakaopay\.com\/post\//g, '')
+        .replace(/\//g, ''),
       articleOriginPath: `${ogData['og:url']}`
-                      .replace(/https:\/\/tech\.kakaopay\.com\//g, ''),
+        .replace(/https:\/\/tech\.kakaopay\.com\//g, ''),
       logo: 'https://tech.kakaopay.com/favicon.ico',
       bgRGBA: '255,84,15',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
@@ -2247,12 +2247,12 @@ function combineFrontAndEnd(md = '', frontmatter = '', endmatter = '') {
     return;
   }
   return `${frontmatter}${md.replace(/\(https:\/\/www\./g, '(https://')
-      .replace(/https:\/\/www.youtube.com\/watch\?v=/g, 'https://youtu.be/')
-      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
-      .replace(/\-   /g, '- ') // ul처리
-      .replace(/    \n\-/g, '-') // ul처리
-      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endmatter}` // ol처리
-      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
+    .replace(/https:\/\/www.youtube.com\/watch\?v=/g, 'https://youtu.be/')
+    .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
+    .replace(/\-   /g, '- ') // ul처리
+    .replace(/    \n\-/g, '-') // ul처리
+    .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endmatter}` // ol처리
+    .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
 }
 
 function churnSpecialChars(md = '') {
@@ -2301,23 +2301,31 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/(.*youtube\.com|youtu\.be)\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-youtube"/>') // Youtube
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*\.wikipedia\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-wikipedia-w"/>') // Wikipedia
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*stackoverflow\.(co|com)\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-stack-overflow"/>') // Stackoverflow
-    .replace(/\[(?=[^\]]*\]\(https:\/\/.*reactjs\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-react"/>') // React.js
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*(reactjs\.org|react\.dev)\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-react"/>') // React.js
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*redux\.js\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-redux"/>') // Redux
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*expressjs\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-expressjs"/>') // Express.js
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*lit\.dev\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-lit"/>') // Lit
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*storybook\.js\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-storybook"/>') // Storybook.js
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*gruntjs\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-grunt"/>') // Grunt
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*prismjs\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-prismjs"/>') // Prism.js
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*yeoman\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-yeoman"/>') // Prism.js
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*typescriptlang\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-typescript"/>') // TypeScript
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*hono\.dev\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-hono"/>') // Hono
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*nodejs\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-node"/>') // Node.js
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*graphql\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-graphql"/>') // GraphQL
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*v0\.app\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-v0"/>') // v0
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*tailwindcss\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-tailwindcss"/>') // Tailwind CSS
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*sass-lang\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-sass"/>') // Sass
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*python\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-python"/>') // Python
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*mongodb\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-mongodb"/>') // MongoDB
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*djangoproject\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-django"/>') // Django
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*fastap\.tiangolo\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-fastapi"/>') // FastAPI
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*go\.dev\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-golang"/>') // Go
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*openai\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-openai"/>') // OpenAI
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*docker\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-docker"/>') // Docker
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*podman\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-podman"/>') // Podman
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*kaggle\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-kaggle"/>') // Kaggle
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*aws\.amazon\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-aws"/>') // AWS
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*cloudflare\.com\/[^)]*\))/g, '[<VPIcno icon="fa-brands fa-cloudflare"/>') // Cloudflare
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*kubernetes\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-k8s"/>') // Kubernetes
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*golang\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-golang"/>') // Go
@@ -2336,8 +2344,10 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*twilio\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont twilio"/>') // Twilio
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*w3\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-w3c"/>') // W3
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*naver\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-naver"/>') // Naver
-    .replace(/\](?=\(https:\/\/github\.com\/([^/)]+\/[^/)]+))/g, ' (<VPIcon icon="iconfont icon-github" />`$1`)]') // Github
-    .replace(/\](?=\(https?:\/\/(?:www\.)?linkedin\.com\/in\/([^/)]+)\/?\))/g, ' (<VPIcon icon="fa-brands fa-linkedin" />`$1`)]') // Linkedin
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*ollama\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-ollama"/>') // Ollama
+    .replace(/\](?=\(https?:\/\/(?:www\.)?github\.com\/([^/)]+\/[^/)]+))/g, ' (<VPIcon icon="iconfont icon-github" />`$1`)]') // Github
+    .replace(/\](?=\(https?:\/\/(?:www\.)?linkedin\.com\/in\/([^/?)]+))/g, ' (<VPIcon icon="fa-brands fa-linkedin" />`$1`)]') // Linkedin
+    .replace(/\](?=\(https?:\/\/(?:www\.)?reddit\.com\/r\/([^/)]+))/g, ' (<VPIcon icon="fa-brands fa-reddit" />`$1`)]') // Reddit
     .replace(/\](?=\(https:\/\/codepen\.io\/([^/]+)\/pen\/)/g, ' (<VPIcon icon="fa-brands fa-codepen" />`$1`)]') // Codepen
     .replace(/\](?=\(https:\/\/medium\.com\/([^/]+))/g, ' (<VPIcon icon="fa-brands fa-medium" />`$1`)]') // Medium
     .replace(/\](?=\(https:\/\/(?:x|twitter)\.com\/([^/)]+)\))/g, ' (<VPIcon icon="fa-brands fa-x-twitter" />`$1`)]') // X (Formally Twitter)

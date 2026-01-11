@@ -37,7 +37,7 @@ const btnDigitalOceanBlog = document.getElementById('fetch-digitalocean-blog');
 const btnKtAcademyBlog = document.getElementById('fetch-kt-academy-blog');
 const btnKotzillaBlog = document.getElementById('fetch-kotzilla-blog');
 const btnOutcomeSchoolBlog = document.getElementById('fetch-outcome-school-blog');
-const btnLearnK8sBlog = document.getElementById('fetch-learn-k8s-blog');
+const btnLearnKubeBlog = document.getElementById('fetch-learnkube-blog');
 const btnItsFossBlog = document.getElementById('fetch-its-foss-blog');
 const btnTecmintBlog = document.getElementById('fetch-tecmint-blog');
 const btnLogrocketBlog = document.getElementById('fetch-logrocket-blog');
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
   [
     btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnCodeMazeBlog, btnCSharpcornerBlog, btnHackingWithSwiftBlog
     , btnDroidconBlog, btnFrontendMastersBlog, btnCssTricksBlog, btnPiccalilLiBlog, btnSmashinMagazineBlog, btnOddBirdBlog
-    , btnDigitalOceanBlog, btnLearnK8sBlog, btnKtAcademyBlog, btnKotzillaBlog , btnLogrocketBlog, btnRealPythonBlog
+    , btnDigitalOceanBlog, btnLearnKubeBlog, btnKtAcademyBlog, btnKotzillaBlog , btnLogrocketBlog, btnRealPythonBlog
     , btnDockerBlog, btnEventDrivenBlog, btnGosolveBlog, btnBramusBlog, btnUnaBlog, btnJoshWComeauBlog, btnCssTipBlog
     , btnAdamArgyleBlog, btnItsFossBlog , btnTecmintBlog, btnOutcomeSchoolBlog, labelArticlePath, btnTechKakaoBlog
     , btnTechKakaoPayBlog, btnYozmArticle, btnD2NaverArticle, btnCopyMessage 
@@ -277,14 +277,14 @@ document.addEventListener('DOMContentLoaded', () => {
       btnOutcomeSchoolBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|(outcomeschool\.com\/)/g, '')
-    } else if (/learnk8s\.io/g.test(tab.url)) {
+    } else if (/learnkube\.com/g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
       detailsBlog.style.background = 'rgba(102,152,204,0.2)'
       summaryBlog.classList.add('activated')
-      summaryBlog.innerHTML = `${makeIcon("https://static.learnk8s.io/f7e5160d4744cf05c46161170b5c11c9.svg")}<span>learnk8s.io</span>`;
-      btnLearnK8sBlog.disabled = false
-      btnLearnK8sBlog.style.display = 'block';
+      summaryBlog.innerHTML = `${makeIcon("https://static.learnkube.com/f7e5160d4744cf05c46161170b5c11c9.svg")}<span>learnkube.com</span>`;
+      btnLearnKubeBlog.disabled = false
+      btnLearnKubeBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|/g, '')
     } else if (/blog\.logrocket\.com/g.test(tab.url)) {
@@ -561,7 +561,7 @@ btnPiccalilLiBlog.addEventListener('click', async () =>        await onClickWebS
 btnSmashinMagazineBlog.addEventListener('click', async () =>   await onClickWebScraping('FETCH_SMASHING_MAGAZINE_BLOG'));
 btnOddBirdBlog.addEventListener('click', async () =>           await onClickWebScraping('FETCH_ODD_BIRD_BLOG'));
 btnDigitalOceanBlog.addEventListener('click', async () =>      await onClickWebScraping('FETCH_DIGITAL_OCEAN_BLOG'));
-btnLearnK8sBlog.addEventListener('click', async () =>          await onClickWebScraping('FETCH_LEARN_K8S_BLOG'));
+btnLearnKubeBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_LEARNKUBE_BLOG'));
 btnKtAcademyBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_KT_ACADEMY_BLOG'));
 btnKotzillaBlog.addEventListener('click', async () =>          await onClickWebScraping('FETCH_KOTZILLA_BLOG'));
 btnOutcomeSchoolBlog.addEventListener('click', async () =>     await onClickWebScraping('FETCH_OUTCOME_SCHOOL_BLOG'));
