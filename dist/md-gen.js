@@ -1162,7 +1162,7 @@ function fetchLogRocketBlog(path = '') {
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
     }
 
-    ElRemoveAll('.article-post, .code-block, .blog-plug.inline-plug.react-plug');
+    ElRemoveAll('.article-post, .code-block, .blog-plug.inline-plug.react-plug, #replay-signup');
     [...document.querySelectorAll('pre')].forEach((e) => {
       console.log(e.innerHTML)
       let currentHtml = e.innerHTML;
@@ -1174,6 +1174,29 @@ function fetchLogRocketBlog(path = '') {
       let className = (language === '') ? language : `language-${language}`;
       e.innerHTML = `<code class="${className}">${currentHtml}</code>`
     })
+
+    const codepenWrapper = [...document.querySelectorAll('p > iframe, .cp_embed_wrapper > iframe')]
+    const cpTags2Replace = codepenWrapper.map((e) => {
+      const [ usernameFound, idFound] = e.getAttribute('src')
+        ?.replace(/(https:\/\/)|(codepen\.io\/)/g, "")
+        ?.replace(/\?.*/g, "").split("/embed/")
+      // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
+      const titleFound = e.getAttribute("title") || "N/A" // SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with 
+      return `<CodePen
+  user="${usernameFound}"
+  slug-hash="${idFound}"
+  title="${titleFound}"
+  :default-tab="['css','result']"
+  :theme="$isDarkmode ? 'dark': 'light'"/>`
+    })
+
+    for (let e of codepenWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      const pEl = document.createElement('p');
+      pEl.textContent = `CodePen Embed Fallback`;
+      e.replaceWith(pEl)
+    }
     
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
@@ -1183,6 +1206,13 @@ function fetchLogRocketBlog(path = '') {
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
+
+    let i=0;
+    mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
+      const currentReplacement = cpTags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
+    });
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -2297,6 +2327,7 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*twilio\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont twilio"/>') // Twilio
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*w3\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-w3c"/>') // W3
     .replace(/\](?=\(https:\/\/github\.com\/([^/)]+\/[^/)]+))/g, ' (<VPIcon icon="iconfont icon-github" />`$1`)]') // Github
+    .replace(/\](?=\(https?:\/\/(?:www\.)?linkedin\.com\/in\/([^/)]+)\/?\))/g, ' (<VPIcon icon="fa-brands fa-linkedin" />`$1`)]') // Linkedin
     .replace(/\](?=\(https:\/\/codepen\.io\/([^/]+)\/pen\/)/g, ' (<VPIcon icon="fa-brands fa-codepen" />`$1`)]') // Codepen
     .replace(/\](?=\(https:\/\/medium\.com\/([^/]+))/g, ' (<VPIcon icon="fa-brands fa-medium" />`$1`)]') // Medium
     .replace(/\](?=\(https:\/\/(?:x|twitter)\.com\/([^/)]+)\))/g, ' (<VPIcon icon="fa-brands fa-x-twitter" />`$1`)]') // X (Formally Twitter)
