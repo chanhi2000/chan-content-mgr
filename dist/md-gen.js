@@ -2307,6 +2307,7 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*gruntjs\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-grunt"/>') // Grunt
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*prismjs\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-prismjs"/>') // Prism.js
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*yeoman\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-yeoman"/>') // Prism.js
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*typescriptlang\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-typescript"/>') // TypeScript
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*nodejs\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-node"/>') // Node.js
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*v0\.app\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-v0"/>') // v0
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*tailwindcss\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-tailwindcss"/>') // Tailwind CSS
@@ -2320,12 +2321,21 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*cloudflare\.com\/[^)]*\))/g, '[<VPIcno icon="fa-brands fa-cloudflare"/>') // Cloudflare
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*kubernetes\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-k8s"/>') // Kubernetes
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*golang\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-golang"/>') // Go
-    .replace(/\[(?=[^\]]*\]\(https:\/\/.*sevalla\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-sevalla"/>') // Go
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*sevalla\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-sevalla"/>') // Sevalla
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*postgresql\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-postgresql"/>') // PostgreSQL
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*mysql\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-mysql"/>') // MySQL
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*cockroachlabs\.cloud\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-cockroach"/>') // CockroachDB
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*ubuntu\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-ubuntu"/>') // Ubuntu
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*brew\.sh\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-homebrew"/>') // Homebrew
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*grafana\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-grafana"/>') // Grafana
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*spring\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-spring"/>') // Spring
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*laravel\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-laravel"/>') // Laravel
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*codesandbox\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-codesandbox"/>') // CodeSandbox
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*figma\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-figma"/>') // Figam
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*flickr\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-flickr"/>') // Flickr
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*twilio\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont twilio"/>') // Twilio
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*w3\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-w3c"/>') // W3
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*naver\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-naver"/>') // Naver
     .replace(/\](?=\(https:\/\/github\.com\/([^/)]+\/[^/)]+))/g, ' (<VPIcon icon="iconfont icon-github" />`$1`)]') // Github
     .replace(/\](?=\(https?:\/\/(?:www\.)?linkedin\.com\/in\/([^/)]+)\/?\))/g, ' (<VPIcon icon="fa-brands fa-linkedin" />`$1`)]') // Linkedin
     .replace(/\](?=\(https:\/\/codepen\.io\/([^/]+)\/pen\/)/g, ' (<VPIcon icon="fa-brands fa-codepen" />`$1`)]') // Codepen
