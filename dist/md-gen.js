@@ -1746,6 +1746,111 @@ function fetchJoshWComeauBlog(path = "") {
   }
 }
 
+function fetchIShadeedBlog(path="") {
+  console.log(`fetchIShadeedBlog ... path: ${path}`)
+
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: (`${ogData['og:title']}` ?? (document.querySelector('h1.post-header__title')?.textContent)?.trim()).replace(/"/g, "”"),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'css',
+      author: "Ahmed Shadeed",
+      authorUrl: "https://ishadeed.com/about/",
+      datePublished: convertDateFormat(
+        document.querySelector('.post-header__date')?.textContent ?? ''
+      ),
+      baseUrl: 'https://ishadeed.com',
+      articleBasePath: 'ishadeed.com',
+      articlePath: `${ogData['og:url']}`
+        .replace(/(https:\/\/)|(www\.)|(ishadeed\.com\/)/g, '')
+        .replace(/article\//g, '')
+        .replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+        .replace(/(https:\/\/)|(www\.)|(ishadeed\.com\/)/g, ''),
+      logo: 'https://ishadeed.com/assets/favicon-32x32.png',
+      bgRGBA: '129,38,197',
+      coverUrl: `${ogData['og:image'].replace(/https:\/\/www\./g, 'https://')}`
+    }
+
+    /*
+    const ytWrapper = [...document.querySelectorAll('figure > iframe')]
+    const ytTags2Replace = ytWrapper.map((e) => {
+      const idFound = e.getAttribute("src")
+        ?.replace(/(https:\/\/)|(www\.)|(youtube\.com\/embed\/)|(\?si=.*)/g, "")
+      return `<VidStack src="youtube/${idFound}" />`
+    })
+    for (let e of ytWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      const pEl = document.createElement('p');
+      pEl.textContent = `Youtube Embed Fallback`;
+      e.replaceWith(pEl)
+    }
+    */
+
+  //   const codepenWrapper = [...document.querySelectorAll('p > iframe, .cp_embed_wrapper > iframe')]
+  //   const cpTags2Replace = codepenWrapper.map((e) => {
+  //     const [usernameFound, idFound] = e.getAttribute('src')
+  //       ?.replace(/(https:\/\/)|(codepen\.io\/)/g, "")
+  //       ?.replace(/\?.*/g, "").split("/embed/")
+  //     // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
+  //     const titleFound = e.getAttribute("title") || "N/A" // SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with 
+  //     return `<CodePen
+  // user="${usernameFound}"
+  // slug-hash="${idFound}"
+  // title="${titleFound}"
+  // :default-tab="['css','result']"
+  // :theme="$isDarkmode ? 'dark': 'light'"/>`
+  //   })
+
+    /*
+    for (let e of codepenWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      const pEl = document.createElement('p');
+      pEl.textContent = `CodePen Embed Fallback`;
+      e.replaceWith(pEl)
+    }
+    */
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.post-content.prose').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
+    mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
+      .replace(/\[\]\(#.*\)/g, '')
+      .replace(/\]\(\/assets\//g, '](https://ishadeed.com/assets/')
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+
+    /* let i = 0; // Initialize counter
+    mdContent = mdContent.replace(/Youtube\sEmbed\sFallback/g, (match) => {
+      const currentReplacement = ytTags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
+    });
+    i = 0;
+    mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
+      const currentReplacement = cpTags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
+    });
+ */
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
 function fetchCssTipBlog(path = "") {
   console.log(`fetchCssTipBlog ... path: ${path}`)
 
@@ -2342,7 +2447,8 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*figma\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-figma"/>') // Figam
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*flickr\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-flickr"/>') // Flickr
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*twilio\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont twilio"/>') // Twilio
-    .replace(/\[(?=[^\]]*\]\(https:\/\/.*w3\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-w3c"/>') // W3
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*(w3|drafts\.csswg)\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-w3c"/>') // W3
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*ibm\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-ibm"/>') // IBM
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*naver\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-naver"/>') // Naver
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*ollama\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-ollama"/>') // Ollama
     .replace(/\](?=\(https?:\/\/(?:www\.)?github\.com\/([^/)]+\/[^/)]+))/g, ' (<VPIcon icon="iconfont icon-github" />`$1`)]') // Github
