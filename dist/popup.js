@@ -34,6 +34,7 @@ const btnPiccalilLiBlog = document.getElementById('fetch-piccalilli-blog');
 const btnSmashinMagazineBlog = document.getElementById('fetch-smashingmagazine-blog');
 const btnOddBirdBlog = document.getElementById('fetch-oddbird-blog');
 const btnDigitalOceanBlog = document.getElementById('fetch-digitalocean-blog');
+const btnTypeScriptTvBlog = document.getElementById('fetch-typescript-tv-blog');
 const btnKtAcademyBlog = document.getElementById('fetch-kt-academy-blog');
 const btnKotzillaBlog = document.getElementById('fetch-kotzilla-blog');
 const btnOutcomeSchoolBlog = document.getElementById('fetch-outcome-school-blog');
@@ -52,6 +53,7 @@ const btnJoshWComeauBlog = document.getElementById('fetch-josh-w-comeau-blog');
 const btnIShadeedBlog = document.getElementById('fetch-ishadeed-blog');
 const btnCssTipBlog = document.getElementById('fetch-css-tip');
 const btnAdamArgyleBlog = document.getElementById('fetch-adam-argyle');
+const btnHuggingFaceBlog = document.getElementById("fetch-hugging-face-blog");
 const btnTechKakaoBlog = document.getElementById('fetch-tech-kakao-blog');
 const btnTechKakaoPayBlog = document.getElementById('fetch-tech-kakao-pay-blog');
 const btnYozmArticle = document.getElementById('fetch-yozm-article');
@@ -101,10 +103,11 @@ document.addEventListener('DOMContentLoaded', () => {
   [
     btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnCodeMazeBlog, btnCSharpcornerBlog, btnHackingWithSwiftBlog
     , btnDroidconBlog, btnFrontendMastersBlog, btnCssTricksBlog, btnPiccalilLiBlog, btnSmashinMagazineBlog, btnOddBirdBlog
-    , btnDigitalOceanBlog, btnLearnKubeBlog, btnKtAcademyBlog, btnKotzillaBlog , btnLogrocketBlog, btnRealPythonBlog
-    , btnDockerBlog, btnEventDrivenBlog, btnGosolveBlog, btnZeroheightBlog, btnBramusBlog, btnUnaBlog, btnJoshWComeauBlog
-    , btnIShadeedBlog, btnCssTipBlog, btnAdamArgyleBlog, btnItsFossBlog , btnTecmintBlog, btnOutcomeSchoolBlog
-    , labelArticlePath, btnTechKakaoBlog, btnTechKakaoPayBlog, btnYozmArticle, btnD2NaverArticle, btnCopyMessage 
+    , btnDigitalOceanBlog, btnTypeScriptTvBlog, btnLearnKubeBlog, btnKtAcademyBlog, btnKotzillaBlog , btnLogrocketBlog
+    , btnRealPythonBlog, btnDockerBlog, btnEventDrivenBlog, btnGosolveBlog, btnZeroheightBlog, btnBramusBlog, btnUnaBlog
+    , btnJoshWComeauBlog, btnIShadeedBlog, btnCssTipBlog, btnAdamArgyleBlog, btnHuggingFaceBlog, btnItsFossBlog
+    , btnTecmintBlog, btnOutcomeSchoolBlog, labelArticlePath, btnTechKakaoBlog, btnTechKakaoPayBlog, btnYozmArticle
+    , btnD2NaverArticle, btnCopyMessage 
   ].forEach((e) => {
     e.style.display = 'none';
   });
@@ -249,6 +252,16 @@ document.addEventListener('DOMContentLoaded', () => {
       btnDigitalOceanBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|(digitalocean\.com\/community\/tutorials\/)/g, '')
+    } else if (/typescript\.tv/g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(18,32,63,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://typescript.tv/_astro/android-chrome-192x192.BhQ8hcWh.png")}<span>typescript.tv</span>`;
+      btnTypeScriptTvBlog.disabled = false
+      btnTypeScriptTvBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(typescript\.tv\/)|(best-practices\/)/g, '')
     } else if (/kt\.academy/g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
@@ -398,7 +411,17 @@ document.addEventListener('DOMContentLoaded', () => {
       btnAdamArgyleBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|(nerdy\.dev\/)/g, '')
-    } else if (/css-tip\.com\//g.test(tab.url)) {
+    } else if (/huggingface\.co\//g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(11,15,25,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://huggingface.co/favicon.ico")}<span>huggingface.co</span>`;
+      btnHuggingFaceBlog.disabled = false
+      btnHuggingFaceBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(huggingface\.co\/)/g, '')
+    }  else if (/css-tip\.com\//g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
       detailsBlog.style.background = 'rgba(111,162,204,0.2)'
@@ -583,6 +606,7 @@ btnPiccalilLiBlog.addEventListener('click', async () =>        await onClickWebS
 btnSmashinMagazineBlog.addEventListener('click', async () =>   await onClickWebScraping('FETCH_SMASHING_MAGAZINE_BLOG'));
 btnOddBirdBlog.addEventListener('click', async () =>           await onClickWebScraping('FETCH_ODD_BIRD_BLOG'));
 btnDigitalOceanBlog.addEventListener('click', async () =>      await onClickWebScraping('FETCH_DIGITAL_OCEAN_BLOG'));
+btnTypeScriptTvBlog.addEventListener('click', async () =>      await onClickWebScraping('FETCH_TYPESCRIPT_TV_BLOG'));
 btnLearnKubeBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_LEARNKUBE_BLOG'));
 btnKtAcademyBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_KT_ACADEMY_BLOG'));
 btnKotzillaBlog.addEventListener('click', async () =>          await onClickWebScraping('FETCH_KOTZILLA_BLOG'));
@@ -601,6 +625,7 @@ btnCssTipBlog.addEventListener('click', async () =>            await onClickWebS
 btnAdamArgyleBlog.addEventListener('click', async () =>        await onClickWebScraping('FETCH_ADAM_ARGYLE_BLOG'));
 btnItsFossBlog.addEventListener('click', async() =>            await onClickWebScraping('FETCH_ITS_FOSS_BLOG'));
 btnTecmintBlog.addEventListener('click', async() =>            await onClickWebScraping('FETCH_TECMINT_BLOG'));
+btnHuggingFaceBlog.addEventListener('click', async() =>        await onClickWebScraping('FETCH_HUGGING_FACE_BLOG'));
 btnTechKakaoBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_TECH_KAKAO'));
 btnTechKakaoPayBlog.addEventListener('click', async () =>      await onClickWebScraping('FETCH_TECH_KAKAO_PAY'));
 btnYozmArticle.addEventListener('click', async () =>           await onClickWebScraping('FETCH_YOZM_ARTICLE'));

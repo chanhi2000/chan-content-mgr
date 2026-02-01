@@ -29,6 +29,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'FETCH_SMASHING_MAGAZINE_BLOG':  sendResponse({ status: "fetch SmashingMagazine Blog DONE!", o: fetchSmashingMagazineBlog(message.path) });break;
     case 'FETCH_ODD_BIRD_BLOG':           sendResponse({ status: "fetch OddBird Blog DONE!", o: fetchOddBirdBlog(message.path) });break;
     case 'FETCH_DIGITAL_OCEAN_BLOG':      sendResponse({ status: "fetch DigitalOcean Blog DONE!", o: fetchDigitalOceanBlog(message.path) });break;
+    case 'FETCH_TYPESCRIPT_TV_BLOG':      sendResponse({ status: "fetch TypeScriptTv Blog DONE!", o: fetchTypeScriptTvBlog(message.path) });break; 
     case 'FETCH_LEARNKUBE_BLOG':          sendResponse({ status: "fetch LearnKube Blog DONE!", o: fetchLearnkubeBlog(message.path) });break;
     case 'FETCH_KT_ACADEMY_BLOG':         sendResponse({ status: "fetch Kt Academy Blog DONE!", o: fetchKtAcademyBlog(message.path) });break;
     case 'FETCH_KOTZILLA_BLOG':           sendResponse({ status: "fetch Kotzilla Blog DONE!", o: fetchKotzillaBlog(message.path) });break;
@@ -47,6 +48,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'FETCH_I_SHJADEED_BLOG':         sendResponse({ status: "fetch Ahmad Shadeed Blog DONE!", o: fetchIShadeedBlog(message.path) });break;
     case 'FETCH_CSS_TIP_BLOG':            sendResponse({ status: "fetch CSS Tip Blog DONE!", o: fetchCssTipBlog(message.path) });break;
     case 'FETCH_ADAM_ARGYLE_BLOG':        sendResponse({ status: "fetch Adam Argyle Blog DONE!", o: fetchAdamArgyleBlog(message.path) });break;
+    case 'FETCH_HUGGING_FACE_BLOG':       sendResponse({ status: "fetch Hugging Face Blog DONE!", o: fetchHuggingFaceBlog(message.path) });break;  
     case 'FETCH_YOZM_ARTICLE':            sendResponse({ status: "fetch yozm Article DONE!", o: fetchYozmArticle() });break;
     case 'FETCH_D2_ARTICLE':              sendResponse({ status: "fetch D2 Article DONE!", o: fetchD2Article(message.path) });break;
     case 'FETCH_TECH_KAKAO':              sendResponse({ status: "fetch Tech Kakao Blog DONE!", o: fetchTechKakao() });break;

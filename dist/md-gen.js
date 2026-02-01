@@ -913,6 +913,108 @@ function fetchDigitalOceanBlog(path = '') {
   }
 }
 
+function fetchTypeScriptTvBlog(path = '') {
+  console.log(`fetchTypeScriptTvBlog ... path: ${path}`)
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: document.querySelector('h1')?.textContent?.trim(),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'typescript',
+      author: "Benny Neugebauer",
+      authorUrl: `https://stackoverflow.com/users/451634/benny-neugebauer`,
+      datePublished: convertDateFormat(
+        document?.querySelector('header  time')?.getAttribute('datetime')
+      ),
+      baseUrl: 'https://typescript.tv',
+      articleBasePath: 'typescript.tv',
+      articlePath: `${ogData['og:url']}`
+        .replace(/(https:\/\/)|(www\.)|(typescript\.tv\/)|(testing\/)|(hands-on\/)|(best-practices\/)|(new-features\/)|(react\/)/g, '')
+        .replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+        .replace(/(https:\/\/)|(www\.)|(typescript\.tv\/)/g, '') ?? `${path.replace(/(https:\/\/)|(www\.)|(typescript\.tv\/)/g, '')}`,
+      logo: 'https://typescript.tv/_astro/android-chrome-192x192.BhQ8hcWh.png',
+      bgRGBA: '18,32,63',
+      coverUrl: `${ogData['og:image']?.replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    const codeBlockWrapper = [...document.querySelectorAll('[data-rehype-pretty-code-figure]')]
+    codeBlockWrapper.forEach((e) => {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      const filename = e.querySelector('figcaption')?.textContent || ""
+      // pre안 내용정리
+      let pre = e.querySelector('pre')
+      const langauge = pre.getAttribute('data-language') ?? 'typescript'
+      pre.className = `language-${langauge}`
+      let code = pre.querySelector('code')
+      code.className = pre.className;
+      console.log(pre)
+      let elements2Remove = [...code.querySelectorAll('button,style')]
+      for (inner of elements2Remove) { inner?.remove() }
+
+      const pEl = document.createElement('p');
+      pEl.textContent = filename;
+      pEl.className = `code-title`
+      // pre를 밖으로
+      e.parentNode.insertBefore(pEl, e)
+      e.parentNode.insertBefore(pre, e)
+      e.remove()
+      // e.innerHTML = pre.outerHTML
+    })
+
+    const ytWrapper = [...document.querySelectorAll('.video-container > iframe')]
+    const ytTags2Replace = ytWrapper.map((e) => {
+      const idFound = e.getAttribute("src")
+        ?.replace(/(https:\/\/)|(www\.)|(youtube\.com)|(youtube-nocookie\.com)|(\/embed\/)|(\?si=.*)/g, "")
+      return `<VidStack src="youtube/${idFound}" />`
+    })
+    for (let e of ytWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      const pEl = document.createElement('p');
+      pEl.textContent = `Youtube Embed Fallback`;
+      e.replaceWith(pEl)
+    }
+
+    /* const elArticle = document.querySelectorAll('details')[0]?.parentNode */
+
+    const elements2Remove = [
+      'article > header > :first-child',
+      'article > header > h1',
+    ]
+    elements2Remove.forEach((e) => document.querySelector(e)?.remove());
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = (document.querySelector('main article'))?.innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+    mdContent = mdContent?.replace(/```\n\n(Copy)\n/g, "```\n")
+      ?.replace(/\[\]\(#.*\)/g, '')
+      ?.replace(/^([a-zA-Z0-9./_-]+)\s+`{3}([a-z]+)/gim, '```$2 title="$1"');
+    
+    let i = 0; // Initialize counter
+    mdContent = mdContent.replace(/Youtube\sEmbed\sFallback/g, (match) => {
+      const currentReplacement = ytTags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
+    });
+
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
 function fetchLearnkubeBlog() {
   console.log('fetchLearnkubeBlog ... ')
   try {
@@ -2083,8 +2185,58 @@ function fetchAdamArgyleBlog(path = "") {
   } catch (error) {
     console.error('Failed to copy JSON:', error);
   }
-
 }
+
+function fetchHuggingFaceBlog(path="") {
+  console.log(`fetchHuggingFaceBlog ... path: ${path}`)
+  try {
+    const ogData = parseOgData();
+    const metaInfo = JSON.parse(document?.querySelector('.SVELTE_HYDRATER.contents')?.getAttribute('data-props'))
+
+    const meta = {
+      lang: 'en-US',
+      title: (ogData['og:title'] ?? (document.querySelector('h1 > span')?.textContent)?.trim())?.replace(/"/g, "”")?.replace(/\s·\s.*/g, ''),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'llm',
+      author: ""/* metaInfo?.authors[0]?.author?.fullname */,
+      authorUrl: ""/* `https://huggingface.co/${metaInfo?.authors[0]?.author?.name}` */,
+      datePublished: convertDateFormat(
+        document.querySelector('.text-base > span.text-sm')?.textContent?.replace(/Published\s/g, "")?.trim() || ''
+      ),
+      baseUrl: 'https://huggingface.co',
+      articleBasePath: 'huggingface.co',
+      articlePath: `${ogData['og:url']}`
+        ?.replace(/(https:\/\/)|(www\.)|(huggingface\.co\/)/g, "")
+        ?.replace(/(blog\/)/g, "")
+        ?.replace(/(microsoft\/)/g, ""),
+      articleOriginPath: `${ogData['og:url']}`
+        ?.replace(/(https:\/\/)|(www\.)|(huggingface\.co\/)/g, ""),
+      logo: 'https://huggingface.co/favicon.ico',
+      bgRGBA: '11,15,25',
+      coverUrl: `${ogData['og:image'].replace(/https:\/\/www\./g, 'https://')}`
+    }
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.blog-content').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+    mdContent = mdContent.replace(/(\`Code language\:.*\(*\))/g, '\n\`\`\`')
+      .replace(/\[\]\(\#.*\)/g, "") // remove empty tag
+      .replace(/\s\[\#\]\(\#.*\)/g, "") // remove empty tag
+
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
 function fetchItsFossBlog() {
   console.log('fetchItsFossBlog ... ')
   try {
@@ -2470,13 +2622,18 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*(nextjs\.org)\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-nextjs"/>') // Next.js
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*redux\.js\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-redux"/>') // Redux
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*expressjs\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-expressjs"/>') // Express.js
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*nestjs\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-nestjs"/>') // Nest.js
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*lit\.dev\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-lit"/>') // Lit
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*storybook\.js\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-storybook"/>') // Storybook.js
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*gruntjs\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-grunt"/>') // Grunt
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*prismjs\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-prismjs"/>') // Prism.js
-    .replace(/\[(?=[^\]]*\]\(https:\/\/.*yeoman\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-yeoman"/>') // Prism.js
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*babeljs\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-babel"/>') // Babel
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*webpack\.js\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-webpack"/>') // Webpack
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*playwright\.dev\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-playwright"/>') // Playwright
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*yeoman\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-yeoman"/>') // Yeoman
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*typescriptlang\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-typescript"/>') // TypeScript
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*hono\.dev\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-hono"/>') // Hono
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*electronjs\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-electron"/>') // Electron
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*nodejs\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-node"/>') // Node.js
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*graphql\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-graphql"/>') // GraphQL
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*v0\.app\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-v0"/>') // v0
@@ -2497,7 +2654,9 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*kubernetes\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-k8s"/>') // Kubernetes
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*golang\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-golang"/>') // Go
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*php\.net\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-php"/>') // PHP
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*git-scm\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-git"/>') // Git
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*sevalla\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-sevalla"/>') // Sevalla
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*heroku\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-heroku"/>') // Heroku
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*postgresql\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-postgresql"/>') // PostgreSQL
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*mysql\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-mysql"/>') // MySQL
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*sqlite\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-sqlite"/>') // SQLite
@@ -2517,6 +2676,11 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*ibm\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-ibm"/>') // IBM
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*naver\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-naver"/>') // Naver
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*ollama\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-ollama"/>') // Ollama
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*apple\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-apple"/>') // Apple
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*android\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-anddroid"/>') // Android
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*huggingface\.co\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-huggingface"/>') // Hugging Face
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*arxiv\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-arxiv"/>') // arXiv
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*nvidia\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-nvidia"/>') // NVidia
     .replace(/\](?=\(https?:\/\/(?:www\.)?github\.com\/([^/)]+\/[^/)]+))/g, ' (<VPIcon icon="iconfont icon-github" />`$1`)]') // Github
     .replace(/\](?=\(https?:\/\/(?:www\.)?linkedin\.com\/in\/([^/?)]+))/g, ' (<VPIcon icon="fa-brands fa-linkedin" />`$1`)]') // Linkedin
     .replace(/\](?=\(https?:\/\/(?:www\.)?reddit\.com\/r\/([^/)]+))/g, ' (<VPIcon icon="fa-brands fa-reddit" />`$1`)]') // Reddit
