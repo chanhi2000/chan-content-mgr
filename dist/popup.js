@@ -45,6 +45,7 @@ const btnRealPythonBlog = document.getElementById('fetch-realpython-blog');
 const btnDockerBlog = document.getElementById('fetch-docker-blog');
 const btnEventDrivenBlog = document.getElementById('fetch-event-driven-blog');
 const btnGosolveBlog = document.getElementById('fetch-gosolve-blog');
+const btnZeroheightBlog = document.getElementById('fetch-zeroheight-blog');
 const btnBramusBlog = document.getElementById('fetch-bramus-blog');
 const btnUnaBlog = document.getElementById('fetch-una-blog');
 const btnJoshWComeauBlog = document.getElementById('fetch-josh-w-comeau-blog');
@@ -101,9 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
     btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnCodeMazeBlog, btnCSharpcornerBlog, btnHackingWithSwiftBlog
     , btnDroidconBlog, btnFrontendMastersBlog, btnCssTricksBlog, btnPiccalilLiBlog, btnSmashinMagazineBlog, btnOddBirdBlog
     , btnDigitalOceanBlog, btnLearnKubeBlog, btnKtAcademyBlog, btnKotzillaBlog , btnLogrocketBlog, btnRealPythonBlog
-    , btnDockerBlog, btnEventDrivenBlog, btnGosolveBlog, btnBramusBlog, btnUnaBlog, btnJoshWComeauBlog, btnIShadeedBlog
-    , btnCssTipBlog, btnAdamArgyleBlog, btnItsFossBlog , btnTecmintBlog, btnOutcomeSchoolBlog, labelArticlePath
-    , btnTechKakaoBlog, btnTechKakaoPayBlog, btnYozmArticle, btnD2NaverArticle, btnCopyMessage 
+    , btnDockerBlog, btnEventDrivenBlog, btnGosolveBlog, btnZeroheightBlog, btnBramusBlog, btnUnaBlog, btnJoshWComeauBlog
+    , btnIShadeedBlog, btnCssTipBlog, btnAdamArgyleBlog, btnItsFossBlog , btnTecmintBlog, btnOutcomeSchoolBlog
+    , labelArticlePath, btnTechKakaoBlog, btnTechKakaoPayBlog, btnYozmArticle, btnD2NaverArticle, btnCopyMessage 
   ].forEach((e) => {
     e.style.display = 'none';
   });
@@ -335,6 +336,16 @@ document.addEventListener('DOMContentLoaded', () => {
       summaryBlog.innerHTML = `${makeIcon("https://gosolve.io/wp-content/uploads/2022/03/cropped-ikona1-192x192.png")}<span>gosolve.io</span>`;
       btnGosolveBlog.disabled = false
       btnGosolveBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(gosolve\.io\/)|/g, '')
+    } else if (/zeroheight\.com/g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(255,72,82,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://zeroheight.com/favicon.ico")}<span>zeroheight.com</span>`;
+      btnZeroheightBlog.disabled = false
+      btnZeroheightBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|(gosolve\.io\/)|/g, '')
     } else if (/bram\.us\//g.test(tab.url)) {
@@ -581,6 +592,7 @@ btnRealPythonBlog.addEventListener('click', async () =>        await onClickWebS
 btnDockerBlog.addEventListener('click', async () =>            await onClickWebScraping('FETCH_DOCKER_BLOG'));
 btnEventDrivenBlog.addEventListener('click', async () =>       await onClickWebScraping('FETCH_EVENT_DRIVEN_BLOG'));
 btnGosolveBlog.addEventListener('click', async () =>           await onClickWebScraping('FETCH_GOSOLVE_BLOG'));
+btnZeroheightBlog.addEventListener('click', async () =>        await onClickWebScraping('FETCH_ZEROHEIGHT_BLOG'));
 btnBramusBlog.addEventListener('click', async () =>            await onClickWebScraping('FETCH_BRAMUS_BLOG'));
 btnUnaBlog.addEventListener('click', async () =>               await onClickWebScraping('FETCH_UNA_BLOG'));
 btnJoshWComeauBlog.addEventListener('click', async () =>       await onClickWebScraping('FETCH_JOSH_W_COMEAU_BLOG'));

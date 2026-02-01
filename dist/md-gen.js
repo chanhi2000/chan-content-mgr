@@ -85,7 +85,7 @@ function fetchFreeCodeCampNews() {
       articlePath: path,
       logo: 'https://cdn.freecodecamp.org/universal/favicons/favicon.ico',
       bgRGBA: '10,10,35',
-      coverUrl: `${ogData['og:image']}`
+      coverUrl: `${ogData['og:image']}`.replace(/(www\.)/g, "")
     }
 
     const ytWrapper = [...document.querySelectorAll('.embed-wrapper > iframe')]
@@ -863,6 +863,7 @@ function fetchDigitalOceanBlog(path = '') {
       description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: siteMeta?.keywords?.toLowerCase() || '',
       author: siteMeta?.author[0]?.name || "",
+      authorUrl: `https://digitalocean.com${document.querySelector('a.kExApF')?.getAttribute('href')}`,
       datePublished: convertDateFormat(
         siteMeta?.datePublished
       ),
@@ -1429,6 +1430,65 @@ function fetchGosolveBlog(path = "") {
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('section.single-blog__content > .container > .row > .col-xl-8.mx-auto').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
+    mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
+      .replace(/\[\]\(#.*\)/g, '')
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+function fetchZeroHeightBlog(path = "") {
+  console.log(`fetchZeroHeightBlog ... path: ${path}`)
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+    const nextMeta = JSON.parse(document.querySelector('script[type="application/json"]#__NEXT_DATA__')?.textContent)
+
+    const meta = {
+      lang: 'en-GB',
+      title: (`${ogData['og:title']}`?.replace(/\s-\szeroheight/g, '') ?? (document.querySelector('h1')?.textContent)?.trim()).replace(/"/g, "”"),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'css', // topics[0] ?? '',
+      author: document.querySelector('.font-inter.text-18px.font-medium')?.textContent ?? '',
+      // authorUrl: document.querySelector('meta[property^="article:author"]')?.getAttribute("content") ?? '',
+      datePublished: convertDateFormat(
+        nextMeta?.props?.pageProps?.page?.post_date ?? ''
+      ),
+      baseUrl: 'https://zeroheight.com',
+      articleBasePath: 'zeroheight.com',
+      articlePath: path.replace(/(https:\/\/)|(zeroheight\.com)/g, '')
+        .replace(/\/blog/g, '')
+        .replace(/\//g, ''),
+      logo: 'https://zeroheight.com/favicon.ico',
+      bgRGBA: '255,72,82',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    const pres = [...document.querySelectorAll('pre')]
+    pres.forEach((e) => {
+      console.log(e.innerHTML)
+      let currentHtml = e.innerHTML;
+      let language = 'go';
+      // if (e.classList.contains('language-typescript') || e.classList.contains('typescript')) language = 'typescript';
+      // else if (e.classList.contains('sql')) language = 'sql';
+      // else if (e.classList.contains('shell')) language = 'shell';
+      // else language = 'javascript';
+      let className = (language === '') ? language : `language-${language}`;
+      e.innerHTML = `<code class="${className}">${currentHtml}</code>`
+    })
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelectorAll('section')[1]?.querySelector('.container .blocks-container').innerHTML
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
     mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
@@ -2407,6 +2467,7 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*\.wikipedia\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-wikipedia-w"/>') // Wikipedia
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*stackoverflow\.(co|com)\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-stack-overflow"/>') // Stackoverflow
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*(reactjs\.org|react\.dev)\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-react"/>') // React.js
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*(nextjs\.org)\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-nextjs"/>') // Next.js
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*redux\.js\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-redux"/>') // Redux
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*expressjs\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-expressjs"/>') // Express.js
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*lit\.dev\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-lit"/>') // Lit
@@ -2431,12 +2492,16 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*podman\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-podman"/>') // Podman
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*kaggle\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-kaggle"/>') // Kaggle
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*aws\.amazon\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-aws"/>') // AWS
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*amazon\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-amazon"/>') // Amazon
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*cloudflare\.com\/[^)]*\))/g, '[<VPIcno icon="fa-brands fa-cloudflare"/>') // Cloudflare
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*kubernetes\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-k8s"/>') // Kubernetes
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*golang\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-golang"/>') // Go
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*php\.net\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-php"/>') // PHP
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*sevalla\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-sevalla"/>') // Sevalla
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*postgresql\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-postgresql"/>') // PostgreSQL
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*mysql\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-mysql"/>') // MySQL
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*sqlite\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-sqlite"/>') // SQLite
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*dbeaver\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-dbeaver"/>') // DBeaver
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*cockroachlabs\.cloud\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-cockroach"/>') // CockroachDB
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*ubuntu\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-ubuntu"/>') // Ubuntu
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*brew\.sh\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-homebrew"/>') // Homebrew
@@ -2448,16 +2513,18 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*flickr\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-flickr"/>') // Flickr
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*twilio\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont twilio"/>') // Twilio
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*(w3|drafts\.csswg)\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-w3c"/>') // W3
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*penpot\.app\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-penpot"/>') // Penpot
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*ibm\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-ibm"/>') // IBM
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*naver\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-naver"/>') // Naver
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*ollama\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-ollama"/>') // Ollama
     .replace(/\](?=\(https?:\/\/(?:www\.)?github\.com\/([^/)]+\/[^/)]+))/g, ' (<VPIcon icon="iconfont icon-github" />`$1`)]') // Github
     .replace(/\](?=\(https?:\/\/(?:www\.)?linkedin\.com\/in\/([^/?)]+))/g, ' (<VPIcon icon="fa-brands fa-linkedin" />`$1`)]') // Linkedin
     .replace(/\](?=\(https?:\/\/(?:www\.)?reddit\.com\/r\/([^/)]+))/g, ' (<VPIcon icon="fa-brands fa-reddit" />`$1`)]') // Reddit
-    .replace(/\](?=\(https:\/\/codepen\.io\/([^/]+)\/pen\/)/g, ' (<VPIcon icon="fa-brands fa-codepen" />`$1`)]') // Codepen
-    .replace(/\](?=\(https:\/\/medium\.com\/([^/]+))/g, ' (<VPIcon icon="fa-brands fa-medium" />`$1`)]') // Medium
+    .replace(/\](?=\(https?:\/\/(?:www\.)?codepen\.io\/([^/]+)\/pen\/)/g, ' (<VPIcon icon="fa-brands fa-codepen" />`$1`)]') // Codepen
+    .replace(/\](?=\(https?:\/\/(?:www\.)?medium\.com\/([^/]+))/g, ' (<VPIcon icon="fa-brands fa-medium" />`$1`)]') // Medium
     .replace(/\](?=\(https:\/\/(?:x|twitter)\.com\/([^/)]+)\))/g, ' (<VPIcon icon="fa-brands fa-x-twitter" />`$1`)]') // X (Formally Twitter)
-    .replace(/\](?=\(https:\/\/dev\.to\/([^/]+))/g, ' (<VPIcon icon="fa-brands fa-dev" />`$1`)]') // Medium
+    .replace(/\](?=\(https:\/\/dev\.to\/([^/]+))/g, ' (<VPIcon icon="fa-brands fa-dev" />`$1`)]') // Dev
+    .replace(/\](?=\(https?:\/\/(?:www\.)?buymeacoffee\.com\/([^/?)]+))/g, ' (<VPIcon icon="iconfont icon-buymeacoffee" />`$1`)]') // Buymeacoffee
 }
 
 function getTurndownResult(articleContent = '') {

@@ -38,6 +38,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'FETCH_DOCKER_BLOG':             sendResponse({ status: "fetch Docker Blog DONE!", o: fetchDockerBlog(message.path) });break;
     case 'FETCH_EVENT_DRIVEN_BLOG':       sendResponse({ status: "fetch EventDriven Blog DONE!", o: fetchEventDrivenBlog(message.path) });break;
     case 'FETCH_GOSOLVE_BLOG':            sendResponse({ status: "fetch GoSolve Blog DONE!", o: fetchGosolveBlog(message.path) });break;
+    case 'FETCH_ZEROHEIGHT_BLOG':         sendResponse({ status: "fetch ZeroHeight Blog DONE!", o: fetchZeroHeightBlog(message.path) });break;
     case 'FETCH_ITS_FOSS_BLOG':           sendResponse({ status: "fetch ItsFoss Blog DONE!", o: fetchItsFossBlog(message.path) });break;
     case 'FETCH_TECMINT_BLOG':            sendResponse({ status: "fetch Tecmint Blog DONE!", o: fetchTecmintBlog(message.path) });break;
     case 'FETCH_BRAMUS_BLOG':             sendResponse({ status: "fetch Bramus Blog DONE!", o: fetchBramusBlog(message.path) });break;
