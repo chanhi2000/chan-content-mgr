@@ -31,7 +31,7 @@ const btnDroidconBlog = document.getElementById('fetch-droidcon-blog');
 const btnFrontendMastersBlog = document.getElementById('fetch-frontendmasters-blog');
 const btnCssTricksBlog = document.getElementById('fetch-css-tricks-blog');
 const btnPiccalilLiBlog = document.getElementById('fetch-piccalilli-blog');
-const btnSmashinMagazineBlog = document.getElementById('fetch-smashingmagazine-blog');
+const btnSmashingMagazineBlog = document.getElementById('fetch-smashingmagazine-blog');
 const btnOddBirdBlog = document.getElementById('fetch-oddbird-blog');
 const btnDigitalOceanBlog = document.getElementById('fetch-digitalocean-blog');
 const btnTypeScriptTvBlog = document.getElementById('fetch-typescript-tv-blog');
@@ -52,7 +52,11 @@ const btnUnaBlog = document.getElementById('fetch-una-blog');
 const btnJoshWComeauBlog = document.getElementById('fetch-josh-w-comeau-blog');
 const btnIShadeedBlog = document.getElementById('fetch-ishadeed-blog');
 const btnCssTipBlog = document.getElementById('fetch-css-tip');
+const btn9ElementsBlog = document.getElementById('fetch-9-elements');
 const btnAdamArgyleBlog = document.getElementById('fetch-adam-argyle');
+const btnTobiasAhlinBlog = document.getElementById('fetch-tobias-ahlin');
+const btnCssIrlBlog = document.getElementById('fetch-css-irl-blog')
+const btnWebDevRedFoxBlog = document.getElementById('fetch-webdev-redfox-blog')
 const btnHuggingFaceBlog = document.getElementById("fetch-hugging-face-blog");
 const btnTechKakaoBlog = document.getElementById('fetch-tech-kakao-blog');
 const btnTechKakaoPayBlog = document.getElementById('fetch-tech-kakao-pay-blog');
@@ -102,12 +106,12 @@ document.addEventListener('DOMContentLoaded', () => {
   pVersion.textContent = `Version: ${version}`;
   [
     btnFetchFreeCodeCampNews, btnMilanJovanovicBlog, btnCodeMazeBlog, btnCSharpcornerBlog, btnHackingWithSwiftBlog
-    , btnDroidconBlog, btnFrontendMastersBlog, btnCssTricksBlog, btnPiccalilLiBlog, btnSmashinMagazineBlog, btnOddBirdBlog
+    , btnDroidconBlog, btnFrontendMastersBlog, btnCssTricksBlog, btnPiccalilLiBlog, btnSmashingMagazineBlog, btnOddBirdBlog
     , btnDigitalOceanBlog, btnTypeScriptTvBlog, btnLearnKubeBlog, btnKtAcademyBlog, btnKotzillaBlog , btnLogrocketBlog
     , btnRealPythonBlog, btnDockerBlog, btnEventDrivenBlog, btnGosolveBlog, btnZeroheightBlog, btnBramusBlog, btnUnaBlog
-    , btnJoshWComeauBlog, btnIShadeedBlog, btnCssTipBlog, btnAdamArgyleBlog, btnHuggingFaceBlog, btnItsFossBlog
-    , btnTecmintBlog, btnOutcomeSchoolBlog, labelArticlePath, btnTechKakaoBlog, btnTechKakaoPayBlog, btnYozmArticle
-    , btnD2NaverArticle, btnCopyMessage 
+    , btnJoshWComeauBlog, btnIShadeedBlog, btnCssTipBlog, btn9ElementsBlog, btnAdamArgyleBlog, btnTobiasAhlinBlog, 
+    , btnCssIrlBlog, btnWebDevRedFoxBlog, btnHuggingFaceBlog, btnItsFossBlog, btnTecmintBlog, btnOutcomeSchoolBlog
+    , labelArticlePath, btnTechKakaoBlog, btnTechKakaoPayBlog, btnYozmArticle, btnD2NaverArticle, btnCopyMessage 
   ].forEach((e) => {
     e.style.display = 'none';
   });
@@ -228,8 +232,8 @@ document.addEventListener('DOMContentLoaded', () => {
       detailsBlog.style.background = 'rgba(211,58,44,0.2)'
       summaryBlog.classList.add('activated')
       summaryBlog.innerHTML = `${makeIcon("https://smashingmagazine.com/images/favicon/favicon.svg")}<span>smashingmagazine.com</span>`;
-      btnSmashinMagazineBlog.disabled = false
-      btnSmashinMagazineBlog.style.display = 'block';
+      btnSmashingMagazineBlog.disabled = false
+      btnSmashingMagazineBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|(smashingmagazine\.com\/)|(\d{4}\/\d{2}\/)/g, '')
     } else if (/oddbird\.net\//g.test(tab.url)) {
@@ -411,6 +415,36 @@ document.addEventListener('DOMContentLoaded', () => {
       btnAdamArgyleBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|(nerdy\.dev\/)/g, '')
+    } else if (/tobiasahlin\.com\//g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(43,47,60,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://tobiasahlin.com/images/touch-icon-ipad-retina.png")}<span>tobiasahlin.com</span>`;
+      btnTobiasAhlinBlog.disabled = false
+      btnTobiasAhlinBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(tobiasahlin\.com\/)/g, '')
+    } else if (/css-irl\.info\//g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(255,20,147,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://css-irl.info/favicon/apple-touch-icon.png")}<span>css-irl.info</span>`;
+      btnCssIrlBlog.disabled = false
+      btnCssIrlBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(css-irl\.info\/)/g, '')
+    } else if (/webdevredfox\.org\//g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(255,127,80,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://svelte.dev/favicon.png")}<span>webdevredfox.org</span>`;
+      btnWebDevRedFoxBlog.disabled = false
+      btnWebDevRedFoxBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(webdevredfox\.org\/)/g, '')
     } else if (/huggingface\.co\//g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
@@ -421,7 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btnHuggingFaceBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|(huggingface\.co\/)/g, '')
-    }  else if (/css-tip\.com\//g.test(tab.url)) {
+    } else if (/css-tip\.com\//g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
       detailsBlog.style.background = 'rgba(111,162,204,0.2)'
@@ -431,6 +465,16 @@ document.addEventListener('DOMContentLoaded', () => {
       btnCssTipBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|(css-tip\.com\/)/g, '')
+    } else if (/9elements\.com\//g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(0,5,4,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://9elements.com/assets/images/meta/favicon.svg")}<span>9elements.com</span>`;
+      btn9ElementsBlog.disabled = false
+      btn9ElementsBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(9elements\.com\/)/g, '')
     } else if (/itsfoss\.com/g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
@@ -603,7 +647,7 @@ btnDroidconBlog.addEventListener('click', async () =>          await onClickWebS
 btnFrontendMastersBlog.addEventListener('click', async () =>   await onClickWebScraping('FETCH_FRONTEND_MASTERS_BLOG'));
 btnCssTricksBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_CSS_TRICKS_BLOG'));
 btnPiccalilLiBlog.addEventListener('click', async () =>        await onClickWebScraping('FETCH_PICCALILLI_BLOG'));
-btnSmashinMagazineBlog.addEventListener('click', async () =>   await onClickWebScraping('FETCH_SMASHING_MAGAZINE_BLOG'));
+btnSmashingMagazineBlog.addEventListener('click', async () =>   await onClickWebScraping('FETCH_SMASHING_MAGAZINE_BLOG'));
 btnOddBirdBlog.addEventListener('click', async () =>           await onClickWebScraping('FETCH_ODD_BIRD_BLOG'));
 btnDigitalOceanBlog.addEventListener('click', async () =>      await onClickWebScraping('FETCH_DIGITAL_OCEAN_BLOG'));
 btnTypeScriptTvBlog.addEventListener('click', async () =>      await onClickWebScraping('FETCH_TYPESCRIPT_TV_BLOG'));
@@ -622,8 +666,12 @@ btnUnaBlog.addEventListener('click', async () =>               await onClickWebS
 btnJoshWComeauBlog.addEventListener('click', async () =>       await onClickWebScraping('FETCH_JOSH_W_COMEAU_BLOG'));
 btnIShadeedBlog.addEventListener('click', async () =>          await onClickWebScraping('FETCH_I_SHJADEED_BLOG'));
 btnCssTipBlog.addEventListener('click', async () =>            await onClickWebScraping('FETCH_CSS_TIP_BLOG'));
+btn9ElementsBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_9_ELEMENTS_BLOG'));
 btnAdamArgyleBlog.addEventListener('click', async () =>        await onClickWebScraping('FETCH_ADAM_ARGYLE_BLOG'));
+btnCssIrlBlog.addEventListener('click', async() =>             await onClickWebScraping('FETCH_CSS_IRL_BLOG'));
+btnWebDevRedFoxBlog.addEventListener('click', async() =>       await onClickWebScraping('FETCH_WEBDEV_REDFOX_BLOG'));
 btnItsFossBlog.addEventListener('click', async() =>            await onClickWebScraping('FETCH_ITS_FOSS_BLOG'));
+btnTobiasAhlinBlog.addEventListener('click', async() =>        await onClickWebScraping('FETCH_TOBIAS_AHLIN_BLOG'));
 btnTecmintBlog.addEventListener('click', async() =>            await onClickWebScraping('FETCH_TECMINT_BLOG'));
 btnHuggingFaceBlog.addEventListener('click', async() =>        await onClickWebScraping('FETCH_HUGGING_FACE_BLOG'));
 btnTechKakaoBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_TECH_KAKAO'));

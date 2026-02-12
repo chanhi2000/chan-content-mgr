@@ -40,6 +40,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'FETCH_EVENT_DRIVEN_BLOG':       sendResponse({ status: "fetch EventDriven Blog DONE!", o: fetchEventDrivenBlog(message.path) });break;
     case 'FETCH_GOSOLVE_BLOG':            sendResponse({ status: "fetch GoSolve Blog DONE!", o: fetchGosolveBlog(message.path) });break;
     case 'FETCH_ZEROHEIGHT_BLOG':         sendResponse({ status: "fetch ZeroHeight Blog DONE!", o: fetchZeroHeightBlog(message.path) });break;
+    case 'FETCH_CSS_IRL_BLOG':            sendResponse({ status: "fetch CSS (In Real Life) Blog DONE!", o: fetchCssIrlBlog(message.path) });break;
+    case 'FETCH_WEBDEV_REDFOX_BLOG':      sendResponse({ status: "fetch WebDev RedFox Blog DONE!", o: fetchWebDevRedFoxBlog(message.path) });break;
     case 'FETCH_ITS_FOSS_BLOG':           sendResponse({ status: "fetch ItsFoss Blog DONE!", o: fetchItsFossBlog(message.path) });break;
     case 'FETCH_TECMINT_BLOG':            sendResponse({ status: "fetch Tecmint Blog DONE!", o: fetchTecmintBlog(message.path) });break;
     case 'FETCH_BRAMUS_BLOG':             sendResponse({ status: "fetch Bramus Blog DONE!", o: fetchBramusBlog(message.path) });break;
@@ -47,7 +49,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'FETCH_JOSH_W_COMEAU_BLOG':      sendResponse({ status: "fetch Josh W. Comeau Blog DONE!", o: fetchJoshWComeauBlog(message.path) });break;
     case 'FETCH_I_SHJADEED_BLOG':         sendResponse({ status: "fetch Ahmad Shadeed Blog DONE!", o: fetchIShadeedBlog(message.path) });break;
     case 'FETCH_CSS_TIP_BLOG':            sendResponse({ status: "fetch CSS Tip Blog DONE!", o: fetchCssTipBlog(message.path) });break;
+    case 'FETCH_9_ELEMENTS_BLOG':         sendResponse({ status: "fetch 9 Elements Blog DONE!", o: fetch9ElementsBlog(message.path) });break;
     case 'FETCH_ADAM_ARGYLE_BLOG':        sendResponse({ status: "fetch Adam Argyle Blog DONE!", o: fetchAdamArgyleBlog(message.path) });break;
+    case 'FETCH_TOBIAS_AHLIN_BLOG':       sendResponse({ status: "fetch Tobias Ahlin Blog DONE!", o: fetchTobiasAhlinBlog(message.path) });break;  
     case 'FETCH_HUGGING_FACE_BLOG':       sendResponse({ status: "fetch Hugging Face Blog DONE!", o: fetchHuggingFaceBlog(message.path) });break;  
     case 'FETCH_YOZM_ARTICLE':            sendResponse({ status: "fetch yozm Article DONE!", o: fetchYozmArticle() });break;
     case 'FETCH_D2_ARTICLE':              sendResponse({ status: "fetch D2 Article DONE!", o: fetchD2Article(message.path) });break;

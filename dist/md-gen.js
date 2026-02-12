@@ -110,6 +110,7 @@ function fetchFreeCodeCampNews() {
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
+    mdContent = mdContent.replace(/\[([^\]]+)\]\(https:\/\/freecodecamp\.org\/news\/([^/#)]+)\/(#?[^)]*)\)/gm, `[**$1**](/freecodecamp.org/$2.md#$3)`)
     mdContent = mdContent.replace(/\[freeCodeCamp\.org\]/g, '[<FontIcon icon="fa-brands fa-free-code-camp"/>freeCodeCamp.org]')
 
     let i = 0; // Initialize counter
@@ -561,6 +562,7 @@ function fetchCssTricks(path = '') {
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
+    mdContent= mdContent.replace(/\[([^\]]+)\]\(https:\/\/css-tricks\.com\/([^/#)]+)\/(#?[^)]*)\)/gm, `[**$1**](/css-tricks.com/$2.md#$3)`)
     mdContent = mdContent.replace(/\[\]\(#.*\)/g, '')
 
     let i = 0; // Initialize counter
@@ -594,7 +596,7 @@ function fetchPiccalilLiBlog(path = "") {
 
     const meta = {
       title: ogData['og:title']?.trim(),
-      description: ogData['og:description'].replace(/"/g, "”"),
+      description: ogData['og:description']?.replace(/"/g, "”"),
       topic: topic?.content?.toLowerCase(),
       author: author?.content,
       authorUrl: author?.link,
@@ -624,36 +626,30 @@ function fetchPiccalilLiBlog(path = "") {
       e.remove()
       // e.innerHTML = pre.outerHTML
     })
-    const codepenWrapper = [...document.querySelectorAll('.codepen-wrapper')]
-    codepenWrapper.forEach((e) => {
-      const raw = JSON.parse(e?.querySelector('astro-island')?.getAttribute("props"))
-      const link = e?.querySelector('a.edit-on-codepen')?.getAttribute("href") ?? ""
-      const [usernameFound, idFound] = link.replace(/(https:\/\/)|(codepen\.io\/)/g, '').split('/pen/')
-      const json = {
-        ...raw,
-        view: raw?.view[1],
-        title: raw?.title[1],
-        username: usernameFound,
-        id: idFound || raw?.id[1],
-        editable: raw?.editable[1],
-        height: raw?.height[1]
-      }
-      // TODO: 태그 변경?
-      /* const tag2Replace = `
-<!--
-<CodePen
+    const codepenWrapper = [...document.querySelectorAll('.cp_embed_wrapper > iframe')]
+    const tags2Replace = codepenWrapper.map((e) => {
+      const [usernameFound, idFound] = e.getAttribute('src')?.replace(/\/\/codepen\.io\//g, "")
+        ?.replace(/\?.*/g, "")
+        ?.replace(/https:/g, "")
+        ?.split("/embed/")
+      // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
+      const titleFound = "N/A" // SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with 
+      return `<CodePen
   user="${usernameFound}"
-  slug-hash="${json.id}"
-  title="${json.title}"
+  slug-hash="${idFound}"
+  title="${titleFound}"
   :default-tab="['css','result']"
-  :theme="$isDarkmode ? 'dark': 'light'"/>
--->
-`
-      console.log(tag2Replace)
-      const el2Replace = e.parentElement.createElement(tag2Replace)
-      e.parentNode.insertBefore(el2Replace, e)
-      e.remove() */
+  :theme="$isDarkmode ? 'dark': 'light'"/>`
     })
+
+    for (let e of codepenWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      const pEl = document.createElement('p');
+      pEl.textContent = `CodePen Embed Fallback`;
+      e.replaceWith(pEl)
+    }
+
     /* const pres = [...document.querySelectorAll('pre')]
     pres.forEach((e) => {
       let currentHtml = e.innerHTML;
@@ -681,6 +677,14 @@ function fetchPiccalilLiBlog(path = "") {
       .replace(/\[Advert\!\[.*\)/g, '')
       .replace(/\t/g, "  ") // tab -> 2-space indentation
       .replace()
+
+    let i = 0; // Initialize counter
+    mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
+      const currentReplacement = tags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
+    });
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -1370,6 +1374,53 @@ function fetchRealPythonBlog(path = '') {
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
 
+    const folderSlugs = [
+      'defining-your-own-python-function'
+      , 'factory-method-python'
+      , 'iterate-through-dictionary-python', 'introduction-to-python-generators'
+      , 'java-vs-python'
+      , 'oop-in-python-vs-java'
+      , 'primer-on-python-decorators'
+      , 'python-assignment-operator'
+      , 'python-boolean', 'python-built-in-functions', 'python-built-in-exceptions'
+      , 'python-class-constructor', 'python-click'
+      , 'python-data-classes', 'python-data-types', 'python-datetime', 'python-descriptors', 'python-exceptions'
+      , 'python-dict-attribute', 'python-dicts', 'python-double-underscore', 
+      , 'python-enum'
+      , 'python-for-loop', 'python-function-names', 'python-functional-programming'
+      , 'python-getter-setter'
+      , 'python-import', 'python-iterators-iterables'
+      , 'python-lambda', 'python-list'
+      , 'python-magic-methods', 'python-math-module', 'python-modules-packages', 'python-mutable-vs-immutable-types'
+      , 'python-multiple-constructors', 'python-namedtuple'
+      , 'python-variables'
+      , 'python-pass', 'python-property', 'python-print'
+      , 'python-repl', 'python-return-statement' 
+      , 'python-sets', 'python-strings'
+      , 'python-testing', 'python-tuple'
+      , 'python-unittest'
+      , 'python-vs-cpp'
+      , 'python-with-statement',
+      , 'python310-new-features'
+      , 'pypi-publish-python-package'
+      , 'syntactic-sugar-python'
+      , 'what-does-isinstance-do-in-python', 'what-is-pip'
+      , 'working-with-files-in-python',
+
+    ]
+    mdContent = mdContent.replace(/\[([^\]]+)\]\(https:\/\/realpython\.com\/([^/#)]+)\/(#?[^)]*)\)/gm, (match, title, slug, id) => {
+  
+      // 1. Determine the suffix (.md or /README.md)
+      const suffix = folderSlugs.includes(slug) ? '/README.md' : '.md';
+      
+      // 2. Determine the domain (Line 2 in your example kept https://, others became relative /)
+      // We'll use relative / for all unless it's the specific "thinking-recursively" case from your example
+      const domain = (slug === 'bonus') ? 'https://realpython.com/' : '/realpython.com/';
+
+      // 3. Return the transformed string
+      return `[**${title}**](${domain}${slug}${suffix}${!!id ? `#${id}` : ""})`;
+    });
+
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -1390,12 +1441,12 @@ function fetchDockerBlog(path = '') {
 
     const meta = {
       lang: 'en-US',
-      title: (`${ogData['og:title']}`?.replace(/(\s\|\s)|(Docker\sBlog)/g, '') ??
+      title: (`${ogData['og:title']}`?.replace(/(\s\|\sDocker.*)/g, '') ??
         (document.querySelector('h1')?.textContent)?.trim()).replace(/"/g, "”"),
       description: `${ogData['og:description']}`.replace(/"/g, "”"),
       topic: 'docker', // topics[0] ?? '',
-      author: document.querySelector('.wp-block-ponyo-blog-author .author .info a')?.textContent?.trim() ?? '',
-      authorUrl: (document.querySelector('.wp-block-ponyo-blog-author .author .info a')?.getAttribute('href') ?? '')
+      author: document.querySelector('.contributor-names>a.contributor, .wp-block-ponyo-blog-author .author .info a')?.textContent?.trim() ?? '',
+      authorUrl: (document.querySelector('.contributor-names>a.contributor, .wp-block-ponyo-blog-author .author .info a')?.getAttribute('href') ?? '')
         ?.replace(/\https:\/\/www\./g, 'https://'),
       datePublished: convertDateFormat(
         document.querySelector('meta[property^="article:published_time"]')?.getAttribute("content") ?? ''
@@ -1544,6 +1595,142 @@ function fetchGosolveBlog(path = "") {
       filename: `${meta.articlePath}.md`,
       text: mdContent
     };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+function fetchCssIrlBlog(path="") {
+  console.log(`fetchCssIrlBlog ... path: ${path}`)
+  const description = document.querySelectorAll('.o-richtext>p')[0]?.textContent
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-GB',
+      title: (`${ogData['og:title']}` ?? (document.querySelector('h1')?.textContent)?.trim())?.replace(/CSS\s{\sIn\sReal\sLife\s}\s\|\s/g, '')?.replace(/"/g, "”"),
+      description: `${ogData['og:description']}`.replace(/"/g, "”") ?? description,
+      topic: [...document.querySelectorAll('ul.c-tag-links>li>a')][0]?.textContent ?? 'css', // topics[0] ?? '',
+      author: 'Michelle Barker',
+      authorUrl: 'https://css-irl.info/about/',
+      datePublished: convertDateFormat(
+        document.querySelector('time')?.getAttribute("datetime") ?? '' 
+      ),
+      baseUrl: 'https://css-irl.info',
+      articleBasePath: 'css-irl.info',
+      articlePath: path.replace(/(https:\/\/)|(css-irl\.info)/g, '')
+        .replace(/\//g, ''),
+      logo: 'https://css-irl.info/favicon/apple-touch-icon.png',
+      bgRGBA: '255,20,147',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    const codepenWrapper = [...document.querySelectorAll('.cp_embed_wrapper > iframe')]
+    const tags2Replace = codepenWrapper.map((e) => {
+      const [usernameFound, idFound] = e.getAttribute('src')?.replace(/\/\/codepen\.io\//g, "")
+        ?.replace(/\?.*/g, "")
+        ?.replace(/https:/g, "")
+        ?.split("/embed/")
+      // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
+      const titleFound = "N/A" // SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with 
+      return `<CodePen
+  user="${usernameFound}"
+  slug-hash="${idFound}"
+  title="${titleFound}"
+  :default-tab="['css','result']"
+  :theme="$isDarkmode ? 'dark': 'light'"/>`
+    })
+
+    for (let e of codepenWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      const pEl = document.createElement('p');
+      pEl.textContent = `CodePen Embed Fallback`;
+      e.replaceWith(pEl)
+    }
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.o-richtext').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
+    mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
+      .replace(/\[\]\(#.*\)/g, '')
+      .replace(/\]\(\/(?=[^)]+\))/g, '](https://css-irl.info/') // 이미지 경로
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+
+    let i = 0; // Initialize counter
+    mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
+      const currentReplacement = tags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
+    });
+
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+function fetchWebDevRedFoxBlog(path = "") {
+  console.log(`fetchWebDevRedFoxBlog ... path: ${path}`)
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: (`${ogData['og:title']}` ?? (document.querySelector('h1.article-title')?.textContent)?.trim())?.replace(/"/g, "”"),
+      description: `${ogData['og:description']}`.replace(/"/g, "”") || "",
+      topic: [...document.querySelectorAll('ul.tags>li.tag')][0]?.textContent?.toLowerCase() ?? 'css', // topics[0] ?? '',
+      author: 'Gustavo Marquez Lainez',
+      authorUrl: 'https://gustavom.codeberg.page/#about',
+      datePublished: convertDateFormat(
+        document.querySelector('.article-card-content > time')?.getAttribute("datetime") ?? '' 
+      ),
+      baseUrl: 'https://webdevredfox.org',
+      articleBasePath: 'webdevredfox.org',
+      articlePath: path.replace(/(https:\/\/)|(webdevredfox\.org)/g, '')
+        .replace(/\/post/g, '')
+        .replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+        .replace(/(https:\/\/)|(www\.)|(webdevredfox\.org\/)/g, ''),
+      logo: 'https://svelte.dev/favicon.png',
+      bgRGBA: '2255,127,80',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.article').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
+    mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
+      .replace(/\[\]\(#.*\)/g, '')
+      .replace(/\]\(\/(?=[^)]+\))/g, '](https://webdevredfox.org/') // 이미지 경로
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+
+    /* let i = 0; // Initialize counter
+    mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
+      const currentReplacement = tags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
+    }); */
+
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+
+
   } catch (error) {
     console.error('Failed to copy JSON:', error);
   }
@@ -2048,20 +2235,6 @@ function fetchCssTipBlog(path = "") {
       let currentHtml = e.innerHTML;
     })
 
-    /* const ytWrapper = [...document.querySelectorAll('figure > iframe')]
-    const ytTags2Replace = ytWrapper.map((e) => {
-      const idFound = e.getAttribute("src")
-        ?.replace(/(https:\/\/)|(www\.)|(youtube\.com\/embed\/)|(\?si=.*)/g, "")
-      return `<VidStack src="youtube/${idFound}" />`
-    })
-    for (let e of ytWrapper) {
-      let currentHtml = e.innerHTML;
-      console.log(currentHtml)
-      const pEl = document.createElement('p');
-      pEl.textContent = `Youtube Embed Fallback`;
-      e.replaceWith(pEl)
-    } */
-
     const codepenWrapper = [...document.querySelectorAll('.cp_embed_wrapper > iframe')]
     const cpTags2Replace = codepenWrapper.map((e) => {
       const [usernameFound, idFound] = e.getAttribute('src')
@@ -2085,6 +2258,8 @@ function fetchCssTipBlog(path = "") {
       e.replaceWith(pEl)
     }
 
+    ElRemoveAll("main>ul.links-nextprev, main>h1, main>time")
+
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
     const articleContent = document.querySelector('main').innerHTML
@@ -2092,6 +2267,9 @@ function fetchCssTipBlog(path = "") {
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
     mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
       .replace(/\[\]\(#.*\)/g, '')
+      .replace(/\]\(\/([^/)]+)\/\)/g, '](/css-tip.com/$1.md)')
+      .replace(/\]\(\/(?=img\/)/g, "](https://css-tip.com/")
+      
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
@@ -2109,6 +2287,119 @@ function fetchCssTipBlog(path = "") {
       return currentReplacement;
     });
 
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+function fetch9ElementsBlog(path="") {
+  console.log(`fetch9ElementsBlog ... path: ${path}`)
+  
+  try {
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: (ogData['og:title']?.replace(/\s-\s9elements/, "") ?? (document.querySelector('h1.chapter-intro__headline')?.textContent)?.trim())?.replace(/"/g, "”")?.replace(/\s·\s.*/g, ''),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'css',
+      author: document?.querySelector('article footer.blog-meta>p.author>a')?.textContent,
+      authorUrl: `https://9elements.com${document?.querySelector('article footer.blog-meta>p.author>a')?.getAttribute('href')}`,
+      datePublished: convertDateFormat(
+        document?.querySelector('article footer.blog-meta>time').getAttribute('datetime')
+      ),
+      baseUrl: 'https://9elements.com',
+      articleBasePath: '9elements.com',
+      articlePath: `${ogData['og:url']}`
+        ?.replace(/(https:\/\/)|(www\.)|(9elements\.com\/)/g, "")
+        ?.replace(/(blog\/)/g, "")
+        ?.replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+        ?.replace(/(https:\/\/)|(www\.)|(9elements\.com\/)/g, ""),
+      logo: 'https://9elements.com/assets/images/meta/favicon.svg',
+      bgRGBA: '0,5,4',
+      coverUrl: `${ogData['og:image'].replace(/https:\/\/www\./g, 'https://')}`
+    }
+
+    /* const codeBlockWrapper = [...document.querySelectorAll('.highlighter-rouge')]?.filter((e) => !!e.querySelector('pre'))
+    for (let e of codeBlockWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      // pre안 내용정리
+      const pre = e.querySelector('pre')
+      if (!pre) continue;
+      const language = [...e.classList].find((e) => 
+        !!e.includes("language")
+      )
+      pre.className += ` ${language}`
+      const code = e.querySelector('code')
+      code.className += ` ${language}`
+      // pre를 밖으로
+      e.parentNode.insertBefore(pre, e)
+      e.remove()
+      // e.innerHTML = pre.outerHTML
+    } */
+
+    const codepenWrapper = [...document.querySelectorAll('.cp_embed_wrapper > iframe')]
+    const tags2Replace = codepenWrapper.map((e) => {
+      const [usernameFound, idFound] = e.getAttribute('src')?.replace(/\/\/codepen\.io\//g, "")
+        ?.replace(/\?.*/g, "")
+        ?.replace(/https:/g, "")
+        ?.split("/embed/")
+      // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
+      const titleFound = "N/A" // SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with 
+      return `<CodePen
+  user="${usernameFound}"
+  slug-hash="${idFound}"
+  title="${titleFound}"
+  :default-tab="['css','result']"
+  :theme="$isDarkmode ? 'dark': 'light'"/>`
+    })
+
+    for (let e of codepenWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      const pEl = document.createElement('p');
+      pEl.textContent = `CodePen Embed Fallback`;
+      e.replaceWith(pEl)
+    }
+
+    const codeBlockWrapper = [...document.querySelectorAll('pre')]
+    for (let e of codeBlockWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      const span = e.querySelector('span.code-language')
+      span.remove()
+      // e.innerHTML = pre.outerHTML
+    }
+    
+    // ElRemoveAll('article>.')
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('article>.blog-content__text').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+    mdContent = mdContent.replace(/(\`Code language\:.*\(*\))/g, '\n\`\`\`')
+      .replace(/\` \n\n/g, '\n```\n\n')
+      .replace(/\[\]\(\#.*\)/g, "") // remove empty tag
+      .replace(/\s\[\#\]\(\#.*\)/g, "") // remove empty tag
+      .replace(/\]\(\/(?=[^)]+\))/g, '](https://9elements.com/') // 이미지 경로
+
+    let i = 0; // Initialize counter
+    mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
+      const currentReplacement = tags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
+    });
+    
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -2177,6 +2468,81 @@ function fetchAdamArgyleBlog(path = "") {
       i++; // Increment for next time
       return currentReplacement;
     });
+
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+function fetchTobiasAhlinBlog(path="") {
+  console.log(`fetchTobiasAhlinBlog ... path: ${path}`)
+  
+  try {
+    const ogData = parseOgData();
+    const [day, month, year] = document.querySelector('.post-categories-date').textContent.split('/')
+
+    const meta = {
+      lang: 'en-US',
+      title: (ogData['og:title'] ?? (document.querySelector('h1.post-headder')?.textContent)?.trim())?.replace(/"/g, "”")?.replace(/\s·\s.*/g, ''),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: document?.querySelectorAll('.post-categories-link')[0]?.textContent?.toLowerCase() ?? 'css',
+      author: "Tobias Ahlin",
+      authorUrl: "https://x.com/tobiasahlin",
+      datePublished: convertDateFormat(
+        `${year}/${month}/${day}`
+      ),
+      baseUrl: 'https://tobiasahlin.com',
+      articleBasePath: 'tobiasahlin.com',
+      articlePath: `${ogData['og:url']}`
+        ?.replace(/(https:\/\/)|(www\.)|(tobiasahlin\.com\/)/g, "")
+        ?.replace(/(blog\/)/g, "")
+        ?.replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+        ?.replace(/(https:\/\/)|(www\.)|(tobiasahlin\.com\/)/g, ""),
+      logo: 'https://tobiasahlin.com/images/touch-icon-ipad-retina.png',
+      bgRGBA: '43,47,60',
+      coverUrl: `${ogData['og:image'].replace(/https:\/\/www\./g, 'https://')}`
+    }
+
+    const codeBlockWrapper = [...document.querySelectorAll('.highlighter-rouge')]?.filter((e) => !!e.querySelector('pre'))
+    for (let e of codeBlockWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      // pre안 내용정리
+      const pre = e.querySelector('pre')
+      if (!pre) continue;
+      const language = [...e.classList].find((e) => 
+        !!e.includes("language")
+      )
+      pre.className += ` ${language}`
+      const code = e.querySelector('code')
+      code.className += ` ${language}`
+      // pre를 밖으로
+      e.parentNode.insertBefore(pre, e)
+      e.remove()
+      // e.innerHTML = pre.outerHTML
+    }
+    
+    ElRemoveAll('.article.article-single > style, .article.article-single > h2 > a')
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.article.article-single').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+    mdContent = mdContent.replace(/(\`Code language\:.*\(*\))/g, '\n\`\`\`')
+      .replace(/\` \n\n/g, '\n```\n\n')
+      .replace(/\[\]\(\#.*\)/g, "") // remove empty tag
+      .replace(/\s\[\#\]\(\#.*\)/g, "") // remove empty tag
+      .replace(/\]\(\/(?=[^)]+\))/g, '](https://tobiasahlin.com/') // 이미지 경로
+
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -2392,6 +2758,7 @@ function fetchYozmArticle() {
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
+    mdContent = mdContent.replace(/\[([^\]]+)\]\(https:\/\/yozm\.weishket\.com\/magazin\/detail\/([^/#)]+)\/(#?[^)]*)\)/gm, `[**$1**](/yozm.wishket.com/$2.md#$3)`)
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -2620,8 +2987,11 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*stackoverflow\.(co|com)\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-stack-overflow"/>') // Stackoverflow
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*(reactjs\.org|react\.dev)\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-react"/>') // React.js
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*(nextjs\.org)\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-nextjs"/>') // Next.js
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*(expo\.dev)\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-expo"/>') // Expo
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*redux\.js\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-redux"/>') // Redux
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*angular\.io\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-angular"/>') // Angular
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*expressjs\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-expressjs"/>') // Express.js
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*axios-http\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-axios"/>') // Axios
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*nestjs\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-nestjs"/>') // Nest.js
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*lit\.dev\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-lit"/>') // Lit
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*storybook\.js\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-storybook"/>') // Storybook.js
@@ -2635,6 +3005,8 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*hono\.dev\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-hono"/>') // Hono
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*electronjs\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-electron"/>') // Electron
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*nodejs\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-node"/>') // Node.js
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*deno\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-deno"/>') // Deno
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*vite\.dev\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-vite"/>') // Vite
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*graphql\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-graphql"/>') // GraphQL
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*v0\.app\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-v0"/>') // v0
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*tailwindcss\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-tailwindcss"/>') // Tailwind CSS
@@ -2643,6 +3015,8 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*mongodb\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-mongodb"/>') // MongoDB
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*djangoproject\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-django"/>') // Django
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*fastap\.tiangolo\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-fastapi"/>') // FastAPI
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*pandas\.pydata\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-pandas"/>') // Pandas
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*jupyter\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-jupyter"/>') // Jupyter Notebook
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*pub\.dev\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-dart-lang"/>') // Dart
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*flutter\.dev\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-flutter"/>') // Flutter
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*go\.dev\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-golang"/>') // Go
@@ -2657,6 +3031,9 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*golang\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-golang"/>') // Go
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*php\.net\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-php"/>') // PHP
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*git-scm\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-git"/>') // Git
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*prettier\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-prettier"/>') // Prettier
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*stylelint\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-stylelint"/>') // Stylelint
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*-eslint\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-eslint"/>') // ESLint
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*sevalla\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-sevalla"/>') // Sevalla
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*heroku\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-heroku"/>') // Heroku
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*postgresql\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-postgresql"/>') // PostgreSQL
@@ -2682,6 +3059,8 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*android\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-anddroid"/>') // Android
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*huggingface\.co\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-huggingface"/>') // Hugging Face
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*arxiv\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-arxiv"/>') // arXiv
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*dribbble\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-dribbble"/>') // Dribbble
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*modelcontextprotocol\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-mcp"/>') // mcp
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*nvidia\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-nvidia"/>') // NVidia
     .replace(/\](?=\(https?:\/\/(?:www\.)?github\.com\/([^/)]+\/[^/)]+))/g, ' (<VPIcon icon="iconfont icon-github" />`$1`)]') // Github
     .replace(/\](?=\(https?:\/\/(?:www\.)?linkedin\.com\/in\/([^/?)]+))/g, ' (<VPIcon icon="fa-brands fa-linkedin" />`$1`)]') // Linkedin

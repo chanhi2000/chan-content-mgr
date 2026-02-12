@@ -50,7 +50,7 @@ function createFrontMatter(meta, customVpCard = null) {
     ? `author: ${meta.author}`
     : `author:
   - name: ${meta.author}
-    url : ${meta.authorUrl}`
+    url: ${meta.authorUrl}`
   return `---
 lang: ${meta.lang ?? 'en-US'}
 title: "${meta.title}"
