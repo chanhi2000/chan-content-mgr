@@ -51,6 +51,7 @@ const btnBramusBlog = document.getElementById('fetch-bramus-blog');
 const btnUnaBlog = document.getElementById('fetch-una-blog');
 const btnJoshWComeauBlog = document.getElementById('fetch-josh-w-comeau-blog');
 const btnIShadeedBlog = document.getElementById('fetch-ishadeed-blog');
+const btnAdrianRoselliBlog = document.getElementById('fetch-adrianroselli-blog');
 const btnCssTipBlog = document.getElementById('fetch-css-tip');
 const btn9ElementsBlog = document.getElementById('fetch-9-elements');
 const btnAdamArgyleBlog = document.getElementById('fetch-adam-argyle');
@@ -109,9 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
     , btnDroidconBlog, btnFrontendMastersBlog, btnCssTricksBlog, btnPiccalilLiBlog, btnSmashingMagazineBlog, btnOddBirdBlog
     , btnDigitalOceanBlog, btnTypeScriptTvBlog, btnLearnKubeBlog, btnKtAcademyBlog, btnKotzillaBlog , btnLogrocketBlog
     , btnRealPythonBlog, btnDockerBlog, btnEventDrivenBlog, btnGosolveBlog, btnZeroheightBlog, btnBramusBlog, btnUnaBlog
-    , btnJoshWComeauBlog, btnIShadeedBlog, btnCssTipBlog, btn9ElementsBlog, btnAdamArgyleBlog, btnTobiasAhlinBlog, 
-    , btnCssIrlBlog, btnWebDevRedFoxBlog, btnHuggingFaceBlog, btnItsFossBlog, btnTecmintBlog, btnOutcomeSchoolBlog
-    , labelArticlePath, btnTechKakaoBlog, btnTechKakaoPayBlog, btnYozmArticle, btnD2NaverArticle, btnCopyMessage 
+    , btnJoshWComeauBlog, btnIShadeedBlog, btnAdrianRoselliBlog, btnCssTipBlog, btn9ElementsBlog, btnAdamArgyleBlog
+    , btnTobiasAhlinBlog, btnCssIrlBlog, btnWebDevRedFoxBlog, btnHuggingFaceBlog, btnItsFossBlog, btnTecmintBlog
+    , btnOutcomeSchoolBlog, labelArticlePath, btnTechKakaoBlog, btnTechKakaoPayBlog, btnYozmArticle, btnD2NaverArticle, btnCopyMessage 
   ].forEach((e) => {
     e.style.display = 'none';
   });
@@ -404,7 +405,17 @@ document.addEventListener('DOMContentLoaded', () => {
       btnIShadeedBlog.disabled = false
       btnIShadeedBlog.style.display = 'block';
       labelArticlePath.value = tab.url
-        .replace(/(https:\/\/)|(www\.)|(joshwcomeau\.com\/)/g, '')
+        .replace(/(https:\/\/)|(www\.)|(ishadeed\.com\/)/g, '')
+    } else if (/adrianroselli\.com\//g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(0,0,0,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://adrianroselli.com/wp-content/themes/AAR/favicon.png")}<span>adrianroselli.com</span>`;
+      btnAdrianRoselliBlog.disabled = false
+      btnAdrianRoselliBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(adrianroselli\.com\/)/g, '')
     } else if (/nerdy\.dev\//g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
@@ -664,6 +675,7 @@ btnZeroheightBlog.addEventListener('click', async () =>        await onClickWebS
 btnBramusBlog.addEventListener('click', async () =>            await onClickWebScraping('FETCH_BRAMUS_BLOG'));
 btnUnaBlog.addEventListener('click', async () =>               await onClickWebScraping('FETCH_UNA_BLOG'));
 btnJoshWComeauBlog.addEventListener('click', async () =>       await onClickWebScraping('FETCH_JOSH_W_COMEAU_BLOG'));
+btnAdrianRoselliBlog.addEventListener('click', async () =>     await onClickWebScraping('FETCH_ADRIAN_ROSELLI_BLOG'));
 btnIShadeedBlog.addEventListener('click', async () =>          await onClickWebScraping('FETCH_I_SHJADEED_BLOG'));
 btnCssTipBlog.addEventListener('click', async () =>            await onClickWebScraping('FETCH_CSS_TIP_BLOG'));
 btn9ElementsBlog.addEventListener('click', async () =>         await onClickWebScraping('FETCH_9_ELEMENTS_BLOG'));

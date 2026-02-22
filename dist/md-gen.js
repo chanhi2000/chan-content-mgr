@@ -562,7 +562,7 @@ function fetchCssTricks(path = '') {
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
-    mdContent= mdContent.replace(/\[([^\]]+)\]\(https:\/\/css-tricks\.com\/([^/#)]+)\/(#?[^)]*)\)/gm, `[**$1**](/css-tricks.com/$2.md#$3)`)
+    mdContent = mdContent.replace(/\[([^\]]+)\]\(https:\/\/css-tricks\.com\/([^/#)]+)\/(#?[^)]*)\)/gm, `[**$1**](/css-tricks.com/$2.md#$3)`)
     mdContent = mdContent.replace(/\[\]\(#.*\)/g, '')
 
     let i = 0; // Initialize counter
@@ -699,6 +699,10 @@ function fetchSmashingMagazineBlog() {
   try {
     // Extract Open Graph metadata
     const ogData = parseOgData();
+    let _ogImage = `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    if (_ogImage == null || _ogImage == undefined || _ogImage.toLowerCase() === 'https:') {
+      _ogImage = `https://smashingmagazine.com/images/smashing-homepage.png`
+    }
 
     const meta = {
       lang: 'en-US',
@@ -719,7 +723,7 @@ function fetchSmashingMagazineBlog() {
         .replace(/(https:\/\/)|(www\.)|(smashingmagazine\.com\/)/g, ''),
       logo: 'https://smashingmagazine.com/images/favicon/favicon.svg',
       bgRGBA: '211,58,44',
-      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+      coverUrl: _ogImage
     }
 
     const elements2Remove = [
@@ -748,6 +752,7 @@ function fetchSmashingMagazineBlog() {
     mdContent = mdContent?.replace(/\[\]\(\#.*\)/g, "") // remove empty tag
       ?.replace(/\s\[\#\]\(\#.*\)/g, "") // remove empty tag
       ?.replace(/```\n\n(Copy)\n/g, "```\n")
+      ?.replace(/\[([^\]]+)\]\(\/(\d{4}\/\d{2}\/([^/)]+))\)/g, '[**$1**](https://smashingmagazine.com/$2.html)<!-- TODO: /smashingmagazine.com/$3.md -->');
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -907,6 +912,9 @@ function fetchDigitalOceanBlog(path = '') {
     mdContent = transformLinks(mdContent);
     mdContent = mdContent?.replace(/```\n\n(Copy)\n/g, "```\n")
       ?.replace(/\[\]\(#.*\)/g, '')
+      ?.replace(/\[([^\]]+)\]\(\/community\/tutorial(?:-collections|s)\/([^/)]+)\)/g, `[**$1**](/digitalocean.com/$2.md)`)
+      ?.replace(/\[([^\]]+)\]\(\/community\/tutorial_collections\/([^/)]+)\)/g, `[**$1**](/digitalocean.com/collections/$2.md)`)
+      ?.replace(/\[([^\]]+)\]\(\/products\/([^)]+)\)/g, '[<VPIcon icon="fa-brands fa-digital-ocean" />$1](https://digitalocean.com/products/$2)')
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -1406,7 +1414,6 @@ function fetchRealPythonBlog(path = '') {
       , 'syntactic-sugar-python'
       , 'what-does-isinstance-do-in-python', 'what-is-pip'
       , 'working-with-files-in-python',
-
     ]
     mdContent = mdContent.replace(/\[([^\]]+)\]\(https:\/\/realpython\.com\/([^/#)]+)\/(#?[^)]*)\)/gm, (match, title, slug, id) => {
   
@@ -2200,6 +2207,153 @@ function fetchIShadeedBlog(path="") {
   }
 }
 
+function fetchAdrianRoselliBlog(path="") {
+  console.log(`fetchAdrianRoselliBlog ... path: ${path}`)
+
+  try {
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: (`${ogData['og:title']}` ?? (document.querySelector('.post > main > h1')?.textContent)?.trim()).replace(/"/g, "”"),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'css',
+      author: 'https://adrianroselli.com',
+      authorUrl: "https://adrianroselli.com/contact",
+      datePublished: convertDateFormat(
+        document.querySelector('meta[property^="article:published_time"]')?.getAttribute("content") ?? document.querySelectorAll('time')[0]?.getAttribute("datetime") ?? ''
+      ),
+      baseUrl: 'https://adrianroselli.com',
+      articleBasePath: 'adrianroselli.com',
+      articlePath: `${ogData['og:url']}`
+        .replace(/(https:\/\/)|(www\.)|(adrianroselli\.com\/)|(\d{4}\/\d{2}\/)/g, '')
+        .replace(/(\/)|(\.html)/g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+        .replace(/(https:\/\/)|(www\.)|(adrianroselli\.com\/)/g, ''),
+      logo: 'https://adrianroselli.com/wp-content/themes/AAR/favicon.png',
+      bgRGBA: '0,0,0',
+      coverUrl: `${ogData['og:image'].replace(/https:\/\/www\./g, 'https://')}`
+    }
+
+    const codepenWrapper = [...document.querySelectorAll('.cp_embed_wrapper > iframe')]
+    const cpTags2Replace = codepenWrapper.map((e) => {
+      const [usernameFound, idFound] = e.getAttribute('src')
+        ?.replace(/(https:\/\/)|(codepen\.io\/)/g, "")
+        ?.replace(/\?.*/g, "").split("/embed/")
+      // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
+      const titleFound = e.getAttribute("title") || "N/A" // SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with 
+      return `<CodePen
+  user="${usernameFound}"
+  slug-hash="${idFound}"
+  title="${titleFound}"
+  :default-tab="['css','result']"
+  :theme="$isDarkmode ? 'dark': 'light'"/>`
+    })
+
+    for (let e of codepenWrapper) {
+      let currentHtml = e.innerHTML;
+      console.log(currentHtml)
+      const pEl = document.createElement('p');
+      pEl.textContent = `CodePen Embed Fallback`;
+      e.replaceWith(pEl)
+    }
+
+    ElRemoveAll("main>article#Comments")
+    
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('main').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
+    mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
+      .replace(/\[\]\(#.*\)/g, '')
+      .replace(/\s\[\#anchor\]\(#.*\)/g, '')
+      .replace(/\]\(\/(?=wp-content\/)/g, "](https://adrianroselli.com/")
+      // .replace(/\]\(\/([^/)]+)\/\)/g, '](/adrianroselli.com/$1.md)')
+      // .replace(/\]\(\/(?=img\/)/g, "](https://adrianroselli.com/")
+      
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+
+    const exceptions = [
+      "2012-advent-calendars-for-web-devs",
+      "a-responsive-accessible-table",
+      "accessibility-gaps-in-mvps",
+      "accessible-emoji-tweaked",
+      "ada-web-site-compliance-still-not-a-thing",
+      "aria-label-does-not-translate",
+      "at-is-more-than-screen-readers",
+      "avoid-emoji-as-class-names",
+      "barriers-from-links-with-aria",
+      "brief-note-on-aria-readonly-support-html",
+      "brief-note-on-buttons-enter-and-space",
+      "css-logical-properties",
+      "details-summary-are-not-insert-control-here",
+      "dont-use-aria-menu-roles-for-site-nav",
+      "hey-its-still-ok-to-use-tables",
+      "honoring-mobile-os-text-size",
+      "its-ok-to-use-tables",
+      "jaws-nvda-and-voiceover-braille-viewers",
+      "keyboard-and-overflow",
+      "link-disclosure-widget-navigation",
+      "live-region-support",
+      "my-priority-of-methods-for-labeling-a-control",
+      "my-request-to-google-on-accessibility",
+      "not-all-screen-reader-users-are-blind",
+      "periodic-table-of-the-elements",
+      "responsive-type-and-zoom",
+      "slides-from-a11ytoconf",
+      "tables-css-display-properties-and-aria",
+      "the-ultimate-ideal-bestest-base-font-size-that-everyone-is-keeping-a-secret-especially-chet",
+      "two-advent-calendars-for-web-developers",
+      "uncanny-a11y",
+      "uniquely-labeling-fields-in-a-table",
+      "web-development-advent-calendars-for-2013",
+      "web-development-advent-calendars-for-2014",
+      "web-development-advent-calendars-for-2015",
+      "web-development-advent-calendars-for-2016",
+      "web-development-advent-calendars-for-2017",
+      "web-development-advent-calendars-for-2018",
+      "web-development-advent-calendars-for-2019",
+      "whcm-and-system-colors",
+      "you-know-what-just-dont-split-words-into-letters",
+      "your-accessibility-claims-are-wrong-unless",
+    ];
+    mdContent = mdContent.replace(/\[([^\]]+)\]\(\/(\d{4}\/\d{2}\/([^/)]+))\.html\)/g, (match, title, fullPath, slug) => {
+      // Bold the title for both cases
+      const boldTitle = `**${title}**`;
+
+      if (exceptions.includes(slug)) {
+        // CASE: Exception - convert to relative path with .md and no TODO
+        return `[${boldTitle}](/adrianroselli.com/${slug}.md)`;
+      } else {
+        // CASE: Normal - convert to absolute URL and add TODO comment
+        return `[${boldTitle}](https://adrianroselli.com/${fullPath}.html)\n<!-- TODO: /adrianroselli.com/${slug}.md -->`;
+      }
+    })
+
+    /* let i = 0; // Initialize counter
+    mdContent = mdContent.replace(/Youtube\sEmbed\sFallback/g, (match) => {
+        const currentReplacement = ytTags2Replace[i];
+        i++; // Increment for next time
+        return currentReplacement;
+    }); */
+    let i = 0;
+    mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
+      const currentReplacement = cpTags2Replace[i];
+      i++; // Increment for next time
+      return currentReplacement;
+    });
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
 function fetchCssTipBlog(path = "") {
   console.log(`fetchCssTipBlog ... path: ${path}`)
 
@@ -2806,10 +2960,10 @@ function fetchD2Article(path = '') {
     const articleContent = document.querySelector('.con_view').innerHTML
     let mdContent = getTurndownResult(articleContent);
     mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
-    mdContent = mdContent.replace(/!\[\]\(\/content\//g, '![](https://d2.naver.com/content/') // ol처리
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
+    mdContent = mdContent.replace(/!\[\]\(\/content\//g, '![](https://d2.naver.com/content/') // ol처리
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -2983,6 +3137,7 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*chrome\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-chrome"/>') // Google Chrome
     .replace(/\[(?=[^\]]*\]\(https:\/\/antigravity\.google\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-antigravity"/>') // Antigravity
     .replace(/\[(?=[^\]]*\]\(https:\/\/(.*youtube\.com|youtu\.be)\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-youtube"/>') // Youtube
+    .replace(/\[(?=[^\]]*\]\(https:\/\/(.*vimeo\.com)\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-vimeo"/>') // Vimeo
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*\.wikipedia\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-wikipedia-w"/>') // Wikipedia
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*stackoverflow\.(co|com)\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-stack-overflow"/>') // Stackoverflow
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*(reactjs\.org|react\.dev)\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-react"/>') // React.js
@@ -3002,6 +3157,7 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*playwright\.dev\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-playwright"/>') // Playwright
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*yeoman\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-yeoman"/>') // Yeoman
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*typescriptlang\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-typescript"/>') // TypeScript
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*zod\.dev\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-zod"/>') // Zod
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*hono\.dev\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-hono"/>') // Hono
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*electronjs\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-electron"/>') // Electron
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*nodejs\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-node"/>') // Node.js
@@ -3027,6 +3183,7 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*aws\.amazon\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-aws"/>') // AWS
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*amazon\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-amazon"/>') // Amazon
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*cloudflare\.com\/[^)]*\))/g, '[<VPIcno icon="fa-brands fa-cloudflare"/>') // Cloudflare
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*digitalocean\.com\/[^)]*\))/g, '[<VPIcno icon="fa-brands fa-digital-ocean"/>') // DigitalOcean
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*kubernetes\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-k8s"/>') // Kubernetes
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*golang\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-golang"/>') // Go
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*php\.net\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-php"/>') // PHP
@@ -3057,8 +3214,13 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*ollama\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-ollama"/>') // Ollama
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*apple\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-apple"/>') // Apple
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*android\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-anddroid"/>') // Android
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*apache\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-Apache"/>') // Apache
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*scalar\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-scalar"/>') // Scalar
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*swagger\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-swagger"/>') // Swagger
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*postman\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-postman"/>') // Postman
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*huggingface\.co\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-huggingface"/>') // Hugging Face
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*arxiv\.org\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-arxiv"/>') // arXiv
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*slideshare\.net\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-slideshare"/>') // Slideshare
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*dribbble\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-dribbble"/>') // Dribbble
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*modelcontextprotocol\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-mcp"/>') // mcp
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*nvidia\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-nvidia"/>') // NVidia
@@ -3066,6 +3228,7 @@ function transformLinks(md = '') {
     .replace(/\](?=\(https?:\/\/(?:www\.)?linkedin\.com\/in\/([^/?)]+))/g, ' (<VPIcon icon="fa-brands fa-linkedin" />`$1`)]') // Linkedin
     .replace(/\](?=\(https?:\/\/(?:www\.)?reddit\.com\/r\/([^/)]+))/g, ' (<VPIcon icon="fa-brands fa-reddit" />`$1`)]') // Reddit
     .replace(/\](?=\(https?:\/\/(?:www\.)?codepen\.io\/([^/]+)\/pen\/)/g, ' (<VPIcon icon="fa-brands fa-codepen" />`$1`)]') // Codepen
+    .replace(/\](?=\(https?:\/\/(?:www\.)?cdpn\.io\/([^/]+)\/debug\/)/g, ' (<VPIcon icon="fa-brands fa-codepen" />`$1`)]') // Codepen
     .replace(/\](?=\(https?:\/\/(?:www\.)?medium\.com\/([^/]+))/g, ' (<VPIcon icon="fa-brands fa-medium" />`$1`)]') // Medium
     .replace(/\](?=\(https:\/\/(?:x|twitter)\.com\/([^/)]+)\))/g, ' (<VPIcon icon="fa-brands fa-x-twitter" />`$1`)]') // X (Formally Twitter)
     .replace(/\](?=\(https:\/\/dev\.to\/([^/]+))/g, ' (<VPIcon icon="fa-brands fa-dev" />`$1`)]') // Dev
