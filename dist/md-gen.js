@@ -1685,6 +1685,60 @@ function fetchCssIrlBlog(path="") {
   }
 }
 
+function fetchDavidBushellBlog(path="") {
+  console.log(`fetchDavidBushellBlog ... path: ${path}`)
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-GB',
+      title: (`${ogData['og:title']}` ?? (document.querySelector('h1>span')?.textContent)?.trim())?.replace(/"/g, "”"),
+      description: `${ogData['og:description']}`.replace(/"/g, "”") ?? description,
+      topic: 'css',
+      author: 'David Bushell',
+      authorUrl: 'https://dbushell.com/about/',
+      datePublished: convertDateFormat(
+        document.querySelector('p.Meta>time')?.getAttribute("datetime") ?? '' 
+      ),
+      baseUrl: 'https://dbushell.com',
+      articleBasePath: 'dbushell.com',
+      articlePath: `${ogData['og:url']}`.replace(/(https:\/\/)|(www\.)|(dbushell\.com)|(\d{4}\/\d{2}\/\d{2}\/)/g, '')
+        .replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+        .replace(/(https:\/\/)|(www\.)|(dbushell\.com\/)/g, ''),
+      logo: 'https://dbushell.com/assets/icons/favicon.svg',
+      bgRGBA: '0,150,190',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    ElRemoveAll('p.Meta')
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('.Prose').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
+    mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
+      ?.replace(/\[([^\]]+)\]\(https:\/\/dbushell\.com\/(\d{4}\/\d{2}\/\d{2}\/([^/)]+))\)/g, '[**$1**](https://dbushell.com/$2.html)<!-- TODO: /dbushell.com/$3.md -->')
+      ?.replace(/https:\/\/dbushell\.com\/bluesky/g, `https://bsky.app/profile/dbushell.com`)
+      ?.replace(/https:\/\/dbushell\.com\/mastodon/g, `https://social.lol/@db`)
+      ?.replace(/\[\]\(#.*\)/g, '')
+      
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+
+}
+
 function fetchWebDevRedFoxBlog(path = "") {
   console.log(`fetchWebDevRedFoxBlog ... path: ${path}`)
   try {
@@ -2450,6 +2504,60 @@ function fetchCssTipBlog(path = "") {
   }
 }
 
+function fetchAListApartBlog(path="") {
+  console.log(`fetchAListApartBlog ... path: ${path}`)
+
+  try {
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: (ogData['og:title'] ?? (document.querySelector('header > h1.entry-title')?.textContent)?.trim())?.replace(/"/g, "”")?.replace(/\s·\s.*/g, ''),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'system-design',
+      author: document?.querySelector('.author > a > span')?.textContent,
+      authorUrl: document?.querySelector('.author > a')?.getAttribute('href'),
+      datePublished: convertDateFormat(
+        document?.querySelector('.posted-on time.entry-date.published').getAttribute('datetime')
+      ),
+      baseUrl: 'https://alistapart.com',
+      articleBasePath: 'alistapart.com',
+      articlePath: `${ogData['og:url']}`
+        ?.replace(/(https:\/\/)|(www\.)|(alistapart\.com\/)/g, "")
+        ?.replace(/(article\/)/g, "")
+        ?.replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+        ?.replace(/(https:\/\/)|(www\.)|(alistapart\.com\/)/g, ""),
+      logo: 'https://i0.wp.com/alistapart.com/wp-content/uploads/2019/03/cropped-icon_navigation-laurel-512.jpg?fit=192%2C192&ssl=1',
+      bgRGBA: '34,34,34',
+      coverUrl: `${ogData['og:image'].replace(/https:\/\/www\./g, 'https://')}`
+    }
+
+    ElRemoveAll('.aside-breaker, .ala-single-sidebar-wrapper, .sharedaddy ')
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('main .entry-content').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = mdContent?.replace(/http:\/\/www\./g, "https://")
+    mdContent = transformLinks(mdContent);
+    mdContent = mdContent?.replace(/\` \n\n/g, '\n```\n\n')
+      ?.replace(/\[([^\]]+)\]\(https?:\/\/(?:www\.)?alistapart\.com\/articles\/([^/)]+)\/?\)/g, `[**$1**](/alistapart.com/$2.md)`)
+      ?.replace(/\[#section[0-9]\]\(\#.*\)/g, "") // remove section[0-9] tag
+      ?.replace(/\s\[\#\]\(\#.*\)/g, "") // remove empty tag
+
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
 function fetch9ElementsBlog(path="") {
   console.log(`fetch9ElementsBlog ... path: ${path}`)
   
@@ -3137,7 +3245,7 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*chrome\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-chrome"/>') // Google Chrome
     .replace(/\[(?=[^\]]*\]\(https:\/\/antigravity\.google\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-antigravity"/>') // Antigravity
     .replace(/\[(?=[^\]]*\]\(https:\/\/(.*youtube\.com|youtu\.be)\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-youtube"/>') // Youtube
-    .replace(/\[(?=[^\]]*\]\(https:\/\/(.*vimeo\.com)\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-vimeo"/>') // Vimeo
+    .replace(/\[(?=[^\]]*\]\(https:\/\/.*vimeo\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-vimeo"/>') // Vimeo
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*\.wikipedia\.org\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-wikipedia-w"/>') // Wikipedia
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*stackoverflow\.(co|com)\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-stack-overflow"/>') // Stackoverflow
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*(reactjs\.org|react\.dev)\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-react"/>') // React.js

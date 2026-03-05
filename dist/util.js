@@ -244,6 +244,13 @@ function createSubMetaInfo(topic) {
     _category=`DevOps\n  - ${_pageName}`
     _tag='devops\n  - win\n  - windows'
     _relatedPath='/devops/win'
+  } else if (/(system)|(design)/g.test(topic)) {
+    console.log(`${topic}!!!`)
+    _pageName = 'System Design'
+    _icon='fas fa-pen-ruler'
+    _category=`Design\n  - System`
+    _tag='design\n  - system'
+    _relatedPath='/academics/system-design'
   } else if (/(llm)/g.test(topic)) {
     console.log(`${topic}!!!`)
     _pageName = 'LLM'

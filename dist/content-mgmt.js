@@ -41,6 +41,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'FETCH_GOSOLVE_BLOG':            sendResponse({ status: "fetch GoSolve Blog DONE!", o: fetchGosolveBlog(message.path) });break;
     case 'FETCH_ZEROHEIGHT_BLOG':         sendResponse({ status: "fetch ZeroHeight Blog DONE!", o: fetchZeroHeightBlog(message.path) });break;
     case 'FETCH_CSS_IRL_BLOG':            sendResponse({ status: "fetch CSS (In Real Life) Blog DONE!", o: fetchCssIrlBlog(message.path) });break;
+    case 'FETCH_DAVID_BUSHELL_BLOG':      sendResponse({ status: "fetch David Bushell Blog DONE!", o: fetchDavidBushellBlog(message.path) });break;
     case 'FETCH_WEBDEV_REDFOX_BLOG':      sendResponse({ status: "fetch WebDev RedFox Blog DONE!", o: fetchWebDevRedFoxBlog(message.path) });break;
     case 'FETCH_ITS_FOSS_BLOG':           sendResponse({ status: "fetch ItsFoss Blog DONE!", o: fetchItsFossBlog(message.path) });break;
     case 'FETCH_TECMINT_BLOG':            sendResponse({ status: "fetch Tecmint Blog DONE!", o: fetchTecmintBlog(message.path) });break;
@@ -50,6 +51,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'FETCH_I_SHJADEED_BLOG':         sendResponse({ status: "fetch Ahmad Shadeed Blog DONE!", o: fetchIShadeedBlog(message.path) });break;
     case 'FETCH_ADRIAN_ROSELLI_BLOG':     sendResponse({ status: "fetch Adrian Roselli Blog DONE!", o: fetchAdrianRoselliBlog(message.path) });break;
     case 'FETCH_CSS_TIP_BLOG':            sendResponse({ status: "fetch CSS Tip Blog DONE!", o: fetchCssTipBlog(message.path) });break;
+    case 'FETCH_ALISTAPART_BLOG':         sendResponse({ status: "fetch A List Apart Blog DONE!", o: fetchAListApartBlog(message.path) });break;
     case 'FETCH_9_ELEMENTS_BLOG':         sendResponse({ status: "fetch 9 Elements Blog DONE!", o: fetch9ElementsBlog(message.path) });break;
     case 'FETCH_ADAM_ARGYLE_BLOG':        sendResponse({ status: "fetch Adam Argyle Blog DONE!", o: fetchAdamArgyleBlog(message.path) });break;
     case 'FETCH_TOBIAS_AHLIN_BLOG':       sendResponse({ status: "fetch Tobias Ahlin Blog DONE!", o: fetchTobiasAhlinBlog(message.path) });break;  
