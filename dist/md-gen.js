@@ -1763,7 +1763,7 @@ function fetchWebDevRedFoxBlog(path = "") {
       articleOriginPath: `${ogData['og:url']}`
         .replace(/(https:\/\/)|(www\.)|(webdevredfox\.org\/)/g, ''),
       logo: 'https://svelte.dev/favicon.png',
-      bgRGBA: '2255,127,80',
+      bgRGBA: '255,127,80',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
     }
 
@@ -1779,6 +1779,7 @@ function fetchWebDevRedFoxBlog(path = "") {
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
 
+
     /* let i = 0; // Initialize counter
     mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
       const currentReplacement = tags2Replace[i];
@@ -1792,6 +1793,60 @@ function fetchWebDevRedFoxBlog(path = "") {
     };
 
 
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+function fetchAlwaysTwistedBlog(path="") {
+  console.log(`fetchAlwaysTwistedBlog ... path: ${path}`)
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+    const tags = [...document.querySelectorAll('ul.at-c-tags>li>a')].map((e) => e?.textContent?.replace(/\s/g, "-")?.toLowerCase())
+
+    const meta = {
+      lang: 'en-US',
+      title: (`${ogData['og:title']}` ?? (document.querySelector('h1.at-c-article__title')?.textContent)?.trim())?.replace(/"/g, "”"),
+      description: `${ogData['og:description']}`.replace(/"/g, "”") || "",
+      topic: tags?.includes('accessibility') ? 'system-design': 'css', // topics[0] ?? '',
+      author: 'Stuart Robson',
+      authorUrl: 'https://alwaystwisted.com/about/',
+      datePublished: convertDateFormat(
+        document.querySelector('.at-c-article__header > time')?.getAttribute("datetime") ?? ''
+      ),
+      baseUrl: 'https://alwaystwisted.com',
+      articleBasePath: 'alwaystwisted.com',
+      articlePath: path.replace(/(https:\/\/)|(www\.)|(alwaystwisted\.com)/g, '')
+        .replace(/\/articles/g, '')
+        .replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+        .replace(/(https:\/\/)|(www\.)|(alwaystwisted\.com\/)/g, ''),
+      logo: 'https://alwaystwisted.com/images/favicons/apple-touch-icon.png',
+      bgRGBA: '255,117,0',
+      coverUrl: `https://alwaystwisted.com${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    ElRemoveAll(".at-c-article__header, .at-c-tags, .at-bluesky-likes")
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('article.at-p-article').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter)
+    mdContent = mdContent.replace(/\` \n\n/g, '\n```\n\n')
+      .replace(/\[\]\(#.*\)/g, '')
+      .replace(/\]\(\/(?=[^)]+\))/g, '](https://alwaystwisted.com/') // 이미지 경로
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+    mdContent = mdContent.replace(/\[([^\]]+)\]\(https?:\/\/alwaystwisted\.com\/articles\/([^/)]+)\/?\)/gm, `[**$1**](/alwaystwisted.com/$2.md)`)
+
+
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
   } catch (error) {
     console.error('Failed to copy JSON:', error);
   }
@@ -1881,7 +1936,7 @@ function fetchBramusBlog(path = "") {
         .replace(/\//g, ''),
       articleOriginPath: `${ogData['og:url']}`
         .replace(/(https:\/\/)|(www\.)|(bram\.us\/)/g, ''),
-      logo: 'https://bramu.us/favicon.ico',
+      logo: 'https://bram.us/favicon.ico',
       bgRGBA: '17,17,17',
       coverUrl: `${ogData['og:image'].replace(/https:\/\/www\./g, 'https://')}`
     }
@@ -2332,7 +2387,9 @@ function fetchAdrianRoselliBlog(path="") {
 
     const exceptions = [
       "2012-advent-calendars-for-web-devs",
+      "a11y-accessibility",
       "a-responsive-accessible-table",
+      "a-strongly-worded-letter", 
       "accessibility-gaps-in-mvps",
       "accessible-emoji-tweaked",
       "ada-web-site-compliance-still-not-a-thing",
@@ -2352,6 +2409,7 @@ function fetchAdrianRoselliBlog(path="") {
       "keyboard-and-overflow",
       "link-disclosure-widget-navigation",
       "live-region-support",
+      "maybe-you-dont-need-a-date-picker",
       "my-priority-of-methods-for-labeling-a-control",
       "my-request-to-google-on-accessibility",
       "not-all-screen-reader-users-are-blind",
@@ -3332,15 +3390,15 @@ function transformLinks(md = '') {
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*dribbble\.com\/[^)]*\))/g, '[<VPIcon icon="fa-brands fa-dribbble"/>') // Dribbble
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*modelcontextprotocol\.io\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-mcp"/>') // mcp
     .replace(/\[(?=[^\]]*\]\(https:\/\/.*nvidia\.com\/[^)]*\))/g, '[<VPIcon icon="iconfont icon-nvidia"/>') // NVidia
-    .replace(/\](?=\(https?:\/\/(?:www\.)?github\.com\/([^/)]+\/[^/)]+))/g, ' (<VPIcon icon="iconfont icon-github" />`$1`)]') // Github
-    .replace(/\](?=\(https?:\/\/(?:www\.)?linkedin\.com\/in\/([^/?)]+))/g, ' (<VPIcon icon="fa-brands fa-linkedin" />`$1`)]') // Linkedin
-    .replace(/\](?=\(https?:\/\/(?:www\.)?reddit\.com\/r\/([^/)]+))/g, ' (<VPIcon icon="fa-brands fa-reddit" />`$1`)]') // Reddit
-    .replace(/\](?=\(https?:\/\/(?:www\.)?codepen\.io\/([^/]+)\/pen\/)/g, ' (<VPIcon icon="fa-brands fa-codepen" />`$1`)]') // Codepen
-    .replace(/\](?=\(https?:\/\/(?:www\.)?cdpn\.io\/([^/]+)\/debug\/)/g, ' (<VPIcon icon="fa-brands fa-codepen" />`$1`)]') // Codepen
-    .replace(/\](?=\(https?:\/\/(?:www\.)?medium\.com\/([^/]+))/g, ' (<VPIcon icon="fa-brands fa-medium" />`$1`)]') // Medium
-    .replace(/\](?=\(https:\/\/(?:x|twitter)\.com\/([^/)]+)\))/g, ' (<VPIcon icon="fa-brands fa-x-twitter" />`$1`)]') // X (Formally Twitter)
-    .replace(/\](?=\(https:\/\/dev\.to\/([^/]+))/g, ' (<VPIcon icon="fa-brands fa-dev" />`$1`)]') // Dev
-    .replace(/\](?=\(https?:\/\/(?:www\.)?buymeacoffee\.com\/([^/?)]+))/g, ' (<VPIcon icon="iconfont icon-buymeacoffee" />`$1`)]') // Buymeacoffee
+    .replace(/\](?=\(https?:\/\/(?:www\.)?github\.com\/([^/)]+\/[^/)]+))/g, ' (<VPIcon icon="iconfont icon-github"/>`$1`)]') // Github
+    .replace(/\](?=\(https?:\/\/(?:www\.)?linkedin\.com\/in\/([^/?)]+))/g, ' (<VPIcon icon="fa-brands fa-linkedin"/>`$1`)]') // Linkedin
+    .replace(/\](?=\(https?:\/\/(?:www\.)?reddit\.com\/r\/([^/)]+))/g, ' (<VPIcon icon="fa-brands fa-reddit"/>`$1`)]') // Reddit
+    .replace(/\](?=\(https?:\/\/(?:www\.)?codepen\.io\/([^/]+)\/pen\/)/g, ' (<VPIcon icon="fa-brands fa-codepen"/>`$1`)]') // Codepen
+    .replace(/\](?=\(https?:\/\/(?:www\.)?cdpn\.io\/([^/]+)\/debug\/)/g, ' (<VPIcon icon="fa-brands fa-codepen"/>`$1`)]') // Codepen
+    .replace(/\](?=\(https?:\/\/(?:www\.)?medium\.com\/([^/]+))/g, ' (<VPIcon icon="fa-brands fa-medium"/>`$1`)]') // Medium
+    .replace(/\](?=\(https:\/\/(?:x|twitter)\.com\/([^/)]+)\))/g, ' (<VPIcon icon="fa-brands fa-x-twitter"/>`$1`)]') // X (Formally Twitter)
+    .replace(/\](?=\(https:\/\/dev\.to\/([^/]+))/g, ' (<VPIcon icon="fa-brands fa-dev"/>`$1`)]') // Dev
+    .replace(/\](?=\(https?:\/\/(?:www\.)?buymeacoffee\.com\/([^/?)]+))/g, ' (<VPIcon icon="iconfont icon-buymeacoffee"/>`$1`)]') // Buymeacoffee
 }
 
 function getTurndownResult(articleContent = '') {
