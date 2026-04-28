@@ -34,7 +34,7 @@ function createFrontMatter(meta, customVpCard = null) {
   "desc": "${customVpCard.desc}",
   "link": "${customVpCard.link}",
   "logo": "${customVpCard.logo}",
-  "background": "rgba(${customVpCard.background},0.2)",
+  "background": "rgba(${meta?.bgRGBA},0.2)",
 }
 \`\`\`` : `\`\`\`component VPCard
 {
@@ -256,14 +256,14 @@ function createSubMetaInfo(topic) {
     _pageName = 'LLM'
     _icon='fas fa-language'
     _category=`AI\n  - ${_pageName}`
-    _tag='ai\n  - artificial-intelligence\n  - llm\n  - large-language-model'
+    _tag='ai\n  - artificial-intelligence\n  - llm\n  - large-language-models'
     _relatedPath='/ai/llm'
   } else if (/(mcp)/g.test(topic)) {
     console.log(`${topic}!!!`)
     _pageName = 'MCP'
     _icon='iconfont icon-mcp'
     _category=`AI\n  - LLM\n  - ${_pageName}`
-    _tag='ai\n  - artificial-intelligence\n  - llm\n  - large-language-model\n  - mcp\n  - model-context-protocol'
+    _tag='ai\n  - artificial-intelligence\n  - llm\n  - large-language-models\n  - mcp\n  - model-context-protocols'
     _relatedPath='/ai/mcp'
   }
 
@@ -283,7 +283,7 @@ function createSiteInfo(meta, customVpCard = null) {
   "desc": "${meta.description}",
   "link": "${meta.baseUrl}/${meta.articleOriginPath ?? meta.articlePath}",
   "logo": "${meta.logo}",
-  "background": "rgba(${customVpCard?.background ?? meta.background},0.2)"
+  "background": "rgba(${customVpCard?.background ?? meta?.bgRGBA},0.2)"
 }
 \`\`\`` : `<SiteInfo
   name="${meta.title}"

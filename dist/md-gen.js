@@ -2923,6 +2923,63 @@ function fetchHuggingFaceBlog(path="") {
   }
 }
 
+function fetchWebDevBlog(path="") {
+  console.log(`fetchWebDevBlog ... path: ${path}`)
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    ElRemoveAll('h1>devsite-actions')
+
+    const meta = {
+      lang: 'en-US',
+      title: (ogData['og:title']?.replace(/\s\s\|\s\sArticles\s\s\|\s\sweb.dev/g, "") ?? (document.querySelector('h1.devsite-page-title')?.textContent)?.trim())
+        ?.replace(/"/g, "”")
+        ?.replace(/\s·\s.*/g, ''),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'css',
+      author: document.querySelectorAll('.wd-author span')?.[0]?.textContent?.trim(),
+      authorUrl: document.querySelectorAll('.wd-author__links a')?.[0]?.getAttribute('href')
+        ?.replace(/twitter\.com/g, "x.com"),
+      datePublished: convertDateFormat(
+        document.querySelector('.wd-pubdates')?.textContent
+          ?.replace(/Published:\s/g, "")
+          ?.replace(/.\sLast\supdated:\s.*/g, "")
+          ?.trim() || ''
+      ),
+      baseUrl: 'https://web.dev',
+      articleBasePath: 'web.dev',
+      articlePath: `${ogData['og:url']}`
+        ?.replace(/(https:\/\/)|(www\.)|(web\.dev\/)/g, "")
+        ?.replace(/(articles\/)/g, ""),
+      articleOriginPath: `${ogData['og:url']}`
+        ?.replace(/(https:\/\/)|(www\.)|(web\.dev\/)/g, ""),
+      logo: 'https://gstatic.com/devrel-devsite/prod/v579073a50c63499824df5a68b8922367066583d283ef78fdade1028efdb4ceb5/web/images/touchicon-180.png',
+      bgRGBA: '26,115,232',
+      coverUrl: ogData['og:image']?.replace(/https:\/\/www\./g, 'https://') ?? "",
+    }
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('article > .devsite-article-body').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+    mdContent = mdContent.replace(/(\`Code language\:.*\(*\))/g, '\n\`\`\`')
+      .replace(/\[\]\(\#.*\)/g, "") // remove empty tag
+      .replace(/\s\[\#\]\(\#.*\)/g, "") // remove empty tag
+
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
 function fetchItsFossBlog() {
   console.log('fetchItsFossBlog ... ')
   try {
