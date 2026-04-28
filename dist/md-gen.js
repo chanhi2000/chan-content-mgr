@@ -1724,10 +1724,51 @@ function fetchDavidBushellBlog(path="") {
       ?.replace(/https:\/\/dbushell\.com\/bluesky/g, `https://bsky.app/profile/dbushell.com`)
       ?.replace(/https:\/\/dbushell\.com\/mastodon/g, `https://social.lol/@db`)
       ?.replace(/\[\]\(#.*\)/g, '')
-      
+      ?.replace(/\)Alt/g, `)`)
+      ?.replace(/```\n\nCopy\sCode/g, '```')
+
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
+
+    const exceptions = [
+      "css-subgrid-is-super-good", // 2026-04-03
+      "top-ten-figma-betrayls", // 2026-03-24
+      "mooving-to-a-self-hosted-bluesky-pds", // 2026-03-03
+      "visually-hidden", // 2026-02-21
+      "declarative-dialog-menu-invoker-commands", // 2026-02-13
+      "big-design-and-bold-ideas", // 2026-02-10
+      "mozilla-slopaganda", // 2026-01-29
+      "death-to-scroll-fade", // 2026-01-10
+      "trillion-dollar-elephants", // 2025-09-08
+      "text-to-speech-synthesis", // 2025-07-26
+      "croissant-no-framework-web-app", // 2025-07-11
+      "baseless", // 2025-06-01
+      "search-with-zig-wasm-worker", // 2025-05-18
+      "the-static-site-churns", // 2025-05-11
+      "static-search-page-find", // 2024-11-21
+      "html-parser-conundrum", // 2024-10-01
+      "css-off-canvas-responsive-navigation-revisited", // 2023-10-06
+      "new-component-library-for-parts-giant", // 2021-07-01
+      "css-off-canvas-responsive-navigation", // 2021-06-17
+      "accessibility-css-focus-state", // 2021-05-01
+      "changing-css-for-good-logical-properties-and-values", // 2021-02-02
+      "a-bit-of-a-new-look", // 2016-02-29
+      "css-framework-for-partsgiant", // 2016-01-04
+      "critical-css-and-performance", // 2015-02-20
+    ]
+    mdContent = mdContent.replace(/\[([^\]]+)\]\(https?:\/\/dbushell\.com\/((\d{4}\/\d{2}\/\d{2}\/)([^/)]+))\/?\)/g, (match, title, fullPath, datePart, slug) => {
+      // Bold the title for both cases
+      const boldTitle = `**${title}**`;
+
+      if (exceptions.includes(slug)) {
+        // CASE: Exception - convert to relative path with .md and no TODO
+        return `[${boldTitle}](/dbushell.com/${slug}.md)`;
+      } else {
+        // CASE: Normal - convert to absolute URL and add TODO comment
+        return `[${boldTitle}](https://dbushell.com/${fullPath})\n<!-- TODO: /dbushell.com/${slug}.md -->`;
+      }
+    })
 
     return {
       filename: `${meta.articlePath}.md`,
@@ -2445,12 +2486,6 @@ function fetchAdrianRoselliBlog(path="") {
       }
     })
 
-    /* let i = 0; // Initialize counter
-    mdContent = mdContent.replace(/Youtube\sEmbed\sFallback/g, (match) => {
-        const currentReplacement = ytTags2Replace[i];
-        i++; // Increment for next time
-        return currentReplacement;
-    }); */
     let i = 0;
     mdContent = mdContent.replace(/CodePen\sEmbed\sFallback/g, (match) => {
       const currentReplacement = cpTags2Replace[i];
@@ -2923,6 +2958,63 @@ function fetchHuggingFaceBlog(path="") {
   }
 }
 
+function fetchWebDevBlog(path="") {
+  console.log(`fetchWebDevBlog ... path: ${path}`)
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    ElRemoveAll('h1>devsite-actions')
+
+    const meta = {
+      lang: 'en-US',
+      title: (ogData['og:title']?.replace(/\s\s\|\s\sArticles\s\s\|\s\sweb.dev/g, "") ?? (document.querySelector('h1.devsite-page-title')?.textContent)?.trim())
+        ?.replace(/"/g, "”")
+        ?.replace(/\s·\s.*/g, ''),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'css',
+      author: document.querySelectorAll('.wd-author span')?.[0]?.textContent?.trim(),
+      authorUrl: document.querySelectorAll('.wd-author__links a')?.[0]?.getAttribute('href')
+        ?.replace(/twitter\.com/g, "x.com"),
+      datePublished: convertDateFormat(
+        document.querySelector('.wd-pubdates')?.textContent
+          ?.replace(/Published:\s/g, "")
+          ?.replace(/.\sLast\supdated:\s.*/g, "")
+          ?.trim() || ''
+      ),
+      baseUrl: 'https://web.dev',
+      articleBasePath: 'web.dev',
+      articlePath: `${ogData['og:url']}`
+        ?.replace(/(https:\/\/)|(www\.)|(web\.dev\/)/g, "")
+        ?.replace(/(articles\/)/g, ""),
+      articleOriginPath: `${ogData['og:url']}`
+        ?.replace(/(https:\/\/)|(www\.)|(web\.dev\/)/g, ""),
+      logo: 'https://gstatic.com/devrel-devsite/prod/v579073a50c63499824df5a68b8922367066583d283ef78fdade1028efdb4ceb5/web/images/touchicon-180.png',
+      bgRGBA: '26,115,232',
+      coverUrl: ogData['og:image']?.replace(/https:\/\/www\./g, 'https://') ?? "",
+    }
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('article > .devsite-article-body').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+    mdContent = mdContent.replace(/(\`Code language\:.*\(*\))/g, '\n\`\`\`')
+      .replace(/\[\]\(\#.*\)/g, "") // remove empty tag
+      .replace(/\s\[\#\]\(\#.*\)/g, "") // remove empty tag
+
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
 function fetchItsFossBlog() {
   console.log('fetchItsFossBlog ... ')
   try {
@@ -3140,6 +3232,58 @@ function fetchD2Article(path = '') {
   }
 }
 
+function fetchTossTech(path = '') {
+  console.log(`fetchTossTech ... path: ${path}`)
+  try {
+    const scripts = Array.from(document.querySelectorAll('script'));
+
+    // Find the first script tag that contains "your-string"
+    const targetScript = scripts?.find(script => 
+      script?.textContent?.includes('createdTime')
+    );
+    // TODO: createdTime의 값을 찾아 datePublished에 대입
+
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'ko-KR',
+      title: (document.querySelector('article>header>h1')
+        ?.textContent ?? ogData['og:title'])?.trim().replace(/"/g, "”"),
+      description: (ogData['og:description'])?.trim().replace(/"/g, "”"),
+      topic: '',
+      author: document.querySelector('article>header>div+h1+div>div>div:first-child>span').textContent ?? '',
+      datePublished: convertDateFormat(
+        document.querySelector('article>header>div+h1+div>div>div:last-child')?.textContent, true
+      ),
+      baseUrl: 'https://toss.tech',
+      articleBasePath: 'toss.tech',
+      articlePath: path.replace(/https:\/\/toss\.tech\/articles\//g, '')
+        .replace(/\//g, ''),
+      articleOriginPath: path
+        .replace(/https:\/\/toss\.tech\//g, ''),
+      logo: 'https://static.toss.im/tds/favicon/favicon.ico',
+      bgRGBA: '34,114,235',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`,
+    }
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('article>header+div>div').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
 
 function fetchTechKakao() {
   console.log('fetchTechKakao ... ')

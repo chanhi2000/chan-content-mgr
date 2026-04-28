@@ -57,8 +57,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'FETCH_ADAM_ARGYLE_BLOG':        sendResponse({ status: "fetch Adam Argyle Blog DONE!", o: fetchAdamArgyleBlog(message.path) });break;
     case 'FETCH_TOBIAS_AHLIN_BLOG':       sendResponse({ status: "fetch Tobias Ahlin Blog DONE!", o: fetchTobiasAhlinBlog(message.path) });break;  
     case 'FETCH_HUGGING_FACE_BLOG':       sendResponse({ status: "fetch Hugging Face Blog DONE!", o: fetchHuggingFaceBlog(message.path) });break;  
+    case 'FETCH_WEB_DEV_BLOG':            sendResponse({ status: "fetch web.dev Blog DONE!", o: fetchWebDevBlog(message.path) });break;   
     case 'FETCH_YOZM_ARTICLE':            sendResponse({ status: "fetch yozm Article DONE!", o: fetchYozmArticle() });break;
     case 'FETCH_D2_ARTICLE':              sendResponse({ status: "fetch D2 Article DONE!", o: fetchD2Article(message.path) });break;
+    case 'FETCH_TOSS_TECH':               sendResponse({ status: "fetch Toss Tech Blog DONE!", o: fetchTossTech() });break;
     case 'FETCH_TECH_KAKAO':              sendResponse({ status: "fetch Tech Kakao Blog DONE!", o: fetchTechKakao() });break;
     case 'FETCH_TECH_KAKAO_PAY':          sendResponse({ status: "fetch Tech KakaoPay Blog DONE!", o: fetchTechKakaoPay() });break;
     // endregion: md-gen.js
@@ -172,10 +174,10 @@ function fetchWL() {
       const vInfo = e.querySelector('a#video-title')
       const cInfo = e.querySelector('.ytd-channel-name.complex-string a.yt-simple-endpoint.style-scope.yt-formatted-string')
       return {
-        channelId: cInfo.href.replace('https://www.youtube.com/@', ''),
-        channelName: cInfo.innerHTML,
-        id: vInfo.href.match(/(?<=https\:\/\/www.youtube.com\/watch\?v=)(.*)(?=\&list=)/g).join(''),    
-        title: vInfo.innerHTML.match(/(?<=          )(.*)/g).join('').replace(/&amp;/g, '&')
+        channelId: cInfo?.href?.replace('https://www.youtube.com/@', ''),
+        channelName: cInfo?.innerHTML,
+        id: vInfo?.href?.match(/(?<=https\:\/\/www.youtube.com\/watch\?v=)(.*)(?=\&list=)/g).join(''),    
+        title: vInfo?.innerHTML?.match(/(?<=          )(.*)/g).join('').replace(/&amp;/g, '&')
       }
     })
     console.log(JSON.stringify(_videos[0]));
