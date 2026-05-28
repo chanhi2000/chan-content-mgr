@@ -479,6 +479,19 @@ function fetchFrontendMastersBlog(path = '') {
   :default-tab="['css','result']"
   :theme="$isDarkmode ? 'dark': 'light'"/>`
     })
+    
+    const pres = [...document.querySelectorAll('pre')]
+    pres.forEach((e) => {
+      const language = e?.getAttribute("data-shcb-language-slug")
+      e?.classList?.add(`language-${language}`)
+      e?.querySelector('small')?.remove()
+      e?.querySelector('button.copy-code')?.remove()
+
+      const codeblock = e?.querySelector('code')
+      codeblock?.classList?.add(`language-${language}`)
+      e?.querySelector('span')?.replaceWith(...e?.querySelector('span')?.childNodes) // <span>태그를 안에 있는 <code>로 덮어쓰기
+      // codeblock.remove()
+    })
 
     const frontmatter = createFrontMatter(meta)
     const endMatter = createEndMatter(meta)
@@ -1732,6 +1745,7 @@ function fetchDavidBushellBlog(path="") {
     mdContent = transformLinks(mdContent);
 
     const exceptions = [
+      // END: 2026
       "css-subgrid-is-super-good", // 2026-04-03
       "top-ten-figma-betrayls", // 2026-03-24
       "mooving-to-a-self-hosted-bluesky-pds", // 2026-03-03
@@ -1739,23 +1753,47 @@ function fetchDavidBushellBlog(path="") {
       "declarative-dialog-menu-invoker-commands", // 2026-02-13
       "big-design-and-bold-ideas", // 2026-02-10
       "mozilla-slopaganda", // 2026-01-29
+      "hmmarkdown2", // 2026-01-23
       "death-to-scroll-fade", // 2026-01-10
+      // END: 2025
       "trillion-dollar-elephants", // 2025-09-08
       "text-to-speech-synthesis", // 2025-07-26
       "croissant-no-framework-web-app", // 2025-07-11
       "baseless", // 2025-06-01
       "search-with-zig-wasm-worker", // 2025-05-18
       "the-static-site-churns", // 2025-05-11
+      "glossary-web-component", // 2025-05-07
+      // END: 2024
       "static-search-page-find", // 2024-11-21
       "html-parser-conundrum", // 2024-10-01
+      "hmmarkdown", // 2024-09-01
+      "super-fast-builds", // 2024-02-14
+      // END: 2023
+      "just-in-time-javascript", // 2023-11-06
       "css-off-canvas-responsive-navigation-revisited", // 2023-10-06
+      // END: 2022
+      // END: 2021
       "new-component-library-for-parts-giant", // 2021-07-01
       "css-off-canvas-responsive-navigation", // 2021-06-17
       "accessibility-css-focus-state", // 2021-05-01
       "changing-css-for-good-logical-properties-and-values", // 2021-02-02
+      // END: 2020
+      // END: 2019
+      // END: 2018
+      // END: 2017
+      // END: 2016
       "a-bit-of-a-new-look", // 2016-02-29
       "css-framework-for-partsgiant", // 2016-01-04
+      // END: 2015
       "critical-css-and-performance", // 2015-02-20
+      // END: 2014
+      // END: 2013
+      // END: 2012
+      // END: 2011
+      // END: 2010
+      // END: 2009
+      // END: 2008
+      // END: 2007
     ]
     mdContent = mdContent.replace(/\[([^\]]+)\]\(https?:\/\/dbushell\.com\/((\d{4}\/\d{2}\/\d{2}\/)([^/)]+))\/?\)/g, (match, title, fullPath, datePart, slug) => {
       // Bold the title for both cases
@@ -2898,7 +2936,131 @@ function fetchTobiasAhlinBlog(path="") {
       .replace(/\s\[\#\]\(\#.*\)/g, "") // remove empty tag
       .replace(/\]\(\/(?=[^)]+\))/g, '](https://tobiasahlin.com/') // 이미지 경로
 
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
 
+function fetchTheoSotiBlog(path="") {
+  console.log(`fetchTheoSotiBlog ... path: ${path}`)
+  
+  try {
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: (ogData['og:title'] ?? (document.querySelector('.title>h1')?.textContent)?.trim())?.replace(/"/g, "”")?.replace(/\s·\s.*/g, ''),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'css',
+      author: "Theo Soti",
+      authorUrl: "https://github.com/TheoSoti",
+      datePublished: convertDateFormat(
+        document.querySelector('.date>time')?.getAttribute('datetime')
+      ),
+      baseUrl: 'https://theosoti.com',
+      articleBasePath: 'theosoti.com',
+      articlePath: `${ogData['og:url']}`
+        ?.replace(/(https:\/\/)|(www\.)|(theosoti\.com\/)/g, "")
+        ?.replace(/(blog\/)/g, "")
+        ?.replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+        ?.replace(/(https:\/\/)|(www\.)|(theosoti\.com\/)/g, ""),
+      logo: 'https://theosoti.com/favicon.ico',
+      bgRGBA: '54,125,89',
+      coverUrl: `${ogData['og:image'].replace(/https:\/\/www\./g, 'https://')}`
+    }
+    
+    ElRemoveAll()
+    const pretags = [...document.querySelectorAll('pre')]
+    pretags?.forEach((e) => {
+      console.log(e.innerHTML)
+      // pre안 내용정리
+      let code = e.querySelector('code')
+      code.className = `language-${e.getAttribute('data-language')}`;
+    })
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('article.prose').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+    mdContent = mdContent.replace(/(\`Code language\:.*\(*\))/g, '\n\`\`\`')
+      .replace(/\[\]\(\#.*\)/g, "") // remove empty tag
+      .replace(/\s\[\#\]\(\#.*\)/g, "") // remove empty tag
+
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    };
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
+function fetchJoshTumathBlog(path="") {
+  console.log(`fetchTobiasAhlinBlog ... path: ${path}`)
+  
+  try {
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-GB',
+      title: (`${ogData['og:title']}` ?? (document.querySelector('main>article>header h1')?.textContent)?.trim())
+        ?.replace(/\s-\sJosh\sTumath/g, "")
+        ?.replace(/"/g, "”")
+        ?.replace(/\s·\s.*/g, ''),
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: 'css',
+      author: "Josh Tumath",
+      authorUrl: "https://joshtumath.uk/about",
+      datePublished: convertDateFormat(
+        document.querySelector('main>article>header time')?.getAttribute('datetime')
+      ),
+      baseUrl: 'https://joshtumath.uk',
+      articleBasePath: 'joshtumath.uk',
+      articlePath: `${ogData['og:url']}`
+        ?.replace(/(https:\/\/)|(www\.)|(joshtumath\.uk\/)/g, "")
+        ?.replace(/(posts\/)/g, "")
+        ?.replace(/(\d{4}-\d{2}-\d{2}-)/g, "")
+        ?.replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+        ?.replace(/(https:\/\/)|(www\.)|(joshtumath\.uk\/)/g, ""),
+      logo: 'https://joshtumath.uk/favicon.ico',
+      bgRGBA: '139,184,223',
+      // coverUrl: `${ogData['og:image']?.replace(/https:\/\/www\./g, 'https://')}`
+    }
+
+    ElRemoveAll()
+    const codetags = [...document.querySelectorAll('pre>code')]
+    codetags?.forEach((e) => {
+      brTags = [...e.querySelectorAll('br')]
+      brTags.forEach((ee) => ee?.remove())
+      highlightTags = [...e.querySelectorAll('span.highlight-line')]
+      highlightTags.forEach((ee) => {
+        ee.parentNode.insertBefore(pre, e)
+        ee?.remove()
+      })
+    })
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('main>article>div').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = combineFrontAndEnd(mdContent, frontmatter, endMatter);
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+    mdContent = mdContent.replace(/(\`Code language\:.*\(*\))/g, '\n\`\`\`')
+      .replace(/\[\]\(\#.*\)/g, "") // remove empty tag
+      .replace(/\s\[permalink\]\(\#.*\)/g, "") // remove empty tag
+  
     return {
       filename: `${meta.articlePath}.md`,
       text: mdContent
@@ -3002,8 +3164,7 @@ function fetchWebDevBlog(path="") {
     mdContent = churnSpecialChars(mdContent);
     mdContent = simplifyCodeblockLang(mdContent);
     mdContent = transformLinks(mdContent);
-    mdContent = mdContent.replace(/(\`Code language\:.*\(*\))/g, '\n\`\`\`')
-      .replace(/\[\]\(\#.*\)/g, "") // remove empty tag
+    mdContent = mdContent.replace.replace(/\[\]\(\#.*\)/g, "") // remove empty tag
       .replace(/\s\[\#\]\(\#.*\)/g, "") // remove empty tag
 
     return {
@@ -3252,9 +3413,9 @@ function fetchTossTech(path = '') {
         ?.textContent ?? ogData['og:title'])?.trim().replace(/"/g, "”"),
       description: (ogData['og:description'])?.trim().replace(/"/g, "”"),
       topic: '',
-      author: document.querySelector('article>header>div+h1+div>div>div:first-child>span').textContent ?? '',
+      author: document.querySelector('article>header>div>div>div>span:first-child').textContent ?? '',
       datePublished: convertDateFormat(
-        document.querySelector('article>header>div+h1+div>div>div:last-child')?.textContent, true
+        document.querySelector('article>header>div>div>div:last-child')?.textContent, true
       ),
       baseUrl: 'https://toss.tech',
       articleBasePath: 'toss.tech',

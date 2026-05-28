@@ -61,6 +61,8 @@ const btnCssIrlBlog = document.getElementById('fetch-css-irl-blog');
 const btnDavidBushellBlog = document.getElementById('fetch-dbushell-blog');
 const btnWebDevRedFoxBlog = document.getElementById('fetch-webdev-redfox-blog')
 const btnAlwaysTwistedBlog = document.getElementById('fetch-always-twisted-blog')
+const btnTheoSotiBlog = document.getElementById("fetch-theo-soti-blog")
+const btnJoshTumathBlog = document.getElementById("fetch-josh-tumath-blog");
 const btnHuggingFaceBlog = document.getElementById("fetch-hugging-face-blog");
 const btnWebDevBlog = document.getElementById("fetch-web-dev-blog");
 const btnTossTechBlog = document.getElementById('fetch-toss-tech-blog');
@@ -117,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     , btnRealPythonBlog, btnDockerBlog, btnEventDrivenBlog, btnGosolveBlog, btnZeroheightBlog, btnBramusBlog, btnUnaBlog
     , btnJoshWComeauBlog, btnIShadeedBlog, btnAdrianRoselliBlog, btnCssTipBlog, btnAListApartBlog, btn9ElementsBlog
     , btnAdamArgyleBlog, btnTobiasAhlinBlog, btnCssIrlBlog, btnDavidBushellBlog, btnWebDevRedFoxBlog, btnAlwaysTwistedBlog
-    , btnHuggingFaceBlog, btnWebDevBlog, btnItsFossBlog, btnTecmintBlog, btnOutcomeSchoolBlog, btnTossTechBlog
+    , btnHuggingFaceBlog, btnWebDevBlog, btnTheoSotiBlog, btnJoshTumathBlog,  btnItsFossBlog, btnTecmintBlog, btnOutcomeSchoolBlog, btnTossTechBlog
     , btnTechKakaoBlog, btnTechKakaoPayBlog, btnYozmArticle, btnD2NaverArticle, btnCopyMessage, labelArticlePath
   ].forEach((e) => {
     e.style.display = 'none';
@@ -482,7 +484,26 @@ document.addEventListener('DOMContentLoaded', () => {
       btnAlwaysTwistedBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|(alwaystwisted\.com\/)|(articles\/)/g, '')
-
+    } else if (/theosoti\.com\//.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(54,125,89,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://theosoti.com/favicon.ico")}<span>theosoti.com</span>`;
+      btnTheoSotiBlog.disabled = false
+      btnTheoSotiBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(theosoti\.com\/)|(blog\/)/g, '')
+    } else if (/joshtumath.uk/.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(139,184,223,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://joshtumath.uk/favicon.ico")}<span>joshtumath.uk</span>`;
+      btnJoshTumathBlog.disabled = false
+      btnJoshTumathBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|(theosoti\.com\/)|(posts\/)/g, '')
     } else if (/huggingface\.co\//g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
@@ -741,6 +762,8 @@ btnCssIrlBlog.addEventListener('click', async() =>             await onClickWebS
 btnDavidBushellBlog.addEventListener('click', async() =>       await onClickWebScraping('FETCH_DAVID_BUSHELL_BLOG'));
 btnWebDevRedFoxBlog.addEventListener('click', async() =>       await onClickWebScraping('FETCH_WEBDEV_REDFOX_BLOG'));
 btnAlwaysTwistedBlog.addEventListener('click', async() =>      await onClickWebScraping('FETCH_ALWAYS_TWISTED_BLOG'));
+btnTheoSotiBlog.addEventListener('click', async() =>           await onClickWebScraping('FETCH_THEO_SOTI_BLOG'));
+btnJoshTumathBlog.addEventListener('click', async() =>         await onClickWebScraping('FETCH_JOSH_TUMATH_BLOG'));
 btnItsFossBlog.addEventListener('click', async() =>            await onClickWebScraping('FETCH_ITS_FOSS_BLOG'));
 btnTobiasAhlinBlog.addEventListener('click', async() =>        await onClickWebScraping('FETCH_TOBIAS_AHLIN_BLOG'));
 btnTecmintBlog.addEventListener('click', async() =>            await onClickWebScraping('FETCH_TECMINT_BLOG'));

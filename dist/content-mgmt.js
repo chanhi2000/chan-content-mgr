@@ -56,6 +56,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'FETCH_9_ELEMENTS_BLOG':         sendResponse({ status: "fetch 9 Elements Blog DONE!", o: fetch9ElementsBlog(message.path) });break;
     case 'FETCH_ADAM_ARGYLE_BLOG':        sendResponse({ status: "fetch Adam Argyle Blog DONE!", o: fetchAdamArgyleBlog(message.path) });break;
     case 'FETCH_TOBIAS_AHLIN_BLOG':       sendResponse({ status: "fetch Tobias Ahlin Blog DONE!", o: fetchTobiasAhlinBlog(message.path) });break;  
+    case 'FETCH_THEO_SOTI_BLOG':          sendResponse({ status: "fetch CSS Tips by Theo Soti Blog DONE!", o: fetchTheoSotiBlog(message.path) });break;  
+    case 'FETCH_JOSH_TUMATH_BLOG':        sendResponse({ status: "fetch Josh Tumath Blog DONE!", o: fetchJoshTumathBlog(message.path) });break;  
     case 'FETCH_HUGGING_FACE_BLOG':       sendResponse({ status: "fetch Hugging Face Blog DONE!", o: fetchHuggingFaceBlog(message.path) });break;  
     case 'FETCH_WEB_DEV_BLOG':            sendResponse({ status: "fetch web.dev Blog DONE!", o: fetchWebDevBlog(message.path) });break;   
     case 'FETCH_YOZM_ARTICLE':            sendResponse({ status: "fetch yozm Article DONE!", o: fetchYozmArticle() });break;
