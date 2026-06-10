@@ -436,8 +436,8 @@ function fetchDroidconBlog(path = '') {
   }
 }
 
-function fetchFrontendMastersBlog(path = '') {
-  console.log('fetchFrontendMastersBlog ... ')
+function fetchMasterDevBlog(path = '') {
+  console.log('fetchMasterDevBlog ... ')
   try {
     // Extract Open Graph metadata
     const ogData = parseOgData();
@@ -447,8 +447,8 @@ function fetchFrontendMastersBlog(path = '') {
       title: document.querySelector('title')
         ?.textContent
         ?.trim()
-        ?.replace(/ – Frontend Masters Boost/g, '')
-        ?.replace(/ – Frontend Masters Blog/g, ''),
+        ?.replace(/ – (Frontend Masters|Master\.dev)\sBoost/g, '')
+        ?.replace(/ – (Frontend Masters|Master\.dev)\sBlog/g, ''),
       description: `${document.querySelector('meta[name="description"]')?.getAttribute("content") ?? ''}`.replace(/"/g, "”"),
       topic: 'css',
       author: document.querySelector('.author-and-time a.author-link')
@@ -457,27 +457,27 @@ function fetchFrontendMastersBlog(path = '') {
       datePublished: convertDateFormat(
         document.querySelector('.author-and-time time')
           ?.getAttribute('datetime') ?? ''),
-      baseUrl: 'https://frontendmasters.com',
-      articleBasePath: 'frontendmasters.com',
+      baseUrl: 'https://master.dev',
+      articleBasePath: 'master.dev',
       articlePath: path.replace(/\//g, ''),
       articleOriginPath: `blog/${path}`,
-      logo: 'https://frontendmasters.com/favicon.ico',
+      logo: 'https://master.dev/favicon.ico',
       bgRGBA: '188,75,52',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
     }
 
     const codepenWrapper = [...document.querySelectorAll('.cp_embed_wrapper > iframe')]
     const tags2Replace = codepenWrapper.map((e) => {
-      const [usernameFound, idFound] = e.getAttribute('src')?.replace(/\/\/codepen\.io\//g, "")
+      const [usernameFound, idFound] = e.getAttribute('src')
+        ?.replace(/\/\/codepen\.io\//g, "")
         ?.replace(/\?.*/g, "").split("/embed/")
-      // const titleFound = e?.contentWindow?.document?.querySelector('head>title') || "N/A"
       const titleFound = "N/A" // SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with 
       return `<CodePen
   user="${usernameFound}"
   slug-hash="${idFound}"
   title="${titleFound}"
   :default-tab="['css','result']"
-  :theme="$isDarkmode ? 'dark': 'light'"/>`
+  :theme="dark"/>`
     })
     
     const pres = [...document.querySelectorAll('pre')]
@@ -564,7 +564,7 @@ function fetchCssTricks(path = '') {
   slug-hash="${idFound}"
   title="${titleFound}"
   :default-tab="['css','result']"
-  :theme="$isDarkmode ? 'dark': 'light'"/>`
+  :theme="dark"/>`
     })
 
     const frontmatter = createFrontMatter(meta)
@@ -652,7 +652,7 @@ function fetchPiccalilLiBlog(path = "") {
   slug-hash="${idFound}"
   title="${titleFound}"
   :default-tab="['css','result']"
-  :theme="$isDarkmode ? 'dark': 'light'"/>`
+  :theme="dark"/>`
     })
 
     for (let e of codepenWrapper) {
@@ -820,7 +820,7 @@ function fetchOddBirdBlog(path = "") {
   slug-hash="${idFound}"
   title="${titleFound}"
   :default-tab="['css','result']"
-  :theme="$isDarkmode ? 'dark': 'light'"/>`
+  :theme="dark"/>`
     })
 
     for (let e of codepenWrapper) {
@@ -1315,7 +1315,7 @@ function fetchLogRocketBlog(path = '') {
   slug-hash="${idFound}"
   title="${titleFound}"
   :default-tab="['css','result']"
-  :theme="$isDarkmode ? 'dark': 'light'"/>`
+  :theme="dark"/>`
     })
 
     for (let e of codepenWrapper) {
@@ -1659,7 +1659,7 @@ function fetchCssIrlBlog(path="") {
   slug-hash="${idFound}"
   title="${titleFound}"
   :default-tab="['css','result']"
-  :theme="$isDarkmode ? 'dark': 'light'"/>`
+  :theme="dark"/>`
     })
 
     for (let e of codepenWrapper) {
@@ -2046,7 +2046,7 @@ function fetchBramusBlog(path = "") {
   slug-hash="${idFound}"
   title="${titleFound}"
   :default-tab="['css','result']"
-  :theme="$isDarkmode ? 'dark': 'light'"/>`
+  :theme="dark"/>`
     })
 
     for (let e of codepenWrapper) {
@@ -2146,7 +2146,7 @@ function fetchUnaBlog(path = "") {
   slug-hash="${idFound}"
   title="${titleFound}"
   :default-tab="['css','result']"
-  :theme="$isDarkmode ? 'dark': 'light'"/>`
+  :theme="dark"/>`
     })
 
     for (let e of codepenWrapper) {
@@ -2246,7 +2246,7 @@ function fetchJoshWComeauBlog(path = "") {
   slug-hash="${idFound}"
   title="${titleFound}"
   :default-tab="['css','result']"
-  :theme="$isDarkmode ? 'dark': 'light'"/>`
+  :theme="dark"/>`
     })
 
     for (let e of codepenWrapper) {
@@ -2348,7 +2348,7 @@ function fetchIShadeedBlog(path="") {
   // slug-hash="${idFound}"
   // title="${titleFound}"
   // :default-tab="['css','result']"
-  // :theme="$isDarkmode ? 'dark': 'light'"/>`
+  // :theme="dark"/>`
   //   })
 
     /*
@@ -2435,7 +2435,7 @@ function fetchAdrianRoselliBlog(path="") {
   slug-hash="${idFound}"
   title="${titleFound}"
   :default-tab="['css','result']"
-  :theme="$isDarkmode ? 'dark': 'light'"/>`
+  :theme="dark"/>`
     })
 
     for (let e of codepenWrapper) {
@@ -2586,7 +2586,7 @@ function fetchCssTipBlog(path = "") {
   slug-hash="${idFound}"
   title="${titleFound}"
   :default-tab="['css','result']"
-  :theme="$isDarkmode ? 'dark': 'light'"/>`
+  :theme="dark"/>`
     })
 
     for (let e of codepenWrapper) {
@@ -2750,7 +2750,7 @@ function fetch9ElementsBlog(path="") {
   slug-hash="${idFound}"
   title="${titleFound}"
   :default-tab="['css','result']"
-  :theme="$isDarkmode ? 'dark': 'light'"/>`
+  :theme="dark"/>`
     })
 
     for (let e of codepenWrapper) {
@@ -2840,7 +2840,7 @@ function fetchAdamArgyleBlog(path = "") {
   slug-hash="${idFound}"
   title="${titleFound}"
   :default-tab="['css','result']"
-  :theme="$isDarkmode ? 'dark': 'light'"/>`
+  :theme="dark"/>`
     })
 
     const frontmatter = createFrontMatter(meta)

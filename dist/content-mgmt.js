@@ -23,7 +23,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'FETCH_C_SHARPCORNER_BLOG':      sendResponse({ status: "fetch c-sharpcorner Blog DONE!", o: fetchCSharpcornerBlog() });break;
     case 'FETCH_HACKING_WITH_SWIFT_BLOG': sendResponse({ status: "fetch hackingWithSwift Blog DONE!", o: fetchHackingWithSwiftBlog(message.path) });break;
     case 'FETCH_DROIDCON_BLOG':           sendResponse({ status: "fetch droidcon Blog DONE!", o: fetchDroidconBlog(message.path) });break;
-    case 'FETCH_FRONTEND_MASTERS_BLOG':   sendResponse({ status: "fetch FrontendmMasters Blog DONE!", o: fetchFrontendMastersBlog(message.path) });break;
+    case 'FETCH_MASTER_DEV_BLOG':         sendResponse({ status: "fetch Master Dev Blog DONE!", o: fetchMasterDevBlog(message.path) });break;
     case 'FETCH_CSS_TRICKS_BLOG':         sendResponse({ status: "fetch CSS Tricks Blog DONE!", o: fetchCssTricks(message.path) });break;
     case 'FETCH_PICCALILLI_BLOG':         sendResponse({ status: "fetch Piccalil Li Blog DONE!", o: fetchPiccalilLiBlog(message.path) });break;
     case 'FETCH_SMASHING_MAGAZINE_BLOG':  sendResponse({ status: "fetch SmashingMagazine Blog DONE!", o: fetchSmashingMagazineBlog(message.path) });break;
