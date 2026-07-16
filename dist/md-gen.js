@@ -3228,6 +3228,61 @@ function fetchItsFossBlog() {
   }
 }
 
+function fetchFosslinuxBlog(path="") {
+  console.log(`fetchFosslinuxBlog ... path: ${path}`)
+  try {
+    // Extract Open Graph metadata
+    const ogData = parseOgData();
+
+    const meta = {
+      lang: 'en-US',
+      title: (document.querySelector('article.post h1.post-title')?.textContent) ?? ogData['og:title'],
+      description: `${ogData['og:description']}`.replace(/"/g, "”"),
+      topic: '',
+      author: document.querySelector('article.post .post-box-meta-single .author-url')?.textContent ?? '',
+      authorUrl: document.querySelector('article.post .post-box-meta-single .author-url')?.getAttribute('href')?.replace(/www\./g, ""),
+      datePublished: convertDateFormat(
+        document.querySelector('article.post .post-box-meta-single time.published')?.getAttribute('datetime') ?? ''
+      ),
+      baseUrl: 'https://fosslinux.com',
+      articleBasePath: 'fosslinux.com',
+      articlePath: `${ogData['og:url']}`
+        .replace(/(https:\/\/)|(www\.)|(fosslinux\.com\/)/g, '')
+        .replace(/[0-9]+\//g, '')
+        .replace(/\.(htm|html)/g, '')
+        .replace(/\//g, ''),
+      articleOriginPath: `${ogData['og:url']}`
+        .replace(/(https:\/\/)|(www\.)|(fosslinux\.com\/)/g, ''),
+      logo: 'https://fosslinux.com/favicon.ico',
+      bgRGBA: '3,138,255',
+      coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
+    }
+
+    const frontmatter = createFrontMatter(meta)
+    const endMatter = createEndMatter(meta)
+    const articleContent = document.querySelector('article.post .post-entry').innerHTML
+    let mdContent = getTurndownResult(articleContent);
+    mdContent = `${frontmatter}${mdContent.replace(/\(https:\/\/www\./g, '(https://')
+      .replace(/(?:^|\n)##\s/g, '\n---\n\n## ') // h2 처리
+      .replace(/(?:^|##\s\n\n)/g, '## ') // h2 처리
+      .replace(/\nxxxxxxxxxx\n/g, '```kotlin')
+      .replace(/\-   /g, '- ') // ul처리
+      .replace(/    \n\-/g, '-') // ul처리
+      .replace(/(?<=[0-9]\.)\s\s/g, ' ')}${endMatter}` // ol처리
+      .replace(/    \n(?=[0-9]\.)/g, '') // ol처리
+    mdContent = churnSpecialChars(mdContent);
+    mdContent = simplifyCodeblockLang(mdContent);
+    mdContent = transformLinks(mdContent);
+
+    return {
+      filename: `${meta.articlePath}.md`,
+      text: mdContent
+    }
+  } catch (error) {
+    console.error('Failed to copy JSON:', error);
+  }
+}
+
 
 function fetchTecmintBlog() {
   console.log('fetchTecmintBlog ... ')

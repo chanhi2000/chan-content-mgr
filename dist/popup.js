@@ -40,6 +40,7 @@ const btnKotzillaBlog = document.getElementById('fetch-kotzilla-blog');
 const btnOutcomeSchoolBlog = document.getElementById('fetch-outcome-school-blog');
 const btnLearnKubeBlog = document.getElementById('fetch-learnkube-blog');
 const btnItsFossBlog = document.getElementById('fetch-its-foss-blog');
+const btnFosslinuxBlog = document.getElementById('fetch-fosslinux-blog');
 const btnTecmintBlog = document.getElementById('fetch-tecmint-blog');
 const btnLogrocketBlog = document.getElementById('fetch-logrocket-blog');
 const btnRealPythonBlog = document.getElementById('fetch-realpython-blog');
@@ -119,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     , btnRealPythonBlog, btnDockerBlog, btnEventDrivenBlog, btnGosolveBlog, btnZeroheightBlog, btnBramusBlog, btnUnaBlog
     , btnJoshWComeauBlog, btnIShadeedBlog, btnAdrianRoselliBlog, btnCssTipBlog, btnAListApartBlog, btn9ElementsBlog
     , btnAdamArgyleBlog, btnTobiasAhlinBlog, btnCssIrlBlog, btnDavidBushellBlog, btnWebDevRedFoxBlog, btnAlwaysTwistedBlog
-    , btnHuggingFaceBlog, btnWebDevBlog, btnTheoSotiBlog, btnJoshTumathBlog,  btnItsFossBlog, btnTecmintBlog, btnOutcomeSchoolBlog, btnTossTechBlog
+    , btnHuggingFaceBlog, btnWebDevBlog, btnTheoSotiBlog, btnJoshTumathBlog,  btnItsFossBlog, btnFosslinuxBlog, btnTecmintBlog, btnOutcomeSchoolBlog, btnTossTechBlog
     , btnTechKakaoBlog, btnTechKakaoPayBlog, btnYozmArticle, btnD2NaverArticle, btnCopyMessage, labelArticlePath
   ].forEach((e) => {
     e.style.display = 'none';
@@ -564,6 +565,16 @@ document.addEventListener('DOMContentLoaded', () => {
       btnItsFossBlog.style.display = 'block';
       labelArticlePath.value = tab.url
         .replace(/(https:\/\/)|(www\.)|/g, '')
+    } else if (/(fosslinux\.com)\/([0-9]+\/)/g.test(tab.url)) {
+      detailsBlog.disabled = false;
+      detailsBlog.open = true;
+      detailsBlog.style.background = 'rgba(3,138,255,0.2)'
+      summaryBlog.classList.add('activated')
+      summaryBlog.innerHTML = `${makeIcon("https://fosslinux.com/favicon.ico")}<span>fosslinux.com</span>`;
+      btnFosslinuxBlog.disabled = false
+      btnFosslinuxBlog.style.display = 'block';
+      labelArticlePath.value = tab.url
+        .replace(/(https:\/\/)|(www\.)|/g, '')
     } else if (/tecmint\.com/g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
@@ -765,6 +776,7 @@ btnAlwaysTwistedBlog.addEventListener('click', async() =>      await onClickWebS
 btnTheoSotiBlog.addEventListener('click', async() =>           await onClickWebScraping('FETCH_THEO_SOTI_BLOG'));
 btnJoshTumathBlog.addEventListener('click', async() =>         await onClickWebScraping('FETCH_JOSH_TUMATH_BLOG'));
 btnItsFossBlog.addEventListener('click', async() =>            await onClickWebScraping('FETCH_ITS_FOSS_BLOG'));
+btnFosslinuxBlog.addEventListener('click', async() =>          await onClickWebScraping('FETCH_FOSSLINUX_BLOG'));
 btnTobiasAhlinBlog.addEventListener('click', async() =>        await onClickWebScraping('FETCH_TOBIAS_AHLIN_BLOG'));
 btnTecmintBlog.addEventListener('click', async() =>            await onClickWebScraping('FETCH_TECMINT_BLOG'));
 btnHuggingFaceBlog.addEventListener('click', async() =>        await onClickWebScraping('FETCH_HUGGING_FACE_BLOG'));
