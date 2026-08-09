@@ -457,11 +457,11 @@ function fetchMasterDevBlog(path = '') {
       datePublished: convertDateFormat(
         document.querySelector('.author-and-time time')
           ?.getAttribute('datetime') ?? ''),
-      baseUrl: 'https://master.dev',
-      articleBasePath: 'master.dev',
+      baseUrl: 'https://blog.master.dev',
+      articleBasePath: 'blog.master.dev',
       articlePath: path.replace(/\//g, ''),
-      articleOriginPath: `blog/${path}`,
-      logo: 'https://master.dev/favicon.ico',
+      articleOriginPath: `${path}`,
+      logo: 'https://blog.master.dev/favicon.ico',
       bgRGBA: '188,75,52',
       coverUrl: `${ogData['og:image'].replace(/\https:\/\/www\./g, 'https://')}`
     }

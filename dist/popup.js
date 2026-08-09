@@ -205,16 +205,16 @@ document.addEventListener('DOMContentLoaded', () => {
       btnDroidconBlog.disabled = false
       btnDroidconBlog.style.display = 'block';
       labelArticlePath.value = tab.url.replace(/(https:\/\/)|(www\.)|(droidcon\.com\/)/g, '')
-    } else if (/master\.dev\//g.test(tab.url)) {
+    } else if (/blog\.master\.dev\//g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;
       detailsBlog.style.background = 'rgba(188,75,52,0.2)'
       summaryBlog.classList.add('activated')
-      summaryBlog.innerHTML = `${makeIcon("https://master.dev/favicon.ico")}<span>master.dev</span>`;
+      summaryBlog.innerHTML = `${makeIcon("https://blog.master.dev/favicon.ico")}<span>blog.master.dev</span>`;
       btnMasterDevBlog.disabled = false
       btnMasterDevBlog.style.display = 'block';
       labelArticlePath.value = tab.url
-        .replace(/(https:\/\/)|(www\.)|(master\.dev\/)(blog\/)/g, '')
+        .replace(/(https:\/\/)|(www\.)|(blog\.master\.dev\/)/g, '')
     } else if (/css-tricks\.com\//g.test(tab.url)) {
       detailsBlog.disabled = false;
       detailsBlog.open = true;

@@ -73,102 +73,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
-function fetchGhRepoInfo() {
+async function fetchGhRepoInfo() {
   console.log('fetchGhRepoInfo ... ')
   try {
-    const repo = document.querySelector("meta[property='og:url']")
-                    ?.getAttribute('content')
-                    ?.replace(/https:\/\/github.com\//g, '') ?? ''
-    const ownerAvatarUrl = document.querySelector("[data-target='react-app.reactRoot']>link")?.href
-    const ownerId = ownerAvatarUrl?.replace(/(https\:\/\/)|(avatars\.githubusercontent\.com)\/u\//g, '')
-                    ?.replace(/\?s=.*/g, "")
-    const ghEmbeddedData = JSON.parse(document.querySelector('react-app>script')?.text)
-    const sidebarAbout = ghEmbeddedData?.payload?.sidebarAbout ?? {
-      activityPath: `${repo}/activity`,
-      canEditMetadata: false,
-      canOpenStargazersAndWatchers: false,
-      description: document.querySelector("meta[property='og:description']")
-                    ?.getAttribute('content')
-                    ?.replace(/https:\/\/github.com\//g, '')
-                    ?.replace(/Contribute\sto\s|development\sby\screating\san\saccount\son\sGitHub./g, '')
-                    ?.replace(` ${repo} `, '')?.replace(` - ${repo}`, '') ?? '',
-      fork: {
-        canFork: true,
-      },
-      forkNetworkPath: `${repo}/forks`,
-      forksCount: 0,
-      formattedDesription: document.querySelector("meta[property='og:description']")
-                    ?.getAttribute('content')
-                    ?.replace(/https:\/\/github.com\//g, '')
-                    ?.replace(/Contribute\sto\s|development\sby\screating\san\saccount\son\sGitHub./g, '')
-                    ?.replace(` ${repo} `, '')?.replace(` - ${repo}`, '') ?? '',
-      hasCitation: false,
-      isOrg: false,
-      ownerLogin: repo?.split('/')?.[0],
-      pin: {
-        canPin: false,
-        isPinned: true,
-        isOrgOwned: false,
-        pinItemsRemaining: 0,
-      },
-      repo: {
-        isAdvisoryWorkspace: false,
-        isArchived: false,
-        isFork: false,
-        isMirror: false,
-        isPrivate: false,
-        isTemplate: false,
-        license: {
-          spdxId: "NOASSERTION",
-          name: "Other",
-        },
-        ownerAvatarUrl: ownerAvatarUrl,
-        ownerId: ownerId,
-        visibilityLabel: "Public",
-      },
-      repoName: repo?.split('/')?.[1],
-      // reportPath: "/contact/report-content?content_url=https%3A%2F%2Fgithub.com%2Fmpiorowski%2Flate-sh&report=mpiorowski+%28user%29",
-      sections: {
-        releases: {},
-        sponsors: true,
-        deployments: [],
-        packages: true,
-        usedBy: false,
-        // ... TODO: 나중에 보기
-      },
-      showDemoNotification: false,
-      showInsights: true,
-      showSponsorButton: true,
-      showTemplateButton: false,
-      star: {
-        viewerHasStarred: false,
-        canStar: true,
-      },
-      stargazerCount: 1321,
-      stargazersPath: `${repo}/stargazers`,
-      topics: [],
-      viewer: {
-        isLoggedIn: true,
-        isSiteAdmin: false,
-        emuContributionBlocked: false
-      },
-      watch: {
-        canWatch: true,
-        watchData: {}, // TODO: 나중에 보기
-      },
-      watcherCount: 0,
-      watchersPath: `${repo}/watchers`,
-      website: "",
-    }
+    const repo = (document.querySelector("meta[property='og:url']")?.getAttribute('content') ?? document.querySelector("meta[name='current-repo-nwo']")?.getAttribute('content'))?.replace(/https:\/\/github.com\//g, '')
+                      
+    const res = await fetch(`https://api.github.com/repos/${repo}`);
+    const resJson = await res?.json();
     const langType = [...document.querySelectorAll(".about-margin .BorderGrid-row .list-style-none>li>a>span.color-fg-default")][0]?.innerHTML ?? ''
-    const desc = sidebarAbout?.description ?? sidebarAbout?.formattedDesription
-    const officialSite = sidebarAbout?.website
-    const topics = sidebarAbout?.topics?.map((t)=> t?.name)
-    const avatar = sidebarAbout?.repo?.ownerAvatarUrl
-    const banner = document.querySelector("meta[property='og:image']")
-                    ?.getAttribute('content') ?? ''
+    const desc = resJson?.description ?? ""
+    const officialSite = resJson?.homepage ?? ""
+    const topics = resJson?.topics ?? []
+    const avatar = resJson?.owner?.avatar_url
+    const banner = document.querySelector("meta[property='og:image']")?.getAttribute('content') ?? ''
+
     const o = {
-      "langType": langType,
+      "langType": langType ?? "",
       "repo": repo,
       "desc": desc,
       "officialSite": officialSite,
