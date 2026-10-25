@@ -1,12 +1,12 @@
 // content-mgmt.js
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   console.info("YTWL ~ MESSAGE arrived")
   switch (message.type) {
     case 'FETCH_YT_CHANNEL_INFO':
       sendResponse({ status: "fetch Youtube Channel Info DONE!", o: fetchYTChannelInfo() });
       break;
     case 'FETCH_GH_REPO_INFO':
-      sendResponse({ status: "fetch Github Repository Info DONE!", o: fetchGhRepoInfo() });
+      sendResponse({ status: "fetch Github Repository Info DONE!", o: await fetchGhRepoInfo() });
       break;
     case 'FETCH_WL':
       sendResponse({ status: "fetch WatchLater DONE!", videos: fetchWL() })
@@ -16,7 +16,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ status: "delete WatchLater STARTED!" })
       break;
     //region: md-gen.js
-    case 'FETCH_SITE_INFO':               sendResponse({ status: "fetch SiteInfo DONE!", o: fetchSiteInfo(message.url) });break;
+    case 'FETCH_SITE_INFO':               sendResponse({ status: "fetch SiteInfo DONE!", o: await fetchSiteInfo(message.url) });break;
     case 'FETCH_FREE_CODE_CAMP_NEWS':     sendResponse({ status: "fetch freeCodeCamp News DONE!", o: fetchFreeCodeCampNews() });break;
     case 'FETCH_MILAN_JOVANOVIC_BLOG':    sendResponse({ status: "fetch milanJovanovic Blog DONE!", o: fetchMilanJovanovicBlog() });break;
     case 'FETCH_CODE_MAZE_BLOG':          sendResponse({ status: "fetch code-maze Blog DONE!", o: fetchCodeMazeBlog() });break;
@@ -75,18 +75,36 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 async function fetchGhRepoInfo() {
   console.log('fetchGhRepoInfo ... ')
-  try {
-    const repo = (document.querySelector("meta[property='og:url']")?.getAttribute('content') ?? document.querySelector("meta[name='current-repo-nwo']")?.getAttribute('content'))?.replace(/https:\/\/github.com\//g, '')
-                      
-    const res = await fetch(`https://api.github.com/repos/${repo}`);
-    const resJson = await res?.json();
-    const langType = [...document.querySelectorAll(".about-margin .BorderGrid-row .list-style-none>li>a>span.color-fg-default")][0]?.innerHTML ?? ''
-    const desc = resJson?.description ?? ""
-    const officialSite = resJson?.homepage ?? ""
-    const topics = resJson?.topics ?? []
-    const avatar = resJson?.owner?.avatar_url
-    const banner = document.querySelector("meta[property='og:image']")?.getAttribute('content') ?? ''
+  const ghInfo = async (repo) => {
+    const response = await fetch(`https://api.github.com/repos/${repo}`)
+    const res = await response?.json() ?? {}
+    console.log(`res: ${JSON.stringify(res)}`)
+    return res
+  }
 
+  const ghOgImageUrl = async (repo, salt="") => {
+    // const res = `https://opengraph.githubassets.com/${await ghOgHash(repo, salt)}/${repo}`;
+    const res = `https://opengraph.githubassets.com/1/${repo}`;
+    console.log(`res: ${res}`)
+    return res
+  }
+
+  try {
+    const repo = document.querySelector("meta[name='current-repo-nwo']")
+                    ?.getAttribute('content')
+                    ?.replace(/https:\/\/github.com\//g, '') ?? ''
+    const ogImageUrl = await ghOgImageUrl(repo)
+    const info = await ghInfo(repo)
+    const langType = [...document.querySelectorAll(".about-margin .BorderGrid-row .list-style-none>li>a>span.color-fg-default")][0]?.innerHTML ?? '';
+    const desc = info?.description 
+      ?? `Contribute to ${repo} development by creating an account on GitHub.`;
+    const officialSite = info?.homepage ?? [...document.querySelectorAll("span > a")]?.[0]?.innerText;
+    const topics = [
+      ...document.querySelectorAll('a[href^="/topics"]'),
+      ...document.querySelectorAll('ul>li>a>span[itemprop="keywords"]')
+    ]?.map((e) => e?.innerText?.toLowerCase());
+    const avatar = info?.avatar_url ?? document.querySelector("img[data-component='Avatar']")?.src;
+    const banner = ogImageUrl ?? document.querySelector("meta[property='og:image']")?.getAttribute('content') ?? '';
     const o = {
       "langType": langType ?? "",
       "repo": repo,

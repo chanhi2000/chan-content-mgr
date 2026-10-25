@@ -8,8 +8,10 @@ const TURNDOWN_SERVICE_DEFAULT_OPTIONS = {
   preformattedCode: 'true',
 }
 
-function fetchSiteInfo(url) {
+async function fetchSiteInfo(url) {
   console.log('fetchSiteInfo ... ')
+  let meta = {}
+  
   try {
     // Extract Open Graph metadata
     const ogData = parseOgData();
@@ -24,7 +26,7 @@ function fetchSiteInfo(url) {
 
     let _url = ogData['og:url']?.replace(/www\./, '') ?? url
 
-    const meta = {
+    meta = {
       title: _title,
       description: _description,
       baseUrl: _url,
@@ -33,6 +35,19 @@ function fetchSiteInfo(url) {
       background: '244,245,255',
       coverUrl: ogData['og:image']?.replace(/www\./, '') ?? ''
     }
+
+    if (/github\.com/.test(url)) {
+      console.log('Github Page FOUND!!! ... ')
+      const repo = _url?.replace(/https:\/\/github.com\//g, '') ?? ''
+      const coverUrl = await ghOgImageUrl(repo)
+      const info = await ghInfo(repo)
+      meta = {
+        ...meta,
+        description: info?.description ?? `Contribute to ${repo} development by creating an account on GitHub.`,
+        coverUrl
+      }
+    }
+
     return createSiteInfo(meta)
   } catch (error) {
     console.error('Failed to copy JSON:', error);

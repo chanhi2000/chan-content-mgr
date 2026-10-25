@@ -1,3 +1,24 @@
+async function ghOgHash(repo, salt="") {
+  const data = new TextEncoder().encode(`${repo}/${salt}`);
+  const digest = await crypto.subtle.digest("SHA-256", data);
+  return [... new Uint8Array(digest)]
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("")
+}
+
+const ghInfo = async (repo) => {
+  const response = await fetch(`https://api.github.com/repos/${repo}`)
+  const res = await response?.json() ?? {}
+  console.log(`res: ${JSON.stringify(res)}`)
+  return res
+}
+
+const ghOgImageUrl = async (repo, salt="") => {
+  // const res = `https://opengraph.githubassets.com/${await ghOgHash(repo, salt)}/${repo}`;
+  const res = `https://opengraph.githubassets.com/1/${repo}`;
+  console.log(`res: ${res}`)
+  return res
+}
 
 function convertDateFormat(dateString, korean=false,) {
   if (dateString == null || dateString == '') {
